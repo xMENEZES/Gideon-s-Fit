@@ -1,39 +1,48 @@
 import Link from "next/link";
-import { Plus, User } from "lucide-react";
+import { User } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { Button } from "@/components/ui/button";
+import { getSessionUserId } from "@/lib/auth/session";
 import { Card, CardContent } from "@/components/ui/card";
+import { TeamCodeCard } from "@/components/shared/team-code-card";
+import { JoinRequestsList } from "@/components/shared/join-requests-list";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
-  const { data: students } = await supabase
-    .from("students")
-    .select("id, nickname, email, profiles!students_profile_id_fkey(full_name)")
-    .order("full_name", { referencedTable: "profiles" });
+  const userId = await getSessionUserId();
+
+  const [{ data: students }, { data: team }, { data: requests }] = await Promise.all([
+    supabase
+      .from("students")
+      .select("id, nickname, email, profiles!students_profile_id_fkey(full_name)")
+      .order("full_name", { referencedTable: "profiles" }),
+    supabase.from("team_codes").select("code").eq("trainer_id", userId!).maybeSingle(),
+    supabase
+      .from("team_join_requests")
+      .select("id, profiles!team_join_requests_user_id_fkey(full_name, email)")
+      .eq("trainer_id", userId!)
+      .eq("status", "pending")
+      .order("created_at", { ascending: true }),
+  ]);
+
+  const pendingRequests = (requests ?? []).map((request) => ({
+    id: request.id,
+    name: request.profiles?.full_name ?? "",
+    email: request.profiles?.email ?? "",
+  }));
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-tight">Meus alunos</h1>
-        <Button nativeButton={false} render={<Link href="/dashboard/alunos/novo" />}>
-          <Plus className="size-4" />
-          Novo aluno
-        </Button>
-      </div>
+      <h1 className="text-2xl font-bold tracking-tight">Meus alunos</h1>
+
+      <TeamCodeCard code={team?.code ?? null} />
+      <JoinRequestsList requests={pendingRequests} />
 
       {!students?.length ? (
         <Card>
           <CardContent className="flex flex-col items-center gap-2 py-16 text-center text-muted-foreground">
             <User className="size-8" />
-            <p>Você ainda não tem alunos cadastrados.</p>
-            <Button
-              variant="secondary"
-              className="mt-2"
-              nativeButton={false}
-              render={<Link href="/dashboard/alunos/novo" />}
-            >
-              Cadastrar o primeiro aluno
-            </Button>
+            <p>Você ainda não tem alunos no seu time.</p>
+            <p className="text-sm">Envie o código do time para quem quiser entrar.</p>
           </CardContent>
         </Card>
       ) : (

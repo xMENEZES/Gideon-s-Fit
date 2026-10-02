@@ -24,7 +24,7 @@ export default async function DietaHistoricoPage({
   if (!protocols?.length) {
     return (
       <p className="py-12 text-center text-muted-foreground">
-        Nenhum protocolo de dieta anterior ainda.
+        Nenhum protocolo alimentar anterior ainda.
       </p>
     );
   }

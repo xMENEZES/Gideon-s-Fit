@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidateModule } from "@/lib/actions/revalidate";
 import { createClient } from "@/lib/supabase/server";
 import {
   startProtocolSchema,
@@ -32,9 +32,7 @@ export async function startNewProtocol(
     return { error: "Não foi possível iniciar o novo protocolo. Tente novamente." };
   }
 
-  const modulePath = type === "workout" ? "treino" : "dieta";
-  revalidatePath(`/dashboard/alunos/${studentId}/${modulePath}`);
-  revalidatePath(`/dashboard/alunos/${studentId}/${modulePath}/historico`);
+  revalidateModule(studentId, type === "workout" ? "treino" : "dieta");
   return { success: true, protocolId: data };
 }
 
@@ -57,8 +55,6 @@ export async function updateProtocolNotes(
 
   if (error) return { error: "Não foi possível salvar as observações." };
 
-  const modulePath = type === "workout" ? "treino" : "dieta";
-  revalidatePath(`/dashboard/alunos/${studentId}/${modulePath}`);
-  revalidatePath(`/aluno/${modulePath}`);
+  revalidateModule(studentId, type === "workout" ? "treino" : "dieta");
   return { success: true };
 }

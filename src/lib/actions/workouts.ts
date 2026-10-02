@@ -1,7 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { revalidateModule } from "@/lib/actions/revalidate";
 import {
   workoutDaySchema,
   exerciseSchema,
@@ -14,12 +14,6 @@ import {
   type UpdateRecommendedLoadInput,
   type LoadLogInput,
 } from "@/lib/validations/workout.schema";
-
-function treinoPath(studentId: string) {
-  return `/dashboard/alunos/${studentId}/treino`;
-}
-
-const ALUNO_TREINO_PATH = "/aluno/treino";
 
 export async function createWorkoutDay(
   studentId: string,
@@ -37,7 +31,7 @@ export async function createWorkoutDay(
 
   if (error) return { error: "Não foi possível criar o dia de treino." };
 
-  revalidatePath(treinoPath(studentId));
+  revalidateModule(studentId, "treino");
   return { success: true };
 }
 
@@ -46,7 +40,7 @@ export async function deleteWorkoutDay(studentId: string, workoutDayId: string) 
   const { error } = await supabase.from("workout_days").delete().eq("id", workoutDayId);
   if (error) return { error: "Não foi possível remover o dia de treino." };
 
-  revalidatePath(treinoPath(studentId));
+  revalidateModule(studentId, "treino");
   return { success: true };
 }
 
@@ -72,7 +66,7 @@ export async function createExercise(
 
   if (error) return { error: "Não foi possível adicionar o exercício." };
 
-  revalidatePath(treinoPath(studentId));
+  revalidateModule(studentId, "treino");
   return { success: true };
 }
 
@@ -81,7 +75,7 @@ export async function deleteExercise(studentId: string, exerciseId: string) {
   const { error } = await supabase.from("exercises").delete().eq("id", exerciseId);
   if (error) return { error: "Não foi possível remover o exercício." };
 
-  revalidatePath(treinoPath(studentId));
+  revalidateModule(studentId, "treino");
   return { success: true };
 }
 
@@ -101,7 +95,7 @@ export async function updateExerciseRest(
 
   if (error) return { error: "Não foi possível atualizar o descanso." };
 
-  revalidatePath(treinoPath(studentId));
+  revalidateModule(studentId, "treino");
   return { success: true };
 }
 
@@ -121,8 +115,7 @@ export async function updateRecommendedLoad(
 
   if (error) return { error: "Não foi possível atualizar a carga recomendada." };
 
-  revalidatePath(treinoPath(studentId));
-  revalidatePath(ALUNO_TREINO_PATH);
+  revalidateModule(studentId, "treino");
   return { success: true };
 }
 
@@ -151,7 +144,6 @@ export async function createLoadLog(
 
   if (error) return { error: "Não foi possível registrar a carga." };
 
-  revalidatePath(treinoPath(studentId));
-  revalidatePath(ALUNO_TREINO_PATH);
+  revalidateModule(studentId, "treino");
   return { success: true };
 }

@@ -1,11 +1,13 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/lib/types/database.types";
+import { ONBOARDING_PATH, roleHome } from "@/lib/auth/roles";
 
 const TRAINER_HOME = "/dashboard";
 const STUDENT_HOME = "/aluno";
+const STANDARD_HOME = "/meu-plano";
 const ADMIN_HOME = "/admin";
-const PUBLIC_PATHS = ["/login", "/cadastro", "/auth/callback"];
+const PUBLIC_PATHS = ["/login", "/cadastro", "/esqueci-senha", "/auth/callback", "/auth/confirm"];
 // /definir-senha fica de fora de propósito: quem clica no link de convite já
 // chega autenticado (sessão criada antes de definir a senha), então não pode
 // ser tratada como "página pública" — senão o redirect abaixo manda a pessoa
@@ -33,14 +35,16 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: claimsData } = await supabase.auth.getClaims();
+  const userId = claimsData?.claims?.sub;
   const { pathname } = request.nextUrl;
   const isPublicPath = PUBLIC_PATHS.some((p) => pathname.startsWith(p));
 
-  if (!user) {
+  if (!userId) {
     if (
       pathname.startsWith(TRAINER_HOME) ||
       pathname.startsWith(STUDENT_HOME) ||
+      pathname.startsWith(STANDARD_HOME) ||
       pathname.startsWith(ADMIN_HOME)
     ) {
       return NextResponse.redirect(new URL("/login", request.url));
@@ -48,32 +52,20 @@ export async function updateSession(request: NextRequest) {
     return supabaseResponse;
   }
 
-  // Usuário autenticado: descobre o role para redirecionar para a área correta
+  // Só precisa do papel para decidir a home de quem cai na raiz ou numa página
+  // pública. As áreas protegidas validam o papel nos próprios layouts (e
+  // redirecionam), então não gastamos uma consulta ao banco em cada navegação.
+  const isAuthReturn = pathname.startsWith("/auth/");
+  const needsHome = pathname === "/" || (isPublicPath && !isAuthReturn);
+  if (!needsHome) return supabaseResponse;
+
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role")
-    .eq("id", user.id)
+    .select("role, onboarded")
+    .eq("id", userId)
     .single();
 
-  const home =
-    profile?.role === "admin"
-      ? ADMIN_HOME
-      : profile?.role === "trainer"
-        ? TRAINER_HOME
-        : STUDENT_HOME;
+  const home = profile?.onboarded === false ? ONBOARDING_PATH : roleHome(profile?.role);
 
-  if (pathname === "/" || (isPublicPath && pathname !== "/auth/callback")) {
-    return NextResponse.redirect(new URL(home, request.url));
-  }
-
-  const inWrongArea =
-    (pathname.startsWith(TRAINER_HOME) && profile?.role !== "trainer") ||
-    (pathname.startsWith(STUDENT_HOME) && profile?.role !== "student") ||
-    (pathname.startsWith(ADMIN_HOME) && profile?.role !== "admin");
-
-  if (inWrongArea) {
-    return NextResponse.redirect(new URL(home, request.url));
-  }
-
-  return supabaseResponse;
+  return NextResponse.redirect(new URL(home, request.url));
 }

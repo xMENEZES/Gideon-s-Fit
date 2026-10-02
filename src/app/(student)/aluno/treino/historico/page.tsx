@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
-import { WorkoutDayCard } from "@/components/shared/workout-day-card";
+import { getSessionUserId } from "@/lib/auth/session";
+import { WorkoutDaysTabs } from "@/components/shared/workout-days-tabs";
 
 function formatDate(iso: string) {
   return new Date(`${iso}T00:00:00`).toLocaleDateString("pt-BR");
@@ -7,12 +8,13 @@ function formatDate(iso: string) {
 
 export default async function AlunoTreinoHistoricoPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const userId = await getSessionUserId();
 
   const { data: student } = await supabase
     .from("students")
     .select("id")
-    .eq("profile_id", user!.id)
+    .eq("profile_id", userId!)
+    .neq("trainer_id", userId!)
     .single();
 
   if (!student) {
@@ -61,11 +63,7 @@ export default async function AlunoTreinoHistoricoPage() {
           {protocol.days.length === 0 ? (
             <p className="text-sm text-muted-foreground">Sem dias de treino registrados.</p>
           ) : (
-            <div className="flex flex-col gap-4">
-              {protocol.days.map((day) => (
-                <WorkoutDayCard key={day.id} day={day} studentId={student.id} editable={false} />
-              ))}
-            </div>
+            <WorkoutDaysTabs days={protocol.days} studentId={student.id} editable={false} />
           )}
         </section>
       ))}

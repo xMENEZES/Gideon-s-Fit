@@ -26,11 +26,17 @@ export function ExerciseCard({
   exercise,
   studentId,
   editable,
+  canLog,
 }: {
   exercise: ExerciseWithLogs;
   studentId: string;
   editable: boolean;
+  // Quem treina registra carga e usa o timer. Por padrão é quem NÃO edita o plano
+  // (o aluno); no plano próprio a mesma pessoa edita e treina.
+  canLog?: boolean;
 }) {
+  const logging = canLog ?? !editable;
+
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-border p-4">
       <div className="flex items-start justify-between gap-2">
@@ -69,7 +75,7 @@ export function ExerciseCard({
       {exercise.notes && <p className="text-sm text-muted-foreground">{exercise.notes}</p>}
       {exercise.video_url && <VideoEmbed url={exercise.video_url} />}
 
-      {!editable && (
+      {logging && (
         <div className="flex flex-col gap-2">
           <RestTimer seconds={exercise.rest_seconds} />
           <AddLoadLogDialog studentId={studentId} exerciseId={exercise.id} />

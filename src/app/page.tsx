@@ -7,19 +7,19 @@ const features = [
     icon: Dumbbell,
     title: "Treinos organizados",
     description:
-      "Monte dias de treino com séries, repetições e vídeo de execução de cada exercício.",
+      "Estruture os dias de treino com séries, repetições, descanso e vídeo de execução de cada exercício.",
   },
   {
     icon: LineChart,
     title: "Progressão de carga",
     description:
-      "Registre a evolução de peso de cada exercício e acompanhe o progresso em gráfico.",
+      "Registre a carga de cada exercício e acompanhe a evolução em gráficos claros.",
   },
   {
     icon: UtensilsCrossed,
-    title: "Dieta personalizada",
+    title: "Protocolo alimentar",
     description:
-      "Cadastre as refeições e os alimentos de cada aluno, com quantidades exatas.",
+      "Monte as refeições com opções e quantidades exatas de cada alimento.",
   },
 ];
 
@@ -32,6 +32,9 @@ export default function Home() {
           <span className="text-xl font-bold tracking-tight text-foreground">Gideon&apos;s Fit</span>
         </div>
         <div className="flex items-center gap-3">
+          <Button variant="outline" nativeButton={false} render={<Link href="/cadastro" />}>
+            Criar conta
+          </Button>
           <Button nativeButton={false} render={<Link href="/login" />}>
             Entrar
           </Button>
@@ -41,15 +44,18 @@ export default function Home() {
       <main className="flex flex-1 flex-col items-center justify-center gap-16 px-6 py-16 text-center">
         <div className="flex max-w-2xl flex-col items-center gap-5">
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-            Treino e dieta dos seus alunos,{" "}
+            Protocolos de treino e alimentar{" "}
             <span className="text-primary">em um só lugar</span>
           </h1>
           <p className="max-w-lg text-lg text-muted-foreground">
-            Uma plataforma para personal trainers e nutricionistas acompanharem
-            cada aluno de perto — sem planilhas, sem PDFs perdidos.
+            Organize a sua rotina de treino e alimentação ou acompanhe seus alunos
+            com precisão. Tudo centralizado, sem planilhas e sem PDFs espalhados.
           </p>
           <div className="mt-2 flex gap-3">
-            <Button size="lg" nativeButton={false} render={<Link href="/login" />}>
+            <Button size="lg" nativeButton={false} render={<Link href="/cadastro" />}>
+              Criar conta
+            </Button>
+            <Button size="lg" variant="outline" nativeButton={false} render={<Link href="/login" />}>
               Entrar
             </Button>
           </div>

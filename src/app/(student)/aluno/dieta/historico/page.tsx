@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getSessionUserId } from "@/lib/auth/session";
 import { MealCard } from "@/components/shared/meal-card";
 
 function formatDate(iso: string) {
@@ -7,12 +8,13 @@ function formatDate(iso: string) {
 
 export default async function AlunoDietaHistoricoPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const userId = await getSessionUserId();
 
   const { data: student } = await supabase
     .from("students")
     .select("id")
-    .eq("profile_id", user!.id)
+    .eq("profile_id", userId!)
+    .neq("trainer_id", userId!)
     .single();
 
   if (!student) {
@@ -32,7 +34,7 @@ export default async function AlunoDietaHistoricoPage() {
   if (!protocols?.length) {
     return (
       <p className="py-12 text-center text-muted-foreground">
-        Nenhum protocolo de dieta anterior ainda.
+        Nenhum protocolo alimentar anterior ainda.
       </p>
     );
   }

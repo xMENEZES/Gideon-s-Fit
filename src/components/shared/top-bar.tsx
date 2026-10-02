@@ -3,6 +3,7 @@ import { Dumbbell, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { signOut } from "@/lib/actions/auth";
+import { cn } from "@/lib/utils";
 
 export function TopBar({
   fullName,
@@ -23,14 +24,22 @@ export function TopBar({
               Gideon&apos;s Fit
             </span>
           </Link>
-          <form action={signOut} className="sm:hidden">
-            <Button variant="ghost" size="sm" type="submit">
-              <LogOut className="size-4" />
-              Sair
-            </Button>
-          </form>
+          <div className="flex items-center gap-1 sm:hidden">
+            {!children && <ThemeToggle />}
+            <form action={signOut}>
+              <Button variant="ghost" size="sm" type="submit">
+                <LogOut className="size-4" />
+                Sair
+              </Button>
+            </form>
+          </div>
         </div>
-        <div className="flex flex-wrap items-center justify-center gap-4 sm:justify-end">
+        <div
+          className={cn(
+            "flex-wrap items-center justify-center gap-4 sm:flex sm:justify-end",
+            children ? "flex" : "hidden"
+          )}
+        >
           {children}
           <ThemeToggle />
           <span className="hidden text-sm text-muted-foreground sm:inline">{fullName}</span>

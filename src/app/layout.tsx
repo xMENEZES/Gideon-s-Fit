@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Gideon's Fit — Treino e Dieta",
-  description: "Plataforma para personal trainers e nutricionistas acompanharem seus alunos",
+  title: "Gideon's Fit | Protocolos de Treino e Alimentar",
+  description: "Organize seus protocolos de treino e alimentar ou acompanhe seus alunos em um só lugar",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",

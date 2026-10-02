@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { WorkoutDayCard } from "@/components/shared/workout-day-card";
+import { WorkoutDaysTabs } from "@/components/shared/workout-days-tabs";
 
 function formatDate(iso: string) {
   return new Date(`${iso}T00:00:00`).toLocaleDateString("pt-BR");
@@ -53,11 +53,7 @@ export default async function TreinoHistoricoPage({
           {protocol.days.length === 0 ? (
             <p className="text-sm text-muted-foreground">Sem dias de treino registrados.</p>
           ) : (
-            <div className="flex flex-col gap-4">
-              {protocol.days.map((day) => (
-                <WorkoutDayCard key={day.id} day={day} studentId={studentId} editable={false} />
-              ))}
-            </div>
+            <WorkoutDaysTabs days={protocol.days} studentId={studentId} editable={false} />
           )}
         </section>
       ))}

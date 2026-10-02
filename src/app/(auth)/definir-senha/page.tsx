@@ -10,6 +10,7 @@ import {
 } from "@/lib/validations/auth.schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/shared/password-input";
 import { Label } from "@/components/ui/label";
 import {
   Card,
@@ -57,7 +58,7 @@ export default function DefinirSenhaPage() {
       <CardHeader>
         <CardTitle>Complete seu cadastro</CardTitle>
         <CardDescription>
-          Informe seu nome e crie uma senha para acessar seu treino e sua dieta
+          Informe seu nome e crie uma senha para acessar seus protocolos de treino e alimentar
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -83,9 +84,8 @@ export default function DefinirSenhaPage() {
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="password">Nova senha</Label>
-            <Input
+            <PasswordInput
               id="password"
-              type="password"
               autoComplete="new-password"
               {...register("password")}
             />
@@ -95,9 +95,8 @@ export default function DefinirSenhaPage() {
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="confirmPassword">Confirme a senha</Label>
-            <Input
+            <PasswordInput
               id="confirmPassword"
-              type="password"
               autoComplete="new-password"
               {...register("confirmPassword")}
             />

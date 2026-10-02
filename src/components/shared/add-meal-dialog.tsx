@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
@@ -9,6 +9,7 @@ import { mealSchema, type MealInput } from "@/lib/validations/meal.schema";
 import { createMeal } from "@/lib/actions/meals";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { TimeField } from "@/components/shared/time-field";
 import { Label } from "@/components/ui/label";
 import {
   Dialog,
@@ -29,6 +30,7 @@ export function AddMealDialog({
   const [open, setOpen] = useState(false);
   const {
     register,
+    control,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
@@ -62,7 +64,13 @@ export function AddMealDialog({
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="suggestedTime">Horário sugerido (opcional)</Label>
-            <Input id="suggestedTime" type="time" {...register("suggestedTime")} />
+            <Controller
+              control={control}
+              name="suggestedTime"
+              render={({ field }) => (
+                <TimeField id="suggestedTime" value={field.value ?? ""} onChange={field.onChange} />
+              )}
+            />
           </div>
           <DialogFooter>
             <Button type="submit" disabled={isSubmitting}>

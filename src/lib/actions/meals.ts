@@ -1,7 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { revalidateModule } from "@/lib/actions/revalidate";
 import {
   mealSchema,
   mealOptionSchema,
@@ -10,10 +10,6 @@ import {
   type MealOptionInput,
   type MealItemInput,
 } from "@/lib/validations/meal.schema";
-
-function dietaPath(studentId: string) {
-  return `/dashboard/alunos/${studentId}/dieta`;
-}
 
 export async function createMeal(studentId: string, protocolId: string, input: MealInput) {
   const parsed = mealSchema.safeParse(input);
@@ -41,7 +37,7 @@ export async function createMeal(studentId: string, protocolId: string, input: M
 
   if (optionError) return { error: "Não foi possível criar a refeição." };
 
-  revalidatePath(dietaPath(studentId));
+  revalidateModule(studentId, "dieta");
   return { success: true };
 }
 
@@ -50,7 +46,7 @@ export async function deleteMeal(studentId: string, mealId: string) {
   const { error } = await supabase.from("meals").delete().eq("id", mealId);
   if (error) return { error: "Não foi possível remover a refeição." };
 
-  revalidatePath(dietaPath(studentId));
+  revalidateModule(studentId, "dieta");
   return { success: true };
 }
 
@@ -72,7 +68,7 @@ export async function createMealOption(studentId: string, mealId: string, input:
 
   if (error) return { error: "Não foi possível adicionar a opção." };
 
-  revalidatePath(dietaPath(studentId));
+  revalidateModule(studentId, "dieta");
   return { success: true };
 }
 
@@ -99,7 +95,7 @@ export async function deleteMealOption(studentId: string, mealOptionId: string) 
   const { error } = await supabase.from("meal_options").delete().eq("id", mealOptionId);
   if (error) return { error: "Não foi possível remover a opção." };
 
-  revalidatePath(dietaPath(studentId));
+  revalidateModule(studentId, "dieta");
   return { success: true };
 }
 
@@ -122,7 +118,7 @@ export async function createMealItem(
 
   if (error) return { error: "Não foi possível adicionar o item." };
 
-  revalidatePath(dietaPath(studentId));
+  revalidateModule(studentId, "dieta");
   return { success: true };
 }
 
@@ -131,6 +127,6 @@ export async function deleteMealItem(studentId: string, mealItemId: string) {
   const { error } = await supabase.from("meal_items").delete().eq("id", mealItemId);
   if (error) return { error: "Não foi possível remover o item." };
 
-  revalidatePath(dietaPath(studentId));
+  revalidateModule(studentId, "dieta");
   return { success: true };
 }

@@ -2,9 +2,9 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Gideon's Fit — Treino e Dieta",
+    name: "Gideon's Fit | Protocolos de Treino e Alimentar",
     short_name: "Gideon's Fit",
-    description: "Plataforma para personal trainers e nutricionistas acompanharem seus alunos",
+    description: "Organize seus protocolos de treino e alimentar ou acompanhe seus alunos em um só lugar",
     start_url: "/",
     scope: "/",
     display: "standalone",

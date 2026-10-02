@@ -39,7 +39,7 @@ export function StudentHeaderActions({
         hasDiet={hasDiet}
       />
       <ConfirmDeleteButton
-        confirmMessage={`Remover o aluno "${fullName}"? Essa ação não pode ser desfeita — todo o histórico de treino e dieta dele será apagado.`}
+        confirmMessage={`Remover "${fullName}" do seu time? Todo o histórico dos protocolos de treino e alimentar que você montou para essa pessoa será apagado e isso não pode ser desfeito. A conta dela continua existindo.`}
         action={handleDelete}
       />
     </div>

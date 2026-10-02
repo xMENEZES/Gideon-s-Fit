@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getProfile } from "@/lib/auth/session";
+import { ONBOARDING_PATH, roleHome } from "@/lib/auth/roles";
 import { TopBar } from "@/components/shared/top-bar";
 
 export default async function StudentAreaLayout({
@@ -7,18 +8,11 @@ export default async function StudentAreaLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const profile = await getProfile();
+  if (!profile) redirect("/login");
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role, full_name")
-    .eq("id", user.id)
-    .single();
-
-  if (profile?.role === "admin") redirect("/admin");
-  if (profile?.role !== "student") redirect("/dashboard");
+  if (!profile.onboarded) redirect(ONBOARDING_PATH);
+  if (profile.role !== "student") redirect(roleHome(profile.role));
 
   return (
     <div className="flex min-h-screen flex-col bg-background">

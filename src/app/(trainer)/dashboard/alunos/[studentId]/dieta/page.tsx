@@ -44,7 +44,7 @@ export default async function DietaPage({
 
       {!protocol ? (
         <p className="py-12 text-center text-muted-foreground">
-          Nenhum protocolo de dieta ativo. Inicie um para começar a montar a dieta.
+          Nenhum protocolo alimentar ativo. Inicie um para começar a montar o protocolo.
         </p>
       ) : (
         <>

@@ -8,6 +8,9 @@ import { createClient } from "@/lib/supabase/client";
 import { loginSchema, type LoginInput } from "@/lib/validations/auth.schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
+import { PasswordInput } from "@/components/shared/password-input";
+import { GoogleButton } from "@/components/shared/google-button";
 import { Label } from "@/components/ui/label";
 import {
   Card,
@@ -46,7 +49,7 @@ export default function LoginPage() {
     <Card>
       <CardHeader>
         <CardTitle>Entrar</CardTitle>
-        <CardDescription>Acesse sua conta de trainer ou aluno</CardDescription>
+        <CardDescription>Acesse sua conta do Gideon&apos;s Fit</CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit(onSubmit)}>
         <CardContent className="flex flex-col gap-4">
@@ -63,10 +66,14 @@ export default function LoginPage() {
             )}
           </div>
           <div className="flex flex-col gap-2">
-            <Label htmlFor="password">Senha</Label>
-            <Input
+            <div className="flex items-center justify-between">
+              <Label htmlFor="password">Senha</Label>
+              <Link href="/esqueci-senha" className="text-xs text-primary hover:underline">
+                Esqueci minha senha
+              </Link>
+            </div>
+            <PasswordInput
               id="password"
-              type="password"
               autoComplete="current-password"
               {...register("password")}
             />
@@ -79,6 +86,18 @@ export default function LoginPage() {
           <Button type="submit" className="w-full" disabled={isSubmitting}>
             {isSubmitting ? "Entrando..." : "Entrar"}
           </Button>
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="h-px flex-1 bg-border" />
+            ou
+            <span className="h-px flex-1 bg-border" />
+          </div>
+          <GoogleButton label="Entrar com Google" />
+          <p className="text-sm text-muted-foreground">
+            Ainda não tem conta?{" "}
+            <Link href="/cadastro" className="font-medium text-primary hover:underline">
+              Criar conta
+            </Link>
+          </p>
         </CardFooter>
       </form>
     </Card>

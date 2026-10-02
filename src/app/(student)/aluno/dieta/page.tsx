@@ -1,21 +1,23 @@
 import { createClient } from "@/lib/supabase/server";
+import { getSessionUserId } from "@/lib/auth/session";
 import { MealCard } from "@/components/shared/meal-card";
 import { ProtocolHeader } from "@/components/shared/protocol-header";
 
 export default async function AlunoDietaPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const userId = await getSessionUserId();
 
   const { data: student } = await supabase
     .from("students")
     .select("id, has_diet")
-    .eq("profile_id", user!.id)
+    .eq("profile_id", userId!)
+    .neq("trainer_id", userId!)
     .single();
 
   if (!student?.has_diet) {
     return (
       <p className="py-12 text-center text-muted-foreground">
-        Seu profissional não habilitou o módulo de dieta para você.
+        Seu profissional não habilitou o protocolo alimentar para você.
       </p>
     );
   }
@@ -53,7 +55,7 @@ export default async function AlunoDietaPage() {
 
       {!protocol ? (
         <p className="py-12 text-center text-muted-foreground">
-          Seu profissional ainda não cadastrou um protocolo de dieta.
+          Seu profissional ainda não cadastrou um protocolo alimentar.
         </p>
       ) : !meals?.length ? (
         <p className="py-12 text-center text-muted-foreground">

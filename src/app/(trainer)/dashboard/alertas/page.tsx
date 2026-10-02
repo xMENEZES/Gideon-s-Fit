@@ -11,7 +11,10 @@ function daysRemaining(endDate: string) {
   return Math.round((end.getTime() - today.getTime()) / 86_400_000);
 }
 
-const TYPE_LABEL: Record<string, string> = { workout: "Treino", diet: "Dieta" };
+const TYPE_LABEL: Record<string, string> = {
+  workout: "Protoc. Treino",
+  diet: "Protoc. Alimentar",
+};
 
 export default async function AlertasPage() {
   const supabase = await createClient();

@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { AddWorkoutDayDialog } from "@/components/shared/add-workout-day-dialog";
-import { WorkoutDayCard } from "@/components/shared/workout-day-card";
+import { WorkoutDaysTabs } from "@/components/shared/workout-days-tabs";
 import { ProtocolHeader } from "@/components/shared/protocol-header";
 
 export default async function TreinoPage({
@@ -57,11 +57,7 @@ export default async function TreinoPage({
               Nenhum dia de treino cadastrado ainda.
             </p>
           ) : (
-            <div className="flex flex-col gap-4">
-              {days.map((day) => (
-                <WorkoutDayCard key={day.id} day={day} studentId={studentId} editable />
-              ))}
-            </div>
+            <WorkoutDaysTabs days={days} studentId={studentId} editable />
           )}
         </>
       )}

@@ -2,8 +2,9 @@
 // Depois de criar o projeto no Supabase, regenere com:
 //   npx supabase gen types typescript --project-id <id> > src/lib/types/database.types.ts
 
-export type UserRole = "admin" | "trainer" | "student";
+export type UserRole = "admin" | "trainer" | "student" | "standard";
 export type ProtocolType = "workout" | "diet";
+export type JoinRequestStatus = "pending" | "approved" | "rejected";
 
 export interface Database {
   public: {
@@ -14,6 +15,7 @@ export interface Database {
           role: UserRole;
           full_name: string;
           email: string;
+          onboarded: boolean;
           created_at: string;
         };
         Insert: {
@@ -21,12 +23,14 @@ export interface Database {
           role: UserRole;
           full_name: string;
           email: string;
+          onboarded?: boolean;
           created_at?: string;
         };
         Update: Partial<{
           role: UserRole;
           full_name: string;
           email: string;
+          onboarded: boolean;
         }>;
         Relationships: [];
       };
@@ -74,7 +78,7 @@ export interface Database {
           {
             foreignKeyName: "students_profile_id_fkey";
             columns: ["profile_id"];
-            isOneToOne: true;
+            isOneToOne: false;
             referencedRelation: "profiles";
             referencedColumns: ["id"];
           },
@@ -330,6 +334,92 @@ export interface Database {
           },
         ];
       };
+      team_codes: {
+        Row: {
+          trainer_id: string;
+          code: string;
+          created_at: string;
+        };
+        Insert: {
+          trainer_id: string;
+          code: string;
+          created_at?: string;
+        };
+        Update: Partial<{
+          code: string;
+        }>;
+        Relationships: [
+          {
+            foreignKeyName: "team_codes_trainer_id_fkey";
+            columns: ["trainer_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      team_join_requests: {
+        Row: {
+          id: string;
+          trainer_id: string;
+          user_id: string;
+          status: JoinRequestStatus;
+          created_at: string;
+          decided_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          trainer_id: string;
+          user_id: string;
+          status?: JoinRequestStatus;
+          created_at?: string;
+          decided_at?: string | null;
+        };
+        Update: Partial<{
+          status: JoinRequestStatus;
+          decided_at: string | null;
+        }>;
+        Relationships: [
+          {
+            foreignKeyName: "team_join_requests_trainer_id_fkey";
+            columns: ["trainer_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "team_join_requests_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      team_join_attempts: {
+        Row: {
+          id: number;
+          user_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: number;
+          user_id: string;
+          created_at?: string;
+        };
+        Update: Partial<{
+          created_at: string;
+        }>;
+        Relationships: [
+          {
+            foreignKeyName: "team_join_attempts_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -347,6 +437,7 @@ export interface Database {
     Enums: {
       user_role: UserRole;
       protocol_type: ProtocolType;
+      join_request_status: JoinRequestStatus;
     };
     CompositeTypes: Record<string, never>;
   };

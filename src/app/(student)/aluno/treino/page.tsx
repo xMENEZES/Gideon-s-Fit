@@ -1,15 +1,17 @@
 import { createClient } from "@/lib/supabase/server";
-import { WorkoutDayCard } from "@/components/shared/workout-day-card";
+import { getSessionUserId } from "@/lib/auth/session";
+import { WorkoutDaysTabs } from "@/components/shared/workout-days-tabs";
 import { ProtocolHeader } from "@/components/shared/protocol-header";
 
 export default async function AlunoTreinoPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const userId = await getSessionUserId();
 
   const { data: student } = await supabase
     .from("students")
     .select("id, has_workout")
-    .eq("profile_id", user!.id)
+    .eq("profile_id", userId!)
+    .neq("trainer_id", userId!)
     .single();
 
   if (!student?.has_workout) {
@@ -60,11 +62,7 @@ export default async function AlunoTreinoPage() {
           Seu personal ainda não cadastrou nenhum dia de treino.
         </p>
       ) : (
-        <div className="flex flex-col gap-4">
-          {days.map((day) => (
-            <WorkoutDayCard key={day.id} day={day} studentId={student.id} editable={false} />
-          ))}
-        </div>
+        <WorkoutDaysTabs days={days} studentId={student.id} editable={false} />
       )}
     </div>
   );
