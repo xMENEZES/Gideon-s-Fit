@@ -1,0 +1,54 @@
+"use client";
+
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AddExerciseDialog } from "@/components/shared/add-exercise-dialog";
+import { ConfirmDeleteButton } from "@/components/shared/confirm-delete-button";
+import { ExerciseCard, type ExerciseWithLogs } from "@/components/shared/exercise-card";
+import { deleteWorkoutDay } from "@/lib/actions/workouts";
+
+export type WorkoutDayWithExercises = {
+  id: string;
+  name: string;
+  exercises: ExerciseWithLogs[];
+};
+
+export function WorkoutDayCard({
+  day,
+  studentId,
+  editable,
+}: {
+  day: WorkoutDayWithExercises;
+  studentId: string;
+  editable: boolean;
+}) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{day.name}</CardTitle>
+        {editable && (
+          <CardAction className="flex items-center gap-1">
+            <AddExerciseDialog studentId={studentId} workoutDayId={day.id} />
+            <ConfirmDeleteButton
+              confirmMessage={`Remover o dia de treino "${day.name}" e todos os seus exercícios?`}
+              action={() => deleteWorkoutDay(studentId, day.id)}
+            />
+          </CardAction>
+        )}
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3">
+        {day.exercises.length === 0 ? (
+          <p className="text-sm text-muted-foreground">Nenhum exercício cadastrado ainda.</p>
+        ) : (
+          day.exercises.map((exercise) => (
+            <ExerciseCard
+              key={exercise.id}
+              exercise={exercise}
+              studentId={studentId}
+              editable={editable}
+            />
+          ))
+        )}
+      </CardContent>
+    </Card>
+  );
+}

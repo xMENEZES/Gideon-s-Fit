@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.gideonsfit.twa",
+      "sha256_cert_fingerprints": [
+        "CF:D7:69:F4:5B:34:B9:F4:EF:45:4A:3E:3D:1D:00:7E:30:99:8A:AA:03:0F:38:C6:27:CC:5A:58:48:E9:F2:B2"
+      ]
+    }
+  }
+]
