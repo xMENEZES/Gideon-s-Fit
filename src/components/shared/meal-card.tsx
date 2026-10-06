@@ -30,10 +30,12 @@ export function MealCard({
   meal,
   studentId,
   editable,
+  tracking,
 }: {
   meal: MealWithOptions;
   studentId: string;
   editable: boolean;
+  tracking?: React.ReactNode;
 }) {
   const showOptionLabels = meal.meal_options.length > 1;
   const singleOption = !showOptionLabels ? meal.meal_options[0] : null;
@@ -117,6 +119,7 @@ export function MealCard({
           </div>
         ))}
       </CardContent>
+      {tracking && <div className="border-t border-border px-4 pt-4">{tracking}</div>}
     </Card>
   );
 }

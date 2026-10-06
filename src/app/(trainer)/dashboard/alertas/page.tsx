@@ -12,8 +12,8 @@ function daysRemaining(endDate: string) {
 }
 
 const TYPE_LABEL: Record<string, string> = {
-  workout: "Protoc. Treino",
-  diet: "Protoc. Alimentar",
+  workout: "Prot. Treino",
+  diet: "Prot. Alimentar",
 };
 
 export default async function AlertasPage() {

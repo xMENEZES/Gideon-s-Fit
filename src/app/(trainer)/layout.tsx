@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { BellRing, Users } from "lucide-react";
+import { BarChart3, BellRing, LayoutTemplate, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getProfile, getSessionUserId } from "@/lib/auth/session";
 import { ONBOARDING_PATH, roleHome } from "@/lib/auth/roles";
@@ -44,15 +44,29 @@ export default async function TrainerLayout({
           href="/dashboard"
           className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
         >
-          <Users className="size-4" />
+          <Users className="hidden size-4 sm:block" />
           Meus Alunos
           {!!pendingRequests && <Badge variant="destructive">{pendingRequests}</Badge>}
+        </Link>
+        <Link
+          href="/dashboard/status"
+          className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
+        >
+          <BarChart3 className="hidden size-4 sm:block" />
+          Status
+        </Link>
+        <Link
+          href="/dashboard/modelos"
+          className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
+        >
+          <LayoutTemplate className="hidden size-4 sm:block" />
+          Modelos
         </Link>
         <Link
           href="/dashboard/alertas"
           className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
         >
-          <BellRing className="size-4" />
+          <BellRing className="hidden size-4 sm:block" />
           Alertas
           {!!alertsCount && <Badge variant="destructive">{alertsCount}</Badge>}
         </Link>

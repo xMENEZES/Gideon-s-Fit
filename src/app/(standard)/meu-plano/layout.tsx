@@ -7,9 +7,10 @@ export default function MeuPlanoLayout({ children }: { children: React.ReactNode
       <SectionTabs
         basePath="/meu-plano"
         items={[
-          { href: "/treino", label: "Protoc. Treino" },
-          { href: "/dieta", label: "Protoc. Alimentar" },
-          { href: "/time", label: "Entrar no Time" },
+          { href: "/treino", label: "Prot. Treino" },
+          { href: "/dieta", label: "Prot. Alimentar" },
+          { href: "/status", label: "Status" },
+          { href: "/time", label: "Entrar no Time", shortLabel: "Time" },
         ]}
       />
       {children}

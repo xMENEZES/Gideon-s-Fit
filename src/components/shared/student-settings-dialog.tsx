@@ -37,7 +37,7 @@ export function StudentSettingsDialog({
 
   async function handleSave() {
     if (!workout && !diet) {
-      toast.error("Habilite pelo menos Protoc. Treino ou Protoc. Alimentar para o aluno");
+      toast.error("Habilite pelo menos Prot. Treino ou Prot. Alimentar para o aluno");
       return;
     }
     setPending(true);
@@ -80,11 +80,11 @@ export function StudentSettingsDialog({
             <Label>Módulos habilitados</Label>
             <label className="flex items-center gap-2 text-sm">
               <Checkbox checked={workout} onCheckedChange={(c) => setWorkout(c === true)} />
-              Protoc. Treino
+              Prot. Treino
             </label>
             <label className="flex items-center gap-2 text-sm">
               <Checkbox checked={diet} onCheckedChange={(c) => setDiet(c === true)} />
-              Protoc. Alimentar
+              Prot. Alimentar
             </label>
           </div>
         </div>

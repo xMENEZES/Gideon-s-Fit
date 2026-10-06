@@ -50,6 +50,7 @@ export default async function AlunoTreinoPage() {
         type="workout"
         protocol={protocol}
         historyHref="/aluno/treino/historico"
+        statusHref="/aluno/status"
         editable={false}
       />
 

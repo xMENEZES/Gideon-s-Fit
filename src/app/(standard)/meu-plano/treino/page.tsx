@@ -43,6 +43,7 @@ export default async function MeuTreinoPage() {
         type="workout"
         protocol={protocol}
         historyHref="/meu-plano/treino/historico"
+        statusHref="/meu-plano/status"
         editable
       />
 

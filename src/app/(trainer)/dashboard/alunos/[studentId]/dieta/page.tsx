@@ -2,6 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { AddMealDialog } from "@/components/shared/add-meal-dialog";
 import { MealCard } from "@/components/shared/meal-card";
 import { ProtocolHeader } from "@/components/shared/protocol-header";
+import { SaveAsTemplateDialog } from "@/components/shared/template-dialogs";
+import { loadProtocolSources } from "@/lib/protocol-sources";
 
 export default async function DietaPage({
   params,
@@ -19,9 +21,10 @@ export default async function DietaPage({
     .eq("is_active", true)
     .maybeSingle();
 
-  const meals = protocol
-    ? (
-        await supabase
+  const sources = await loadProtocolSources(supabase, studentId, "diet");
+
+  const mealsResult = protocol
+    ? await supabase
           .from("meals")
           .select(
             "id, name, suggested_time, meal_options(id, label, sort_order, meal_items(id, food_name, quantity, unit, notes, sort_order))"
@@ -29,8 +32,9 @@ export default async function DietaPage({
           .eq("protocol_id", protocol.id)
           .order("sort_order", { ascending: true })
           .order("sort_order", { referencedTable: "meal_options", ascending: true })
-      ).data
     : null;
+  const meals = mealsResult?.data ?? null;
+  const mealsFailed = !!mealsResult?.error;
 
   return (
     <div className="flex flex-col gap-4">
@@ -39,7 +43,11 @@ export default async function DietaPage({
         type="diet"
         protocol={protocol}
         historyHref={`/dashboard/alunos/${studentId}/dieta/historico`}
+        statusHref={`/dashboard/alunos/${studentId}/status`}
         editable
+        templates={sources.templates}
+        sourceStudents={sources.sourceStudents}
+        extraActions={protocol ? <SaveAsTemplateDialog protocolId={protocol.id} /> : null}
       />
 
       {!protocol ? (
@@ -52,7 +60,11 @@ export default async function DietaPage({
             <AddMealDialog studentId={studentId} protocolId={protocol.id} />
           </div>
 
-          {!meals?.length ? (
+          {mealsFailed ? (
+        <p className="py-12 text-center text-muted-foreground">
+          Não foi possível carregar as refeições. Atualize a página para tentar de novo.
+        </p>
+      ) : !meals?.length ? (
             <p className="py-12 text-center text-muted-foreground">
               Nenhuma refeição cadastrada ainda.
             </p>

@@ -7,7 +7,7 @@ export const studentSettingsSchema = z
     hasDiet: z.boolean(),
   })
   .refine((data) => data.hasWorkout || data.hasDiet, {
-    message: "Habilite pelo menos Protoc. Treino ou Protoc. Alimentar para o aluno",
+    message: "Habilite pelo menos Prot. Treino ou Prot. Alimentar para o aluno",
     path: ["hasWorkout"],
   });
 export type StudentSettingsInput = z.infer<typeof studentSettingsSchema>;

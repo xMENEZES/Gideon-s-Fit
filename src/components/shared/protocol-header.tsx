@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { AlertTriangle, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { StartProtocolDialog } from "@/components/shared/start-protocol-dialog";
+import { StartProtocolDialog, type SourceOption } from "@/components/shared/start-protocol-dialog";
 import { EditProtocolNotesDialog } from "@/components/shared/edit-protocol-notes-dialog";
 import type { ProtocolType } from "@/lib/types/database.types";
 
@@ -23,13 +23,21 @@ export function ProtocolHeader({
   type,
   protocol,
   historyHref,
+  statusHref,
   editable,
+  templates,
+  sourceStudents,
+  extraActions,
 }: {
   studentId: string;
   type: ProtocolType;
   protocol: { id: string; start_date: string; end_date: string; notes?: string | null } | null;
   historyHref: string;
+  statusHref?: string;
   editable: boolean;
+  templates?: SourceOption[];
+  sourceStudents?: SourceOption[];
+  extraActions?: React.ReactNode;
 }) {
   const remaining = protocol ? daysRemaining(protocol.end_date) : null;
 
@@ -61,16 +69,36 @@ export function ProtocolHeader({
             <p className="text-sm text-muted-foreground">Nenhum protocolo ativo</p>
           )}
         </div>
-        <div className="flex items-center gap-3">
-          <Link href={historyHref} className="text-sm font-medium text-primary hover:underline">
-            Ver histórico
-          </Link>
+        <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
+          <div className="flex items-center gap-4">
+            <Link
+              href={historyHref}
+              className="whitespace-nowrap text-sm font-medium text-primary hover:underline"
+            >
+              Ver histórico
+            </Link>
+            {statusHref && (
+              <Link
+                href={statusHref}
+                className="whitespace-nowrap text-sm font-medium text-primary hover:underline"
+              >
+                Ver status
+              </Link>
+            )}
+          </div>
           {editable && (
-            <StartProtocolDialog
-              studentId={studentId}
-              type={type}
-              hasActiveProtocol={!!protocol}
-            />
+            // No celular os botões ficam empilhados (Novo protocolo em cima) e ocupam a
+            // largura toda; em telas maiores ficam lado a lado.
+            <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:gap-3">
+              {extraActions}
+              <StartProtocolDialog
+                studentId={studentId}
+                type={type}
+                hasActiveProtocol={!!protocol}
+                templates={templates}
+                sourceStudents={sourceStudents}
+              />
+            </div>
           )}
         </div>
       </div>

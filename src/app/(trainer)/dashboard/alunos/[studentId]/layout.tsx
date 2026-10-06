@@ -21,8 +21,9 @@ export default async function StudentLayout({
   if (!student) notFound();
 
   const tabs = [
-    student.has_workout && { href: "/treino", label: "Protoc. Treino" },
-    student.has_diet && { href: "/dieta", label: "Protoc. Alimentar" },
+    student.has_workout && { href: "/treino", label: "Prot. Treino" },
+    student.has_diet && { href: "/dieta", label: "Prot. Alimentar" },
+    { href: "/status", label: "Status" },
   ].filter((tab): tab is { href: string; label: string } => Boolean(tab));
 
   return (

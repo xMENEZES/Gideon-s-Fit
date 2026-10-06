@@ -87,7 +87,9 @@ export interface Database {
       protocols: {
         Row: {
           id: string;
-          student_id: string;
+          student_id: string | null;
+          owner_trainer_id: string | null;
+          template_name: string | null;
           type: ProtocolType;
           start_date: string;
           end_date: string;
@@ -98,7 +100,9 @@ export interface Database {
         };
         Insert: {
           id?: string;
-          student_id: string;
+          student_id?: string | null;
+          owner_trainer_id?: string | null;
+          template_name?: string | null;
           type: ProtocolType;
           start_date?: string;
           end_date: string;
@@ -111,6 +115,7 @@ export interface Database {
           end_date: string;
           is_active: boolean;
           notes: string | null;
+          template_name: string | null;
         }>;
         Relationships: [
           {
@@ -396,6 +401,42 @@ export interface Database {
           },
         ];
       };
+      meal_logs: {
+        Row: {
+          id: string;
+          meal_id: string;
+          log_date: string;
+          done: boolean;
+          note: string | null;
+          created_by: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          meal_id: string;
+          log_date: string;
+          done: boolean;
+          note?: string | null;
+          created_by: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<{
+          done: boolean;
+          note: string | null;
+          updated_at: string;
+        }>;
+        Relationships: [
+          {
+            foreignKeyName: "meal_logs_meal_id_fkey";
+            columns: ["meal_id"];
+            isOneToOne: false;
+            referencedRelation: "meals";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       team_join_attempts: {
         Row: {
           id: number;
@@ -430,6 +471,29 @@ export interface Database {
           p_end_date: string;
           p_duplicate: boolean;
           p_start_date?: string;
+        };
+        Returns: string;
+      };
+      apply_protocol: {
+        Args: {
+          p_source_protocol_id: string;
+          p_student_id: string;
+          p_end_date: string;
+          p_start_date?: string;
+        };
+        Returns: string;
+      };
+      copy_protocol_content: {
+        Args: {
+          p_source: string;
+          p_target: string;
+        };
+        Returns: undefined;
+      };
+      create_template_from_protocol: {
+        Args: {
+          p_source_protocol_id: string;
+          p_name: string;
         };
         Returns: string;
       };

@@ -15,8 +15,9 @@ export default async function AlunoLayout({ children }: { children: React.ReactN
     .single();
 
   const tabs = [
-    (student?.has_workout ?? true) && { href: "/treino", label: "Protoc. Treino" },
-    (student?.has_diet ?? true) && { href: "/dieta", label: "Protoc. Alimentar" },
+    (student?.has_workout ?? true) && { href: "/treino", label: "Prot. Treino" },
+    (student?.has_diet ?? true) && { href: "/dieta", label: "Prot. Alimentar" },
+    { href: "/status", label: "Status" },
   ].filter((tab): tab is { href: string; label: string } => Boolean(tab));
 
   return (

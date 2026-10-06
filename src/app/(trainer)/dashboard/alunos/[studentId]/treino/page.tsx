@@ -2,6 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { AddWorkoutDayDialog } from "@/components/shared/add-workout-day-dialog";
 import { WorkoutDaysTabs } from "@/components/shared/workout-days-tabs";
 import { ProtocolHeader } from "@/components/shared/protocol-header";
+import { SaveAsTemplateDialog } from "@/components/shared/template-dialogs";
+import { loadProtocolSources } from "@/lib/protocol-sources";
 
 export default async function TreinoPage({
   params,
@@ -18,6 +20,8 @@ export default async function TreinoPage({
     .eq("type", "workout")
     .eq("is_active", true)
     .maybeSingle();
+
+  const sources = await loadProtocolSources(supabase, studentId, "workout");
 
   const days = protocol
     ? (
@@ -39,7 +43,11 @@ export default async function TreinoPage({
         type="workout"
         protocol={protocol}
         historyHref={`/dashboard/alunos/${studentId}/treino/historico`}
+        statusHref={`/dashboard/alunos/${studentId}/status`}
         editable
+        templates={sources.templates}
+        sourceStudents={sources.sourceStudents}
+        extraActions={protocol ? <SaveAsTemplateDialog protocolId={protocol.id} /> : null}
       />
 
       {!protocol ? (
