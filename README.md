@@ -21,7 +21,6 @@ Produção: <https://gideons-fit.vercel.app>
 - **Usuário Padrão:** monta o próprio treino e a própria alimentação e vê só o próprio status.
 - **Profissional:** gerencia o time, vê o status de todos os alunos de uma vez e o detalhe de cada um.
 - **Aluno:** acompanha o protocolo montado pelo profissional, registra cargas e refeições.
-- **Administrador:** convida profissionais e gerencia contas.
 
 **Times e modelos**
 - **Time por código:** o profissional gera um código de 8 caracteres, a pessoa o digita e o profissional aprova a entrada. O aluno pode sair do time quando quiser e volta a ser Usuário Padrão.
