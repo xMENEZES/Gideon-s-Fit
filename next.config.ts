@@ -2,10 +2,9 @@ import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV !== "production";
 
-// Content-Security-Policy em modo de RELATÓRIO (Report-Only): o navegador registra no
-// console o que seria bloqueado, mas não bloqueia nada. Depois de uma rodada de uso real
-// sem violações, troque o nome do cabeçalho para "Content-Security-Policy" para passar a
-// bloquear de fato.
+// Content-Security-Policy em modo de BLOQUEIO (medida em 07/10/2026 nos 4 papéis, sem
+// violações além do teste de `eval` do zod, que é capturado e inofensivo). Para voltar a só
+// registrar sem bloquear, troque o nome do cabeçalho para "Content-Security-Policy-Report-Only".
 //  - 'unsafe-inline' em script/style é exigido pelos scripts embutidos do Next.js e pelo
 //    estilo do Tailwind; o próximo passo de endurecimento é usar nonces.
 //  - connect-src libera o Supabase (API e tempo real); frame-src libera só o YouTube.
@@ -35,7 +34,7 @@ const securityHeaders = [
     key: "Permissions-Policy",
     value: "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()",
   },
-  { key: "Content-Security-Policy-Report-Only", value: contentSecurityPolicy },
+  { key: "Content-Security-Policy", value: contentSecurityPolicy },
 ];
 
 const nextConfig: NextConfig = {
