@@ -2,7 +2,9 @@
 
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AddExerciseDialog } from "@/components/shared/add-exercise-dialog";
+import { CARD_ACTIONS_CLASS } from "@/components/shared/card-actions";
 import { ConfirmDeleteButton } from "@/components/shared/confirm-delete-button";
+import { EditWorkoutDayDialog } from "@/components/shared/edit-workout-day-dialog";
 import { ExerciseCard, type ExerciseWithLogs } from "@/components/shared/exercise-card";
 import { deleteWorkoutDay } from "@/lib/actions/workouts";
 
@@ -28,8 +30,9 @@ export function WorkoutDayCard({
       <CardHeader>
         <CardTitle>{day.name}</CardTitle>
         {editable && (
-          <CardAction className="flex items-center gap-1">
+          <CardAction className={CARD_ACTIONS_CLASS}>
             <AddExerciseDialog studentId={studentId} workoutDayId={day.id} />
+            <EditWorkoutDayDialog studentId={studentId} workoutDayId={day.id} name={day.name} />
             <ConfirmDeleteButton
               confirmMessage={`Remover o dia de treino "${day.name}" e todos os seus exercícios?`}
               action={() => deleteWorkoutDay(studentId, day.id)}

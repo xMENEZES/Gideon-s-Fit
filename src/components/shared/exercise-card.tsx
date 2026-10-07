@@ -5,8 +5,7 @@ import { VideoEmbed } from "@/components/shared/video-embed";
 import { LoadHistoryDialog } from "@/components/shared/load-history-dialog";
 import { AddLoadLogDialog } from "@/components/shared/add-load-log-dialog";
 import { ConfirmDeleteButton } from "@/components/shared/confirm-delete-button";
-import { EditExerciseRestDialog } from "@/components/shared/edit-exercise-rest-dialog";
-import { EditRecommendedLoadDialog } from "@/components/shared/edit-recommended-load-dialog";
+import { EditExerciseDialog } from "@/components/shared/edit-exercise-dialog";
 import { RestTimer } from "@/components/shared/rest-timer";
 import { deleteExercise } from "@/lib/actions/workouts";
 
@@ -40,7 +39,7 @@ export function ExerciseCard({
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-border p-4">
       <div className="flex items-start justify-between gap-2">
-        <div>
+        <div className="min-w-0">
           <p className="font-medium">{exercise.name}</p>
           <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
             <Badge variant="secondary">{exercise.sets} séries</Badge>
@@ -53,17 +52,8 @@ export function ExerciseCard({
           </div>
         </div>
         {editable && (
-          <div className="flex items-center gap-1">
-            <EditRecommendedLoadDialog
-              studentId={studentId}
-              exerciseId={exercise.id}
-              recommendedLoadKg={exercise.recommended_load_kg}
-            />
-            <EditExerciseRestDialog
-              studentId={studentId}
-              exerciseId={exercise.id}
-              restSeconds={exercise.rest_seconds}
-            />
+          <div className="flex shrink-0 items-center gap-1">
+            <EditExerciseDialog studentId={studentId} exercise={exercise} />
             <ConfirmDeleteButton
               confirmMessage={`Remover o exercício "${exercise.name}"?`}
               action={() => deleteExercise(studentId, exercise.id)}

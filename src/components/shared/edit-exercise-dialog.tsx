@@ -3,14 +3,14 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus } from "lucide-react";
+import { Pencil } from "lucide-react";
 import { toast } from "sonner";
 import {
   exerciseSchema,
   type ExerciseInput,
   type ExerciseFormInput,
 } from "@/lib/validations/workout.schema";
-import { createExercise } from "@/lib/actions/workouts";
+import { updateExercise } from "@/lib/actions/workouts";
 import { Button } from "@/components/ui/button";
 import { ExerciseFormFields } from "@/components/shared/exercise-form-fields";
 import {
@@ -22,12 +22,35 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-export function AddExerciseDialog({
+export type EditableExercise = {
+  id: string;
+  name: string;
+  sets: number;
+  reps: string;
+  rest_seconds: number;
+  recommended_load_kg: number | null;
+  video_url: string | null;
+  notes: string | null;
+};
+
+function toFormValues(exercise: EditableExercise): ExerciseFormInput {
+  return {
+    name: exercise.name,
+    sets: exercise.sets,
+    reps: exercise.reps,
+    restSeconds: exercise.rest_seconds,
+    recommendedLoadKg: exercise.recommended_load_kg ?? "",
+    videoUrl: exercise.video_url ?? "",
+    notes: exercise.notes ?? "",
+  };
+}
+
+export function EditExerciseDialog({
   studentId,
-  workoutDayId,
+  exercise,
 }: {
   studentId: string;
-  workoutDayId: string;
+  exercise: EditableExercise;
 }) {
   const [open, setOpen] = useState(false);
   const {
@@ -37,34 +60,47 @@ export function AddExerciseDialog({
     formState: { errors, isSubmitting },
   } = useForm<ExerciseFormInput, unknown, ExerciseInput>({
     resolver: zodResolver(exerciseSchema),
-    defaultValues: { restSeconds: 60 },
+    defaultValues: toFormValues(exercise),
   });
 
+  function handleOpenChange(next: boolean) {
+    if (next) reset(toFormValues(exercise));
+    setOpen(next);
+  }
+
   async function onSubmit(values: ExerciseInput) {
-    const result = await createExercise(studentId, workoutDayId, values);
+    const result = await updateExercise(studentId, exercise.id, values);
     if (result?.error) {
       toast.error(result.error);
       return;
     }
-    reset();
     setOpen(false);
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button variant="ghost" size="sm" />}>
-        <Plus />
-        Exercício
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogTrigger
+        render={
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            className="text-muted-foreground"
+            type="button"
+            title="Editar exercício"
+          />
+        }
+      >
+        <Pencil />
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Novo exercício</DialogTitle>
+          <DialogTitle>Editar exercício</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <ExerciseFormFields register={register} errors={errors} />
           <DialogFooter>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Adicionando..." : "Adicionar"}
+              {isSubmitting ? "Salvando..." : "Salvar"}
             </Button>
           </DialogFooter>
         </form>

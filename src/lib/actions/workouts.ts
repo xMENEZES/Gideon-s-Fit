@@ -6,13 +6,9 @@ import { quotaMessage } from "@/lib/quota";
 import {
   workoutDaySchema,
   exerciseSchema,
-  updateExerciseRestSchema,
-  updateRecommendedLoadSchema,
   loadLogSchema,
   type WorkoutDayInput,
   type ExerciseInput,
-  type UpdateExerciseRestInput,
-  type UpdateRecommendedLoadInput,
   type LoadLogInput,
 } from "@/lib/validations/workout.schema";
 
@@ -80,41 +76,51 @@ export async function deleteExercise(studentId: string, exerciseId: string) {
   return { success: true };
 }
 
-export async function updateExerciseRest(
+export async function updateWorkoutDay(
   studentId: string,
-  exerciseId: string,
-  input: UpdateExerciseRestInput
+  workoutDayId: string,
+  input: WorkoutDayInput
 ) {
-  const parsed = updateExerciseRestSchema.safeParse(input);
+  const parsed = workoutDaySchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Dados inválidos." };
 
   const supabase = await createClient();
-  const { error } = await supabase
-    .from("exercises")
-    .update({ rest_seconds: parsed.data.restSeconds })
-    .eq("id", exerciseId);
+  const { data, error } = await supabase
+    .from("workout_days")
+    .update({ name: parsed.data.name })
+    .eq("id", workoutDayId)
+    .select("id");
 
-  if (error) return { error: "Não foi possível atualizar o descanso." };
+  if (error || !data?.length) return { error: "Não foi possível atualizar o dia de treino." };
 
   revalidateModule(studentId, "treino");
   return { success: true };
 }
 
-export async function updateRecommendedLoad(
+export async function updateExercise(
   studentId: string,
   exerciseId: string,
-  input: UpdateRecommendedLoadInput
+  input: ExerciseInput
 ) {
-  const parsed = updateRecommendedLoadSchema.safeParse(input);
+  const parsed = exerciseSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Dados inválidos." };
 
   const supabase = await createClient();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("exercises")
-    .update({ recommended_load_kg: parsed.data.recommendedLoadKg })
-    .eq("id", exerciseId);
+    .update({
+      name: parsed.data.name,
+      sets: parsed.data.sets,
+      reps: parsed.data.reps,
+      rest_seconds: parsed.data.restSeconds,
+      recommended_load_kg: parsed.data.recommendedLoadKg ?? null,
+      video_url: parsed.data.videoUrl || null,
+      notes: parsed.data.notes || null,
+    })
+    .eq("id", exerciseId)
+    .select("id");
 
-  if (error) return { error: "Não foi possível atualizar a carga recomendada." };
+  if (error || !data?.length) return { error: "Não foi possível atualizar o exercício." };
 
   revalidateModule(studentId, "treino");
   return { success: true };

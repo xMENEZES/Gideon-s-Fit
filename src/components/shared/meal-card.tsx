@@ -5,7 +5,11 @@ import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/componen
 import { Badge } from "@/components/ui/badge";
 import { AddMealItemDialog } from "@/components/shared/add-meal-item-dialog";
 import { AddMealOptionDialog } from "@/components/shared/add-meal-option-dialog";
+import { CARD_ACTIONS_CLASS } from "@/components/shared/card-actions";
 import { ConfirmDeleteButton } from "@/components/shared/confirm-delete-button";
+import { EditMealDialog } from "@/components/shared/edit-meal-dialog";
+import { EditMealItemDialog } from "@/components/shared/edit-meal-item-dialog";
+import { EditMealOptionDialog } from "@/components/shared/edit-meal-option-dialog";
 import { deleteMeal, deleteMealItem, deleteMealOption } from "@/lib/actions/meals";
 
 export type MealWithOptions = {
@@ -43,7 +47,7 @@ export function MealCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex flex-wrap items-center gap-2">
           {meal.name}
           {meal.suggested_time && (
             <Badge variant="secondary" className="gap-1">
@@ -53,11 +57,17 @@ export function MealCard({
           )}
         </CardTitle>
         {editable && (
-          <CardAction className="flex items-center gap-1">
+          <CardAction className={CARD_ACTIONS_CLASS}>
             {singleOption && (
               <AddMealItemDialog studentId={studentId} mealOptionId={singleOption.id} />
             )}
             <AddMealOptionDialog studentId={studentId} mealId={meal.id} />
+            <EditMealDialog
+              studentId={studentId}
+              mealId={meal.id}
+              name={meal.name}
+              suggestedTime={meal.suggested_time}
+            />
             <ConfirmDeleteButton
               confirmMessage={`Remover a refeição "${meal.name}" e todos os seus itens?`}
               action={() => deleteMeal(studentId, meal.id)}
@@ -73,11 +83,16 @@ export function MealCard({
         {meal.meal_options.map((option, index) => (
           <div key={option.id} className={showOptionLabels ? "flex flex-col gap-2" : "contents"}>
             {showOptionLabels && (
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="text-sm font-semibold">{option.label || `Opção ${index + 1}`}</p>
                 {editable && (
                   <div className="flex items-center gap-1">
                     <AddMealItemDialog studentId={studentId} mealOptionId={option.id} />
+                    <EditMealOptionDialog
+                      studentId={studentId}
+                      mealOptionId={option.id}
+                      label={option.label}
+                    />
                     <ConfirmDeleteButton
                       confirmMessage={`Remover a opção "${option.label || `Opção ${index + 1}`}" e todos os seus itens?`}
                       action={() => deleteMealOption(studentId, option.id)}
@@ -108,10 +123,13 @@ export function MealCard({
                       )}
                     </div>
                     {editable && (
-                      <ConfirmDeleteButton
-                        confirmMessage={`Remover "${item.food_name}"?`}
-                        action={() => deleteMealItem(studentId, item.id)}
-                      />
+                      <div className="flex shrink-0 items-center gap-1">
+                        <EditMealItemDialog studentId={studentId} item={item} />
+                        <ConfirmDeleteButton
+                          confirmMessage={`Remover "${item.food_name}"?`}
+                          action={() => deleteMealItem(studentId, item.id)}
+                        />
+                      </div>
                     )}
                   </div>
                 ))

@@ -14,10 +14,11 @@ export const exerciseSchema = z.object({
     .int()
     .min(5, "Mínimo 5 segundos")
     .max(3600, "Máximo 3600 segundos (60 minutos)"),
-  recommendedLoadKg: z.coerce
-    .number()
-    .min(0, "Informe um valor válido")
-    .optional(),
+  // Campo em branco = sem carga recomendada (sem isso, "" virava 0 kg).
+  recommendedLoadKg: z.preprocess(
+    (value) => (value === "" || value == null ? undefined : value),
+    z.coerce.number().min(0, "Informe um valor válido").optional()
+  ),
   // Só http e https: o formato de URL do zod também aceitaria "javascript:" e similares.
   videoUrl: z
     .string()
@@ -31,16 +32,6 @@ export const exerciseSchema = z.object({
 });
 export type ExerciseInput = z.infer<typeof exerciseSchema>;
 export type ExerciseFormInput = z.input<typeof exerciseSchema>;
-
-export const updateExerciseRestSchema = exerciseSchema.pick({ restSeconds: true });
-export type UpdateExerciseRestInput = z.infer<typeof updateExerciseRestSchema>;
-export type UpdateExerciseRestFormInput = z.input<typeof updateExerciseRestSchema>;
-
-export const updateRecommendedLoadSchema = z.object({
-  recommendedLoadKg: z.coerce.number().min(0, "Informe um valor válido"),
-});
-export type UpdateRecommendedLoadInput = z.infer<typeof updateRecommendedLoadSchema>;
-export type UpdateRecommendedLoadFormInput = z.input<typeof updateRecommendedLoadSchema>;
 
 export const loadLogSchema = z.object({
   weightKg: z.coerce.number().min(0, "Informe a carga em kg"),

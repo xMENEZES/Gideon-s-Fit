@@ -3,14 +3,10 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Target } from "lucide-react";
+import { Pencil } from "lucide-react";
 import { toast } from "sonner";
-import {
-  updateRecommendedLoadSchema,
-  type UpdateRecommendedLoadInput,
-  type UpdateRecommendedLoadFormInput,
-} from "@/lib/validations/workout.schema";
-import { updateRecommendedLoad } from "@/lib/actions/workouts";
+import { workoutDaySchema, type WorkoutDayInput } from "@/lib/validations/workout.schema";
+import { updateWorkoutDay } from "@/lib/actions/workouts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,14 +19,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-export function EditRecommendedLoadDialog({
+export function EditWorkoutDayDialog({
   studentId,
-  exerciseId,
-  recommendedLoadKg,
+  workoutDayId,
+  name,
 }: {
   studentId: string;
-  exerciseId: string;
-  recommendedLoadKg: number | null;
+  workoutDayId: string;
+  name: string;
 }) {
   const [open, setOpen] = useState(false);
   const {
@@ -38,18 +34,18 @@ export function EditRecommendedLoadDialog({
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<UpdateRecommendedLoadFormInput, unknown, UpdateRecommendedLoadInput>({
-    resolver: zodResolver(updateRecommendedLoadSchema),
-    defaultValues: { recommendedLoadKg: recommendedLoadKg ?? undefined },
+  } = useForm<WorkoutDayInput>({
+    resolver: zodResolver(workoutDaySchema),
+    defaultValues: { name },
   });
 
   function handleOpenChange(next: boolean) {
-    if (next) reset({ recommendedLoadKg: recommendedLoadKg ?? undefined });
+    if (next) reset({ name });
     setOpen(next);
   }
 
-  async function onSubmit(values: UpdateRecommendedLoadInput) {
-    const result = await updateRecommendedLoad(studentId, exerciseId, values);
+  async function onSubmit(values: WorkoutDayInput) {
+    const result = await updateWorkoutDay(studentId, workoutDayId, values);
     if (result?.error) {
       toast.error(result.error);
       return;
@@ -66,29 +62,21 @@ export function EditRecommendedLoadDialog({
             size="icon-sm"
             className="text-muted-foreground"
             type="button"
-            title="Editar carga recomendada"
+            title="Editar dia de treino"
           />
         }
       >
-        <Target />
+        <Pencil />
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Carga recomendada</DialogTitle>
+          <DialogTitle>Editar dia de treino</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-            <Label htmlFor="recommendedLoadKg">Carga recomendada (kg)</Label>
-            <Input
-              id="recommendedLoadKg"
-              type="number"
-              step="0.5"
-              min={0}
-              {...register("recommendedLoadKg")}
-            />
-            {errors.recommendedLoadKg && (
-              <p className="text-sm text-destructive">{errors.recommendedLoadKg.message}</p>
-            )}
+            <Label htmlFor="name">Nome</Label>
+            <Input id="name" {...register("name")} />
+            {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
           </div>
           <DialogFooter>
             <Button type="submit" disabled={isSubmitting}>

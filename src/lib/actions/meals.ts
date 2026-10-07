@@ -42,6 +42,23 @@ export async function createMeal(studentId: string, protocolId: string, input: M
   return { success: true };
 }
 
+export async function updateMeal(studentId: string, mealId: string, input: MealInput) {
+  const parsed = mealSchema.safeParse(input);
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Dados inválidos." };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("meals")
+    .update({ name: parsed.data.name, suggested_time: parsed.data.suggestedTime || null })
+    .eq("id", mealId)
+    .select("id");
+
+  if (error || !data?.length) return { error: "Não foi possível atualizar a refeição." };
+
+  revalidateModule(studentId, "dieta");
+  return { success: true };
+}
+
 export async function deleteMeal(studentId: string, mealId: string) {
   const supabase = await createClient();
   const { error } = await supabase.from("meals").delete().eq("id", mealId);
@@ -68,6 +85,27 @@ export async function createMealOption(studentId: string, mealId: string, input:
   });
 
   if (error) return { error: "Não foi possível adicionar a opção." };
+
+  revalidateModule(studentId, "dieta");
+  return { success: true };
+}
+
+export async function updateMealOption(
+  studentId: string,
+  mealOptionId: string,
+  input: MealOptionInput
+) {
+  const parsed = mealOptionSchema.safeParse(input);
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Dados inválidos." };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("meal_options")
+    .update({ label: parsed.data.label })
+    .eq("id", mealOptionId)
+    .select("id");
+
+  if (error || !data?.length) return { error: "Não foi possível atualizar a opção." };
 
   revalidateModule(studentId, "dieta");
   return { success: true };
@@ -118,6 +156,28 @@ export async function createMealItem(
   });
 
   if (error) return { error: quotaMessage(error) ?? "Não foi possível adicionar o item." };
+
+  revalidateModule(studentId, "dieta");
+  return { success: true };
+}
+
+export async function updateMealItem(studentId: string, mealItemId: string, input: MealItemInput) {
+  const parsed = mealItemSchema.safeParse(input);
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Dados inválidos." };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("meal_items")
+    .update({
+      food_name: parsed.data.foodName,
+      quantity: parsed.data.quantity,
+      unit: parsed.data.unit,
+      notes: parsed.data.notes || null,
+    })
+    .eq("id", mealItemId)
+    .select("id");
+
+  if (error || !data?.length) return { error: "Não foi possível atualizar o item." };
 
   revalidateModule(studentId, "dieta");
   return { success: true };
