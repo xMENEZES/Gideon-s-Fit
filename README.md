@@ -68,37 +68,6 @@ supabase/
   tests/          scripts de verificação (isolamento entre contas, cotas)
 ```
 
-## Como rodar localmente
-
-Pré-requisitos: Node.js 20 ou superior e um projeto no [Supabase](https://supabase.com).
-
-1. Instale as dependências:
-
-   ```bash
-   npm install
-   ```
-
-2. Crie o arquivo `.env.local` na raiz com as variáveis abaixo (os valores vêm do painel do seu projeto Supabase; **nunca** os coloque no repositório):
-
-   | Variável | Uso |
-   |---|---|
-   | `NEXT_PUBLIC_SUPABASE_URL` | URL do projeto Supabase |
-   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | chave pública (anon/publishable) |
-   | `SUPABASE_SERVICE_ROLE_KEY` | chave de serviço, **somente no servidor** |
-   | `NEXT_PUBLIC_SITE_URL` | URL pública do site (links de e-mail e redirecionamentos) |
-
-3. Rode as migrações de `supabase/migrations` em ordem no SQL Editor do Supabase. A `0014` (que cria um valor de enum) precisa rodar sozinha. As migrações `*_rollback.sql` desfazem a migração de mesmo número e **não** fazem parte da sequência normal.
-
-4. Configure no Supabase o provedor Google (opcional), as URLs de redirecionamento e os modelos de e-mail de confirmação e de recuperação de senha (que apontam para `/auth/confirm`).
-
-5. Inicie o servidor de desenvolvimento:
-
-   ```bash
-   npm run dev
-   ```
-
-Outros comandos: `npm run build` (compilação de produção), `npm run start` (servir a compilação) e `npm run lint`.
-
 ## Segurança
 
 - **RLS em todas as tabelas:** cada pessoa só lê e escreve os próprios dados, e o profissional só os dados do próprio time. As regras de acesso das tabelas filhas usam funções `security definer` para manter o desempenho.
