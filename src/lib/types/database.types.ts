@@ -483,6 +483,14 @@ export interface Database {
         };
         Returns: string;
       };
+      register_join_attempt: {
+        Args: {
+          p_user_id: string;
+          p_max_attempts: number;
+          p_window_seconds: number;
+        };
+        Returns: boolean;
+      };
       copy_protocol_content: {
         Args: {
           p_source: string;

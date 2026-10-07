@@ -7,6 +7,7 @@ const TRAINER_HOME = "/dashboard";
 const STUDENT_HOME = "/aluno";
 const STANDARD_HOME = "/meu-plano";
 const ADMIN_HOME = "/admin";
+const ACCOUNT_PATH = "/conta";
 const PUBLIC_PATHS = ["/login", "/cadastro", "/esqueci-senha", "/auth/callback", "/auth/confirm"];
 // /definir-senha fica de fora de propósito: quem clica no link de convite já
 // chega autenticado (sessão criada antes de definir a senha), então não pode
@@ -45,7 +46,9 @@ export async function updateSession(request: NextRequest) {
       pathname.startsWith(TRAINER_HOME) ||
       pathname.startsWith(STUDENT_HOME) ||
       pathname.startsWith(STANDARD_HOME) ||
-      pathname.startsWith(ADMIN_HOME)
+      pathname.startsWith(ADMIN_HOME) ||
+      pathname === ACCOUNT_PATH ||
+      pathname.startsWith(`${ACCOUNT_PATH}/`)
     ) {
       return NextResponse.redirect(new URL("/login", request.url));
     }

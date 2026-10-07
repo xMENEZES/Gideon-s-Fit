@@ -9,6 +9,7 @@ import { cadastroSchema, type CadastroInput } from "@/lib/validations/auth.schem
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { PasswordInput } from "@/components/shared/password-input";
 import { GoogleButton } from "@/components/shared/google-button";
 import { ProfileTypeSelector } from "@/components/shared/profile-type-selector";
@@ -31,9 +32,13 @@ export default function CadastroPage() {
     setValue,
     watch,
     formState: { errors, isSubmitting },
-  } = useForm<CadastroInput>({ resolver: zodResolver(cadastroSchema) });
+  } = useForm<CadastroInput>({
+    resolver: zodResolver(cadastroSchema),
+    defaultValues: { acceptTerms: false },
+  });
 
   const role = watch("role");
+  const acceptTerms = watch("acceptTerms");
 
   async function onSubmit(values: CadastroInput) {
     setServerError(null);
@@ -42,7 +47,11 @@ export default function CadastroPage() {
       email: values.email,
       password: values.password,
       options: {
-        data: { role: values.role, full_name: values.fullName },
+        data: {
+          role: values.role,
+          full_name: values.fullName,
+          terms_accepted_at: new Date().toISOString(),
+        },
         emailRedirectTo: `${window.location.origin}/auth/confirm`,
       },
     });
@@ -102,7 +111,32 @@ export default function CadastroPage() {
             {errors.role && <p className="text-sm text-destructive">{errors.role.message}</p>}
           </div>
 
-          <GoogleButton label="Cadastrar com Google" profile={role} />
+          <div className="flex flex-col gap-2">
+            <label className="flex items-start gap-2 text-sm">
+              <Checkbox
+                checked={acceptTerms === true}
+                onCheckedChange={(checked) =>
+                  setValue("acceptTerms", checked === true, { shouldValidate: true })
+                }
+              />
+              <span>
+                Li e aceito a{" "}
+                <Link
+                  href="/privacidade"
+                  target="_blank"
+                  className="font-medium text-primary hover:underline"
+                >
+                  Política de Privacidade
+                </Link>
+                .
+              </span>
+            </label>
+            {errors.acceptTerms && (
+              <p className="text-sm text-destructive">{errors.acceptTerms.message}</p>
+            )}
+          </div>
+
+          <GoogleButton label="Cadastrar com Google" profile={role} disabled={!acceptTerms} />
 
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
             <span className="h-px flex-1 bg-border" />

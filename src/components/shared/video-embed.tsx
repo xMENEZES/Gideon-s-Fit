@@ -10,24 +10,38 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
+// Id de vídeo do YouTube: 11 caracteres de [A-Za-z0-9_-]. Qualquer outra coisa (barras,
+// pontos, parâmetros) é recusada, para não montar um endereço de embed fora do esperado.
+const YOUTUBE_ID = /^[A-Za-z0-9_-]{11}$/;
+
+function isYoutubeHost(hostname: string, domain: string) {
+  return hostname === domain || hostname.endsWith(`.${domain}`);
+}
+
 function getYoutubeId(url: string): string | null {
   try {
     const parsed = new URL(url);
-    if (parsed.hostname.includes("youtu.be")) {
-      return parsed.pathname.slice(1) || null;
+    let id: string | null = null;
+    if (isYoutubeHost(parsed.hostname, "youtu.be")) {
+      id = parsed.pathname.slice(1);
+    } else if (isYoutubeHost(parsed.hostname, "youtube.com")) {
+      if (parsed.pathname === "/watch") id = parsed.searchParams.get("v");
+      else if (parsed.pathname.startsWith("/shorts/")) id = parsed.pathname.split("/shorts/")[1];
+      else if (parsed.pathname.startsWith("/embed/")) id = parsed.pathname.split("/embed/")[1];
     }
-    if (parsed.hostname.includes("youtube.com")) {
-      if (parsed.pathname === "/watch") return parsed.searchParams.get("v");
-      if (parsed.pathname.startsWith("/shorts/")) {
-        return parsed.pathname.split("/shorts/")[1] ?? null;
-      }
-      if (parsed.pathname.startsWith("/embed/")) {
-        return parsed.pathname.split("/embed/")[1] ?? null;
-      }
-    }
-    return null;
+    return id && YOUTUBE_ID.test(id) ? id : null;
   } catch {
     return null;
+  }
+}
+
+// Só links http e https viram link clicável (defesa extra além da validação ao salvar).
+function isSafeLink(url: string): boolean {
+  try {
+    const { protocol } = new URL(url);
+    return protocol === "http:" || protocol === "https:";
+  } catch {
+    return false;
   }
 }
 
@@ -62,6 +76,8 @@ export function VideoEmbed({ url }: { url: string }) {
       </Dialog>
     );
   }
+
+  if (!isSafeLink(url)) return null;
 
   return (
     <a

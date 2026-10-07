@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Dumbbell, LogOut } from "lucide-react";
+import { Dumbbell, LogOut, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { signOut } from "@/lib/actions/auth";
@@ -29,6 +29,21 @@ const LAYOUT = {
   },
 } as const;
 
+function AccountLink() {
+  return (
+    <Button
+      variant="ghost"
+      size="icon-sm"
+      nativeButton={false}
+      render={<Link href="/conta" />}
+      title="Minha conta"
+    >
+      <UserRound />
+      <span className="sr-only">Minha conta</span>
+    </Button>
+  );
+}
+
 export function TopBar({
   fullName,
   homeHref,
@@ -52,6 +67,7 @@ export function TopBar({
           </Link>
           <div className={layout.compactControls}>
             <ThemeToggle />
+            <AccountLink />
             <form action={signOut}>
               <Button variant="ghost" size="sm" type="submit">
                 <LogOut className="size-4" />
@@ -64,6 +80,9 @@ export function TopBar({
           {children}
           <div className={layout.toggle}>
             <ThemeToggle />
+          </div>
+          <div className={layout.toggle}>
+            <AccountLink />
           </div>
           <span className={layout.name}>{fullName}</span>
           <form action={signOut} className={layout.signOut}>

@@ -6,7 +6,7 @@ export const metadata = {
 };
 
 const CONTACT_EMAIL = "gabrielprojects97@gmail.com";
-const UPDATED_AT = "2 de outubro de 2026";
+const UPDATED_AT = "7 de outubro de 2026";
 
 const sections: { title: string; body: React.ReactNode }[] = [
   {
@@ -89,8 +89,14 @@ const sections: { title: string; body: React.ReactNode }[] = [
     title: "6. Por quanto tempo guardamos",
     body: (
       <p>
-        Mantemos seus dados enquanto sua conta existir. Você pode pedir a exclusão da conta e dos
-        dados associados a qualquer momento pelo e-mail de contato.
+        Mantemos seus dados enquanto sua conta existir. Você pode excluir a sua conta e todos os
+        dados associados a qualquer momento, direto no aplicativo (menu &quot;Minha conta&quot;), ou
+        pedir a exclusão pelo e-mail de contato. Veja o passo a passo em{" "}
+        <Link className="text-primary underline" href="/excluir-conta">
+          Como excluir sua conta
+        </Link>
+        . Cópias de segurança do provedor de hospedagem podem manter os dados por um período limitado
+        antes de serem descartadas.
       </p>
     ),
   },

@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const studentSettingsSchema = z
   .object({
-    nickname: z.string().optional(),
+    nickname: z.string().max(60, "No máximo 60 caracteres").optional(),
     hasWorkout: z.boolean(),
     hasDiet: z.boolean(),
   })

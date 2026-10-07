@@ -8,7 +8,7 @@ export type StartProtocolInput = z.infer<typeof startProtocolSchema>;
 export type StartProtocolFormInput = z.input<typeof startProtocolSchema>;
 
 export const updateProtocolNotesSchema = z.object({
-  notes: z.string().optional(),
+  notes: z.string().max(2000, "No máximo 2000 caracteres").optional(),
 });
 export type UpdateProtocolNotesInput = z.infer<typeof updateProtocolNotesSchema>;
 export type UpdateProtocolNotesFormInput = z.input<typeof updateProtocolNotesSchema>;

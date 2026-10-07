@@ -58,7 +58,17 @@ export async function deleteTrainer(trainerId: string) {
   const caller = await requireAdmin();
   if (!caller) return { error: "Apenas o administrador pode remover profissionais." };
 
+  if (trainerId === caller.id) return { error: "Você não pode remover a sua própria conta por aqui." };
+
   const admin = createAdminClient();
+
+  // O alvo precisa ser mesmo um profissional: um id qualquer não pode levar outra conta junto.
+  const { data: target } = await admin
+    .from("profiles")
+    .select("role")
+    .eq("id", trainerId)
+    .maybeSingle();
+  if (target?.role !== "trainer") return { error: "Profissional não encontrado." };
 
   const { count, error: countError } = await admin
     .from("students")
@@ -89,6 +99,9 @@ export async function adminDeleteStudent(studentId: string) {
     .single();
 
   if (findError || !student) return { error: "Aluno não encontrado." };
+  if (student.profile_id === caller.id) {
+    return { error: "Você não pode remover a sua própria conta por aqui." };
+  }
 
   const { error } = await admin.auth.admin.deleteUser(student.profile_id);
   if (error) return { error: "Não foi possível remover o aluno." };

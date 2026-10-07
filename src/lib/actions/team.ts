@@ -57,18 +57,18 @@ export async function requestToJoinTeam(rawCode: string) {
 
   const admin = createAdminClient();
 
-  // Toda tentativa conta, acertando ou errando: impede adivinhar códigos.
-  const since = new Date(Date.now() - ATTEMPT_WINDOW_MS).toISOString();
-  const { count } = await admin
-    .from("team_join_attempts")
-    .select("id", { count: "exact", head: true })
-    .eq("user_id", userId)
-    .gte("created_at", since);
-
-  if ((count ?? 0) >= MAX_ATTEMPTS) {
+  // Toda tentativa conta, acertando ou errando: impede adivinhar códigos. A contagem e o
+  // registro são uma operação só no banco (com trava por usuário), então pedidos
+  // simultâneos não conseguem passar do limite.
+  const { data: allowed, error: attemptError } = await admin.rpc("register_join_attempt", {
+    p_user_id: userId,
+    p_max_attempts: MAX_ATTEMPTS,
+    p_window_seconds: ATTEMPT_WINDOW_MS / 1000,
+  });
+  if (attemptError) return { error: "Não foi possível verificar o código agora. Tente novamente." };
+  if (!allowed) {
     return { error: "Muitas tentativas. Aguarde alguns minutos e tente novamente." };
   }
-  await admin.from("team_join_attempts").insert({ user_id: userId });
 
   const { data: team } = await admin
     .from("team_codes")

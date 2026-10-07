@@ -52,8 +52,7 @@ export default function EsqueciSenhaPage() {
         <CardHeader>
           <CardTitle>Verifique seu e-mail</CardTitle>
           <CardDescription>
-            Se existir uma conta com esse e-mail, enviamos um link para redefinir a senha. Abra o
-            link no mesmo navegador em que fez o pedido.
+            Se existir uma conta com esse e-mail, enviamos um link para redefinir a senha.
           </CardDescription>
         </CardHeader>
         <CardFooter>

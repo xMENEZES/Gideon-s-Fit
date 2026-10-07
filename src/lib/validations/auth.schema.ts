@@ -10,10 +10,13 @@ export type LoginInput = z.infer<typeof loginSchema>;
 export const cadastroSchema = z
   .object({
     role: z.enum(["trainer", "standard"], { message: "Escolha o tipo de perfil" }),
-    fullName: z.string().min(2, "Informe seu nome completo"),
+    fullName: z.string().min(2, "Informe seu nome completo").max(120, "No máximo 120 caracteres"),
     email: z.string().email("Informe um email válido"),
     password: z.string().min(8, "A senha deve ter pelo menos 8 caracteres"),
     confirmPassword: z.string(),
+    acceptTerms: z
+      .boolean()
+      .refine((value) => value === true, "Aceite a política de privacidade para continuar"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "As senhas não coincidem",

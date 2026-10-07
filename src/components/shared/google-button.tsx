@@ -30,9 +30,11 @@ function GoogleIcon() {
 export function GoogleButton({
   label = "Continuar com Google",
   profile,
+  disabled = false,
 }: {
   label?: string;
   profile?: "trainer" | "standard";
+  disabled?: boolean;
 }) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -54,7 +56,7 @@ export function GoogleButton({
 
   return (
     <div className="flex flex-col gap-2">
-      <Button type="button" variant="outline" className="w-full" onClick={handleClick} disabled={pending}>
+      <Button type="button" variant="outline" className="w-full" onClick={handleClick} disabled={pending || disabled}>
         <GoogleIcon />
         {pending ? "Redirecionando..." : label}
       </Button>
