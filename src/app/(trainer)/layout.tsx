@@ -1,11 +1,11 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { BarChart3, BellRing, LayoutTemplate, Users } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
-import { getProfile, getSessionUserId } from "@/lib/auth/session";
+import { getProfile } from "@/lib/auth/session";
 import { ONBOARDING_PATH, roleHome } from "@/lib/auth/roles";
 import { TopBar } from "@/components/shared/top-bar";
-import { Badge } from "@/components/ui/badge";
+import { AlertsBadge, PendingRequestsBadge } from "@/components/shared/trainer-nav-badges";
 
 export default async function TrainerLayout({
   children,
@@ -18,25 +18,6 @@ export default async function TrainerLayout({
   if (!profile.onboarded) redirect(ONBOARDING_PATH);
   if (profile.role !== "trainer") redirect(roleHome(profile.role));
 
-  const cutoffDate = new Date();
-  cutoffDate.setDate(cutoffDate.getDate() + 7);
-  const cutoff = cutoffDate.toISOString().slice(0, 10);
-
-  const supabase = await createClient();
-  const userId = await getSessionUserId();
-  const [{ count: alertsCount }, { count: pendingRequests }] = await Promise.all([
-    supabase
-      .from("protocols")
-      .select("id", { count: "exact", head: true })
-      .eq("is_active", true)
-      .lte("end_date", cutoff),
-    supabase
-      .from("team_join_requests")
-      .select("id", { count: "exact", head: true })
-      .eq("trainer_id", userId!)
-      .eq("status", "pending"),
-  ]);
-
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <TopBar fullName={profile.full_name} homeHref="/dashboard">
@@ -46,7 +27,9 @@ export default async function TrainerLayout({
         >
           <Users className="hidden size-4 sm:block" />
           Meus Alunos
-          {!!pendingRequests && <Badge variant="destructive">{pendingRequests}</Badge>}
+          <Suspense fallback={null}>
+            <PendingRequestsBadge />
+          </Suspense>
         </Link>
         <Link
           href="/dashboard/status"
@@ -68,7 +51,9 @@ export default async function TrainerLayout({
         >
           <BellRing className="hidden size-4 sm:block" />
           Alertas
-          {!!alertsCount && <Badge variant="destructive">{alertsCount}</Badge>}
+          <Suspense fallback={null}>
+            <AlertsBadge />
+          </Suspense>
         </Link>
       </TopBar>
       <main className="flex-1 px-6 py-8 sm:px-10">{children}</main>

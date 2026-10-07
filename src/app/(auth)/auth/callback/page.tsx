@@ -75,7 +75,13 @@ export default function AuthCallbackPage() {
         await chooseProfile(perfil);
       }
 
-      const destination = next && next.startsWith("/") ? next : code ? "/" : "/definir-senha";
+      // Só caminhos internos: "//site.com" e "/\site.com" começam com "/" mas o navegador
+      // os trata como endereço externo (redirecionamento aberto).
+      const safeNext =
+        next && next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/\\")
+          ? next
+          : null;
+      const destination = safeNext ?? (code ? "/" : "/definir-senha");
       window.location.href = destination;
     }
 

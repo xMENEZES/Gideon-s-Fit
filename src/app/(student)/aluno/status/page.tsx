@@ -1,5 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
-import { getSessionUserId } from "@/lib/auth/session";
+import { getOwnTeamStudent } from "@/lib/data/students";
 import { StatusReport, type StatusSearchParams } from "@/components/shared/status-report";
 
 export default async function AlunoStatusPage({
@@ -7,15 +6,7 @@ export default async function AlunoStatusPage({
 }: {
   searchParams: Promise<StatusSearchParams>;
 }) {
-  const supabase = await createClient();
-  const userId = await getSessionUserId();
-
-  const { data: student } = await supabase
-    .from("students")
-    .select("id, has_workout, has_diet")
-    .eq("profile_id", userId!)
-    .neq("trainer_id", userId!)
-    .single();
+  const student = await getOwnTeamStudent();
 
   if (!student) {
     return <p className="py-12 text-center text-muted-foreground">Nenhum status disponível.</p>;

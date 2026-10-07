@@ -17,19 +17,19 @@ export default async function StatusOverviewPage() {
   const supabase = await createClient();
   const today = todayBR();
 
-  const { data: students } = await supabase
-    .from("students")
-    .select("id, nickname, email, profiles!students_profile_id_fkey(full_name)")
-    .order("full_name", { referencedTable: "profiles" });
-
-  const studentIds = (students ?? []).map((student) => student.id);
-  const { data: protocolRows } = studentIds.length
-    ? await supabase
-        .from("protocols")
-        .select("id, student_id, type, start_date, end_date, is_active")
-        .in("student_id", studentIds)
-        .eq("is_active", true)
-    : { data: [] };
+  // Alunos e protocolos ativos buscados ao mesmo tempo. O RLS já limita os protocolos aos
+  // alunos deste profissional (modelos são inativos e ficam de fora).
+  const [{ data: students }, { data: protocolRows }] = await Promise.all([
+    supabase
+      .from("students")
+      .select("id, nickname, email, profiles!students_profile_id_fkey(full_name)")
+      .order("full_name", { referencedTable: "profiles" }),
+    supabase
+      .from("protocols")
+      .select("id, student_id, type, start_date, end_date, is_active")
+      .eq("is_active", true)
+      .not("student_id", "is", null),
+  ]);
 
   const protocols = (protocolRows ?? []) as ProtocolRow[];
   const workoutProtocols = protocols.filter((protocol) => protocol.type === "workout");

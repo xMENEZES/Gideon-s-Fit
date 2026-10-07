@@ -45,3 +45,6 @@ next-env.d.ts
 
 # credenciais locais
 senha supabase.txt
+
+# relatorios de seguranca (descrevem fragilidades: nunca publicar)
+RELATORIO_SEGURANCA_*.md
