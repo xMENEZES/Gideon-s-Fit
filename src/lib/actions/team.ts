@@ -3,6 +3,7 @@
 import { randomInt } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { quotaMessage } from "@/lib/quota";
 import { getProfile, getSessionUserId } from "@/lib/auth/session";
 
 // Sem 0/O/1/I para o código ser fácil de ler e digitar.
@@ -174,7 +175,9 @@ export async function decideJoinRequest(requestId: string, decision: "approve" |
     has_workout: true,
     has_diet: true,
   });
-  if (insertError) return { error: "Não foi possível adicionar a pessoa ao time." };
+  if (insertError) {
+    return { error: quotaMessage(insertError) ?? "Não foi possível adicionar a pessoa ao time." };
+  }
 
   await admin
     .from("profiles")

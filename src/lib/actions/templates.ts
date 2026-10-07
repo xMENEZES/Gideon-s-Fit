@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { quotaMessage } from "@/lib/quota";
 import { createClient } from "@/lib/supabase/server";
 import { getProfile, getSessionUserId } from "@/lib/auth/session";
 import { addDays, isIsoDate, todayBR } from "@/lib/dates";
@@ -57,7 +58,7 @@ export async function createTemplate(type: ProtocolType, rawName: string) {
     })
     .select("id")
     .single();
-  if (error || !data) return { error: "Não foi possível criar o modelo." };
+  if (error || !data) return { error: quotaMessage(error) ?? "Não foi possível criar o modelo." };
 
   revalidatePath("/dashboard/modelos");
   return { success: true, templateId: data.id };
@@ -131,7 +132,7 @@ export async function saveAsTemplate(protocolId: string, rawName: string) {
     .single();
   if (insertError || !template) {
     console.error("saveAsTemplate (criar modelo) falhou:", insertError?.message ?? "sem retorno");
-    return { error: "Não foi possível salvar o modelo." };
+    return { error: quotaMessage(insertError) ?? "Não foi possível salvar o modelo." };
   }
 
   const { error: copyError } = await supabase.rpc("copy_protocol_content", {

@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidateModule } from "@/lib/actions/revalidate";
+import { quotaMessage } from "@/lib/quota";
 import {
   mealSchema,
   mealOptionSchema,
@@ -26,7 +27,7 @@ export async function createMeal(studentId: string, protocolId: string, input: M
     .select("id")
     .single();
 
-  if (error || !meal) return { error: "Não foi possível criar a refeição." };
+  if (error || !meal) return { error: quotaMessage(error) ?? "Não foi possível criar a refeição." };
 
   // Toda refeição já nasce com 1 opção (sem rótulo) para poder receber
   // itens direto; vira "opções" de verdade só quando o trainer adicionar
@@ -116,7 +117,7 @@ export async function createMealItem(
     notes: parsed.data.notes || null,
   });
 
-  if (error) return { error: "Não foi possível adicionar o item." };
+  if (error) return { error: quotaMessage(error) ?? "Não foi possível adicionar o item." };
 
   revalidateModule(studentId, "dieta");
   return { success: true };

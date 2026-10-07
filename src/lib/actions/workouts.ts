@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidateModule } from "@/lib/actions/revalidate";
+import { quotaMessage } from "@/lib/quota";
 import {
   workoutDaySchema,
   exerciseSchema,
@@ -29,7 +30,7 @@ export async function createWorkoutDay(
     name: parsed.data.name,
   });
 
-  if (error) return { error: "Não foi possível criar o dia de treino." };
+  if (error) return { error: quotaMessage(error) ?? "Não foi possível criar o dia de treino." };
 
   revalidateModule(studentId, "treino");
   return { success: true };
@@ -64,7 +65,7 @@ export async function createExercise(
     notes: parsed.data.notes || null,
   });
 
-  if (error) return { error: "Não foi possível adicionar o exercício." };
+  if (error) return { error: quotaMessage(error) ?? "Não foi possível adicionar o exercício." };
 
   revalidateModule(studentId, "treino");
   return { success: true };
