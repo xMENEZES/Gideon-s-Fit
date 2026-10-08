@@ -3,6 +3,10 @@
 @import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
+/* Telas baixas (celular pequeno ou deitado): a tela inicial entra em modo compacto para
+   caber sem rolagem vertical. */
+@custom-variant short (@media (max-height: 640px));
+@custom-variant tiny (@media (max-height: 480px));
 
 @theme inline {
   --color-background: var(--background);
