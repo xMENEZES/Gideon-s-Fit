@@ -27,10 +27,11 @@ export function SectionTabs({
           <Link
             key={href}
             href={href}
+            aria-current={active ? "page" : undefined}
             className={cn(
-              "inline-flex h-7 flex-auto shrink-0 items-center justify-center whitespace-nowrap rounded-md px-2 text-[13px] font-medium transition-colors sm:flex-none sm:px-4 sm:text-sm",
+              "inline-flex h-7 flex-auto shrink-0 items-center justify-center whitespace-nowrap rounded-md px-2 text-[13px] font-medium transition-colors max-[340px]:px-1 sm:flex-none sm:px-4 sm:text-sm",
               active
-                ? "bg-background text-foreground shadow-sm"
+                ? "bg-background font-semibold text-primary shadow-sm"
                 : "hover:text-foreground"
             )}
           >

@@ -31,7 +31,11 @@ export function WorkoutDaysTabs({
     <Tabs value={active.id} onValueChange={(value) => setSelected(value as string)}>
       <TabsList className="group-data-horizontal/tabs:h-10 w-full justify-start overflow-x-auto overflow-y-hidden">
         {days.map((day) => (
-          <TabsTrigger key={day.id} value={day.id} className="flex-none px-4">
+          <TabsTrigger
+            key={day.id}
+            value={day.id}
+            className="flex-none px-4 data-active:font-semibold data-active:text-primary dark:data-active:text-primary"
+          >
             {shortLabel(day.name)}
           </TabsTrigger>
         ))}
