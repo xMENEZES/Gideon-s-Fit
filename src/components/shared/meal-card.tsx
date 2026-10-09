@@ -11,6 +11,7 @@ import { EditMealDialog } from "@/components/shared/edit-meal-dialog";
 import { EditMealItemDialog } from "@/components/shared/edit-meal-item-dialog";
 import { EditMealOptionDialog } from "@/components/shared/edit-meal-option-dialog";
 import { deleteMeal, deleteMealItem, deleteMealOption } from "@/lib/actions/meals";
+import { formatQuantity } from "@/lib/units";
 
 export type MealWithOptions = {
   id: string;
@@ -115,7 +116,7 @@ export function MealCard({
                       <p className="font-medium">
                         {item.food_name}{" "}
                         <span className="text-sm text-muted-foreground">
-                          — {item.quantity} {item.unit}
+                          — {formatQuantity(item.quantity, item.unit)}
                         </span>
                       </p>
                       {item.notes && (

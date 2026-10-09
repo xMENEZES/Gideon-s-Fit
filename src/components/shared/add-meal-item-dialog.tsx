@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
@@ -14,6 +14,7 @@ import { createMealItem } from "@/lib/actions/meals";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { UnitField } from "@/components/shared/unit-field";
 import {
   Dialog,
   DialogContent,
@@ -31,13 +32,17 @@ export function AddMealItemDialog({
   mealOptionId: string;
 }) {
   const [open, setOpen] = useState(false);
+  // Remonta o menu de unidades quando o formulário é reiniciado.
+  const [unitKey, setUnitKey] = useState(0);
   const {
     register,
+    control,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
   } = useForm<MealItemFormInput, unknown, MealItemInput>({
     resolver: zodResolver(mealItemSchema),
+    defaultValues: { unit: "" },
   });
 
   async function onSubmit(values: MealItemInput) {
@@ -46,7 +51,8 @@ export function AddMealItemDialog({
       toast.error(result.error);
       return;
     }
-    reset();
+    reset({ unit: "" });
+    setUnitKey((key) => key + 1);
     setOpen(false);
   }
 
@@ -71,14 +77,26 @@ export function AddMealItemDialog({
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
               <Label htmlFor="quantity">Quantidade</Label>
-              <Input id="quantity" type="number" step="0.1" min={0} {...register("quantity")} />
+              <Input id="quantity" type="number" step="any" min={0} {...register("quantity")} />
               {errors.quantity && (
                 <p className="text-sm text-destructive">{errors.quantity.message}</p>
               )}
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="unit">Unidade</Label>
-              <Input id="unit" placeholder="g, ml, unidade..." {...register("unit")} />
+              <Controller
+                control={control}
+                name="unit"
+                render={({ field }) => (
+                  <UnitField
+                    key={unitKey}
+                    id="unit"
+                    value={typeof field.value === "string" ? field.value : ""}
+                    onChange={field.onChange}
+                    invalid={!!errors.unit}
+                  />
+                )}
+              />
               {errors.unit && <p className="text-sm text-destructive">{errors.unit.message}</p>}
             </div>
           </div>

@@ -226,19 +226,32 @@ function MealSection({
   today: string;
 }) {
   const days = [...status.days].reverse();
+  const hasInProgress = days.some((day) => day.inProgress);
+  const noClosedDay = status.closedDays === 0;
 
   return (
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatTile
           label="Refeições feitas"
-          value={`${status.doneTotal} de ${status.expectedTotal}`}
+          value={noClosedDay ? "-" : `${status.doneTotal} de ${status.expectedTotal}`}
           tone="good"
         />
-        <StatTile label="Aproveitamento" value={`${status.percent}%`} tone="good" />
-        <StatTile label="Não feitas" value={String(status.missedTotal)} tone={status.missedTotal ? "bad" : undefined} />
-        <StatTile label="Sem registro" value={String(status.unmarkedTotal)} />
+        <StatTile label="Aproveitamento" value={noClosedDay ? "-" : `${status.percent}%`} tone="good" />
+        <StatTile
+          label="Não feitas"
+          value={noClosedDay ? "-" : String(status.missedTotal)}
+          tone={status.missedTotal ? "bad" : undefined}
+        />
+        <StatTile label="Sem registro" value={noClosedDay ? "-" : String(status.unmarkedTotal)} />
       </div>
+      {hasInProgress && (
+        <p className="text-xs text-muted-foreground">
+          {noClosedDay
+            ? "Ainda não há dia encerrado: o aproveitamento aparece quando o dia de hoje terminar."
+            : "Hoje está em andamento e só entra nos totais e no aproveitamento quando o dia terminar."}
+        </p>
+      )}
 
       {days.length === 0 ? (
         <p className="text-sm text-muted-foreground">Nenhum dia com protocolo alimentar neste período.</p>
@@ -252,8 +265,13 @@ function MealSection({
             return (
               <div key={day.date} className="flex flex-col gap-2 rounded-lg border border-border px-3 py-2">
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-sm font-medium">
+                  <p className="flex items-center gap-2 text-sm font-medium">
                     {weekday(day.date)}, {formatDate(day.date)}
+                    {day.inProgress && (
+                      <Badge variant="secondary" className="font-normal">
+                        Em andamento
+                      </Badge>
+                    )}
                   </p>
                   <p className="text-sm text-muted-foreground">
                     {day.done} de {day.total} {day.total === 1 ? "feita" : "feitas"}
@@ -273,7 +291,14 @@ function MealSection({
                     ))}
                     {day.unmarked > 0 && (
                       <li className="text-muted-foreground">
-                        {day.unmarked} {day.unmarked === 1 ? "refeição sem registro" : "refeições sem registro"}
+                        {day.unmarked}{" "}
+                        {day.inProgress
+                          ? day.unmarked === 1
+                            ? "refeição ainda sem registro"
+                            : "refeições ainda sem registro"
+                          : day.unmarked === 1
+                            ? "refeição sem registro"
+                            : "refeições sem registro"}
                       </li>
                     )}
                   </ul>
@@ -347,7 +372,7 @@ export async function StatusReport({
       ? buildWorkoutStatus(workout, today, workoutEntries.get(workout.id) ?? [])
       : null;
   const mealStatus = customRange
-    ? buildMealRangeStatus(dietPeriods, mealRows, customRange.from, customRange.to)
+    ? buildMealRangeStatus(dietPeriods, mealRows, customRange.from, customRange.to, today)
     : diet
       ? buildMealStatus(diet, today, mealRows.get(diet.id) ?? [])
       : null;

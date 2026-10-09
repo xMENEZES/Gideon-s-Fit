@@ -98,9 +98,11 @@ export default async function StatusOverviewPage() {
                     <span className="text-xs text-muted-foreground">Alimentar</span>
                     <span className="text-sm font-medium">
                       {diet
-                        ? diet.expectedTotal
-                          ? `${diet.percent}% (${diet.doneTotal} de ${diet.expectedTotal} refeições)`
-                          : "Sem refeições cadastradas"
+                        ? diet.mealsPerDay === 0
+                          ? "Sem refeições cadastradas"
+                          : diet.closedDays === 0
+                            ? "Em andamento (1º dia)"
+                            : `${diet.percent}% (${diet.doneTotal} de ${diet.expectedTotal} refeições)`
                         : "Sem protocolo ativo"}
                     </span>
                   </div>

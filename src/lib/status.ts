@@ -131,6 +131,9 @@ export type MealDayStatus = {
   done: number;
   missed: { meal: string; note: string | null }[];
   unmarked: number;
+  // Dia ainda em andamento (hoje): aparece na lista, mas só entra nos totais e na
+  // porcentagem depois que o dia terminar.
+  inProgress: boolean;
 };
 
 export type MealStatus = {
@@ -141,8 +144,48 @@ export type MealStatus = {
   unmarkedTotal: number;
   expectedTotal: number;
   percent: number;
+  // Quantos dias já encerrados entraram na conta (0 no primeiro dia de um protocolo novo).
+  closedDays: number;
   partial: boolean;
 };
+
+function buildMealDay(date: string, today: string, meals: MealRow[]): MealDayStatus {
+  const day: MealDayStatus = {
+    date,
+    total: meals.length,
+    done: 0,
+    missed: [],
+    unmarked: 0,
+    inProgress: date >= today,
+  };
+  for (const meal of meals) {
+    const log = meal.logs.get(date);
+    if (!log) day.unmarked += 1;
+    else if (log.done) day.done += 1;
+    else day.missed.push({ meal: meal.name, note: log.note });
+  }
+  return day;
+}
+
+// Totais e porcentagem consideram só os dias encerrados.
+function summarizeMeals(days: MealDayStatus[], mealsPerDay: number, partial: boolean): MealStatus {
+  const closed = days.filter((day) => !day.inProgress);
+  const doneTotal = closed.reduce((sum, day) => sum + day.done, 0);
+  const missedTotal = closed.reduce((sum, day) => sum + day.missed.length, 0);
+  const expectedTotal = closed.reduce((sum, day) => sum + day.total, 0);
+
+  return {
+    days,
+    mealsPerDay,
+    doneTotal,
+    missedTotal,
+    unmarkedTotal: expectedTotal - doneTotal - missedTotal,
+    expectedTotal,
+    percent: expectedTotal ? Math.round((doneTotal / expectedTotal) * 100) : 0,
+    closedDays: closed.length,
+    partial,
+  };
+}
 
 export function buildMealStatus(period: ProtocolPeriod, today: string, meals: MealRow[]): MealStatus {
   let last: string | null = null;
@@ -150,33 +193,9 @@ export function buildMealStatus(period: ProtocolPeriod, today: string, meals: Me
     for (const date of meal.logs.keys()) if (!last || date > last) last = date;
   }
   const range = daysBetween(period.start_date, periodEnd(period, today, last));
+  const days = range.map((date) => buildMealDay(date, today, meals));
 
-  let doneTotal = 0;
-  let missedTotal = 0;
-  const days = range.map<MealDayStatus>((date) => {
-    const day: MealDayStatus = { date, total: meals.length, done: 0, missed: [], unmarked: 0 };
-    for (const meal of meals) {
-      const log = meal.logs.get(date);
-      if (!log) day.unmarked += 1;
-      else if (log.done) day.done += 1;
-      else day.missed.push({ meal: meal.name, note: log.note });
-    }
-    doneTotal += day.done;
-    missedTotal += day.missed.length;
-    return day;
-  });
-
-  const expectedTotal = meals.length * range.length;
-  return {
-    days,
-    mealsPerDay: meals.length,
-    doneTotal,
-    missedTotal,
-    unmarkedTotal: expectedTotal - doneTotal - missedTotal,
-    expectedTotal,
-    percent: expectedTotal ? Math.round((doneTotal / expectedTotal) * 100) : 0,
-    partial: period.is_active && today <= period.end_date,
-  };
+  return summarizeMeals(days, meals.length, period.is_active && today <= period.end_date);
 }
 
 // ---- Intervalo livre de datas (pode atravessar protocolos) ----
@@ -222,39 +241,16 @@ export function buildMealRangeStatus(
   periods: ProtocolPeriod[],
   mealsByProtocol: Map<string, MealRow[]>,
   from: string,
-  to: string
+  to: string,
+  today: string
 ): MealStatus {
-  let doneTotal = 0;
-  let missedTotal = 0;
-  let expectedTotal = 0;
   const days: MealDayStatus[] = [];
 
   for (const date of daysBetween(from, to)) {
     const period = protocolInEffect(periods, date);
     if (!period) continue;
-    const meals = mealsByProtocol.get(period.id) ?? [];
-
-    const day: MealDayStatus = { date, total: meals.length, done: 0, missed: [], unmarked: 0 };
-    for (const meal of meals) {
-      const log = meal.logs.get(date);
-      if (!log) day.unmarked += 1;
-      else if (log.done) day.done += 1;
-      else day.missed.push({ meal: meal.name, note: log.note });
-    }
-    doneTotal += day.done;
-    missedTotal += day.missed.length;
-    expectedTotal += meals.length;
-    days.push(day);
+    days.push(buildMealDay(date, today, mealsByProtocol.get(period.id) ?? []));
   }
 
-  return {
-    days,
-    mealsPerDay: Math.max(0, ...days.map((day) => day.total)),
-    doneTotal,
-    missedTotal,
-    unmarkedTotal: expectedTotal - doneTotal - missedTotal,
-    expectedTotal,
-    percent: expectedTotal ? Math.round((doneTotal / expectedTotal) * 100) : 0,
-    partial: false,
-  };
+  return summarizeMeals(days, Math.max(0, ...days.map((day) => day.total)), false);
 }
