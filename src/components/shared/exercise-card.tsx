@@ -1,5 +1,6 @@
 "use client";
 
+import { Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { VideoEmbed } from "@/components/shared/video-embed";
 import { LoadHistoryDialog } from "@/components/shared/load-history-dialog";
@@ -26,6 +27,7 @@ export function ExerciseCard({
   studentId,
   editable,
   canLog,
+  today,
 }: {
   exercise: ExerciseWithLogs;
   studentId: string;
@@ -33,8 +35,11 @@ export function ExerciseCard({
   // Quem treina registra carga e usa o timer. Por padrão é quem NÃO edita o plano
   // (o aluno); no plano próprio a mesma pessoa edita e treina.
   canLog?: boolean;
+  // Quando informado (telas diárias), mostra o selo "Registrado hoje" se houver carga nessa data.
+  today?: string;
 }) {
   const logging = canLog ?? !editable;
+  const loggedToday = !!today && exercise.exercise_load_logs.some((log) => log.logged_at === today);
 
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-border p-4">
@@ -47,6 +52,12 @@ export function ExerciseCard({
             <Badge variant="secondary">{exercise.rest_seconds}s descanso</Badge>
             {exercise.recommended_load_kg != null && (
               <Badge variant="secondary">{exercise.recommended_load_kg} kg recomendado</Badge>
+            )}
+            {loggedToday && (
+              <Badge variant="outline" className="gap-1 border-primary text-primary">
+                <Check className="size-3" />
+                Registrado hoje
+              </Badge>
             )}
             <LoadHistoryDialog exerciseName={exercise.name} logs={exercise.exercise_load_logs} />
           </div>

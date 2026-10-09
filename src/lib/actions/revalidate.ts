@@ -8,8 +8,10 @@ export function revalidateModule(studentId: string, module: "treino" | "dieta") 
   revalidatePath(`/dashboard/alunos/${studentId}/${module}/historico`);
   revalidatePath(`/aluno/${module}`);
   revalidatePath(`/aluno/${module}/historico`);
+  revalidatePath(`/aluno/${module}/plano`);
   revalidatePath(`/meu-plano/${module}`);
   revalidatePath(`/meu-plano/${module}/historico`);
+  revalidatePath(`/meu-plano/${module}/editar`);
   // Na tela de edição de modelos, o id do modelo ocupa o lugar do id do aluno.
   revalidatePath(`/dashboard/modelos/${studentId}`);
 }

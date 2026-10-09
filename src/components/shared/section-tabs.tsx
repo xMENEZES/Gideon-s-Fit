@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { isNavActive } from "@/lib/nav";
 import { cn } from "@/lib/utils";
 
 // No celular cada aba ocupa o tamanho do próprio texto e a sobra da largura é dividida entre
@@ -22,7 +23,8 @@ export function SectionTabs({
     <div className="flex w-full items-center gap-1 overflow-x-auto overflow-y-hidden rounded-lg bg-muted p-1 text-muted-foreground sm:inline-flex sm:h-9 sm:w-fit sm:max-w-full">
       {items.map((item) => {
         const href = `${basePath}${item.href}`;
-        const active = pathname === href;
+        // Vale também nas subtelas (editar, plano completo, histórico).
+        const active = isNavActive(pathname, href);
         return (
           <Link
             key={href}

@@ -1,11 +1,13 @@
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { addDays, todayBR } from "@/lib/dates";
 import { getSoloStudentId } from "@/lib/team/solo";
 import { loadActiveDiet } from "@/lib/data/protocols";
-import { AddMealDialog } from "@/components/shared/add-meal-dialog";
-import { DietDayTracker } from "@/components/shared/diet-day-tracker";
-import { addDays, todayBR } from "@/lib/dates";
-import { ProtocolHeader } from "@/components/shared/protocol-header";
+import { hasDietContent } from "@/lib/today";
+import { DietToday } from "@/components/shared/diet-today";
 
+// Com o protocolo alimentar pronto, esta aba mostra a alimentação de hoje. Enquanto não
+// houver protocolo com refeições, a pessoa segue para a tela de montagem (/editar).
 export default async function MinhaDietaPage() {
   const studentId = await getSoloStudentId();
   if (!studentId) {
@@ -24,47 +26,24 @@ export default async function MinhaDietaPage() {
     to: today,
   });
 
+  if (failed) {
+    return (
+      <p className="py-12 text-center text-muted-foreground">
+        Não foi possível carregar as refeições. Atualize a página para tentar de novo.
+      </p>
+    );
+  }
+  if (!protocol || !meals || !hasDietContent(meals)) redirect("/meu-plano/dieta/editar");
+
   return (
-    <div className="flex flex-col gap-4">
-      <ProtocolHeader
-        studentId={studentId}
-        type="diet"
-        protocol={protocol}
-        historyHref="/meu-plano/dieta/historico"
-        statusHref="/meu-plano/status"
-        editable
-      />
-
-      {!protocol ? (
-        <p className="py-12 text-center text-muted-foreground">
-          Nenhum protocolo alimentar ativo. Inicie um para começar a montar o seu.
-        </p>
-      ) : (
-        <>
-          <div className="flex justify-end">
-            <AddMealDialog studentId={studentId} protocolId={protocol.id} />
-          </div>
-
-          {failed ? (
-            <p className="py-12 text-center text-muted-foreground">
-              Não foi possível carregar as refeições. Atualize a página para tentar de novo.
-            </p>
-          ) : !meals?.length ? (
-            <p className="py-12 text-center text-muted-foreground">
-              Nenhuma refeição cadastrada ainda.
-            </p>
-          ) : (
-            <DietDayTracker
-              meals={meals}
-              studentId={studentId}
-              startDate={protocol.start_date}
-              today={today}
-              initialLogs={logs}
-              editable
-            />
-          )}
-        </>
-      )}
-    </div>
+    <DietToday
+      studentId={studentId}
+      protocol={protocol}
+      meals={meals}
+      logs={logs}
+      today={today}
+      actionHref="/meu-plano/dieta/editar"
+      actionLabel="Editar plano"
+    />
   );
 }

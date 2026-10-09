@@ -1,10 +1,14 @@
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { todayBR } from "@/lib/dates";
 import { getSoloStudentId } from "@/lib/team/solo";
 import { loadActiveWorkout } from "@/lib/data/protocols";
-import { AddWorkoutDayDialog } from "@/components/shared/add-workout-day-dialog";
-import { WorkoutDaysTabs } from "@/components/shared/workout-days-tabs";
-import { ProtocolHeader } from "@/components/shared/protocol-header";
+import { hasWorkoutContent } from "@/lib/today";
+import { WorkoutToday } from "@/components/shared/workout-today";
 
+// Com o protocolo de treino pronto, esta aba mostra o treino de hoje. Enquanto não houver
+// protocolo com exercícios, a pessoa segue para a tela de montagem (/editar), que não troca
+// sozinha no meio da montagem.
 export default async function MeuTreinoPage() {
   const studentId = await getSoloStudentId();
   if (!studentId) {
@@ -18,40 +22,23 @@ export default async function MeuTreinoPage() {
   const supabase = await createClient();
   const { protocol, days, failed } = await loadActiveWorkout(supabase, studentId);
 
+  if (failed) {
+    return (
+      <p className="py-12 text-center text-muted-foreground">
+        Não foi possível carregar o treino. Atualize a página para tentar de novo.
+      </p>
+    );
+  }
+  if (!protocol || !days || !hasWorkoutContent(days)) redirect("/meu-plano/treino/editar");
+
   return (
-    <div className="flex flex-col gap-4">
-      <ProtocolHeader
-        studentId={studentId}
-        type="workout"
-        protocol={protocol}
-        historyHref="/meu-plano/treino/historico"
-        statusHref="/meu-plano/status"
-        editable
-      />
-
-      {!protocol ? (
-        <p className="py-12 text-center text-muted-foreground">
-          Nenhum protocolo de treino ativo. Inicie um para começar a montar o seu treino.
-        </p>
-      ) : (
-        <>
-          <div className="flex justify-end">
-            <AddWorkoutDayDialog studentId={studentId} protocolId={protocol.id} />
-          </div>
-
-          {failed ? (
-            <p className="py-12 text-center text-muted-foreground">
-              Não foi possível carregar o treino. Atualize a página para tentar de novo.
-            </p>
-          ) : !days?.length ? (
-            <p className="py-12 text-center text-muted-foreground">
-              Nenhum dia de treino cadastrado ainda.
-            </p>
-          ) : (
-            <WorkoutDaysTabs days={days} studentId={studentId} editable canLog />
-          )}
-        </>
-      )}
-    </div>
+    <WorkoutToday
+      studentId={studentId}
+      protocol={protocol}
+      days={days}
+      today={todayBR()}
+      actionHref="/meu-plano/treino/editar"
+      actionLabel="Editar plano"
+    />
   );
 }

@@ -19,11 +19,13 @@ export function WorkoutDayCard({
   studentId,
   editable,
   canLog,
+  today,
 }: {
   day: WorkoutDayWithExercises;
   studentId: string;
   editable: boolean;
   canLog?: boolean;
+  today?: string;
 }) {
   return (
     <Card>
@@ -51,6 +53,7 @@ export function WorkoutDayCard({
               studentId={studentId}
               editable={editable}
               canLog={canLog}
+              today={today}
             />
           ))
         )}

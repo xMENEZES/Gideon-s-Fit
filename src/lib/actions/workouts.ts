@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidateModule } from "@/lib/actions/revalidate";
 import { quotaMessage } from "@/lib/quota";
+import { todayBR } from "@/lib/dates";
 import {
   workoutDaySchema,
   exerciseSchema,
@@ -144,7 +145,8 @@ export async function createLoadLog(
     exercise_id: exerciseId,
     weight_kg: parsed.data.weightKg,
     reps_done: parsed.data.repsDone ?? null,
-    logged_at: parsed.data.loggedAt || undefined,
+    // Sem data escolhida, vale o dia de Brasília (o banco usa UTC e viraria o dia às 21h).
+    logged_at: parsed.data.loggedAt || todayBR(),
     notes: parsed.data.notes || null,
     created_by: user.id,
   });

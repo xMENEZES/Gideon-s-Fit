@@ -17,13 +17,18 @@ export function WorkoutDaysTabs({
   studentId,
   editable,
   canLog,
+  initialDayId,
+  today,
 }: {
   days: WorkoutDayWithExercises[];
   studentId: string;
   editable: boolean;
   canLog?: boolean;
+  // Dia que já vem selecionado (padrão: o primeiro). Usado pela tela diária.
+  initialDayId?: string;
+  today?: string;
 }) {
-  const [selected, setSelected] = useState(days[0]?.id);
+  const [selected, setSelected] = useState(initialDayId ?? days[0]?.id);
   const active = days.find((day) => day.id === selected) ?? days[0];
   if (!active) return null;
 
@@ -41,7 +46,13 @@ export function WorkoutDaysTabs({
         ))}
       </TabsList>
       <TabsContent value={active.id}>
-        <WorkoutDayCard day={active} studentId={studentId} editable={editable} canLog={canLog} />
+        <WorkoutDayCard
+          day={active}
+          studentId={studentId}
+          editable={editable}
+          canLog={canLog}
+          today={today}
+        />
       </TabsContent>
     </Tabs>
   );

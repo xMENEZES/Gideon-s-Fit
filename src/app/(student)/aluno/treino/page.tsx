@@ -1,9 +1,13 @@
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { todayBR } from "@/lib/dates";
 import { getOwnTeamStudent } from "@/lib/data/students";
 import { loadActiveWorkout } from "@/lib/data/protocols";
-import { WorkoutDaysTabs } from "@/components/shared/workout-days-tabs";
-import { ProtocolHeader } from "@/components/shared/protocol-header";
+import { hasWorkoutContent } from "@/lib/today";
+import { WorkoutToday } from "@/components/shared/workout-today";
 
+// Com o protocolo pronto, a aba mostra o treino de hoje. Enquanto o profissional não tiver
+// montado o treino, segue para o plano completo, que explica o que falta.
 export default async function AlunoTreinoPage() {
   const student = await getOwnTeamStudent();
 
@@ -18,32 +22,23 @@ export default async function AlunoTreinoPage() {
   const supabase = await createClient();
   const { protocol, days, failed } = await loadActiveWorkout(supabase, student.id);
 
-  return (
-    <div className="flex flex-col gap-4">
-      <ProtocolHeader
-        studentId={student.id}
-        type="workout"
-        protocol={protocol}
-        historyHref="/aluno/treino/historico"
-        statusHref="/aluno/status"
-        editable={false}
-      />
+  if (failed) {
+    return (
+      <p className="py-12 text-center text-muted-foreground">
+        Não foi possível carregar o treino. Atualize a página para tentar de novo.
+      </p>
+    );
+  }
+  if (!protocol || !days || !hasWorkoutContent(days)) redirect("/aluno/treino/plano");
 
-      {!protocol ? (
-        <p className="py-12 text-center text-muted-foreground">
-          Seu personal ainda não cadastrou um protocolo de treino.
-        </p>
-      ) : failed ? (
-        <p className="py-12 text-center text-muted-foreground">
-          Não foi possível carregar o treino. Atualize a página para tentar de novo.
-        </p>
-      ) : !days?.length ? (
-        <p className="py-12 text-center text-muted-foreground">
-          Seu personal ainda não cadastrou nenhum dia de treino.
-        </p>
-      ) : (
-        <WorkoutDaysTabs days={days} studentId={student.id} editable={false} />
-      )}
-    </div>
+  return (
+    <WorkoutToday
+      studentId={student.id}
+      protocol={protocol}
+      days={days}
+      today={todayBR()}
+      actionHref="/aluno/treino/plano"
+      actionLabel="Ver plano completo"
+    />
   );
 }

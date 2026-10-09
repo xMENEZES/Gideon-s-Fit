@@ -1,10 +1,13 @@
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { addDays, todayBR } from "@/lib/dates";
 import { getOwnTeamStudent } from "@/lib/data/students";
 import { loadActiveDiet } from "@/lib/data/protocols";
-import { DietDayTracker } from "@/components/shared/diet-day-tracker";
-import { addDays, todayBR } from "@/lib/dates";
-import { ProtocolHeader } from "@/components/shared/protocol-header";
+import { hasDietContent } from "@/lib/today";
+import { DietToday } from "@/components/shared/diet-today";
 
+// Com o protocolo pronto, a aba mostra a alimentação de hoje. Enquanto o profissional não
+// tiver montado o protocolo, segue para o plano completo, que explica o que falta.
 export default async function AlunoDietaPage() {
   const student = await getOwnTeamStudent();
 
@@ -24,39 +27,24 @@ export default async function AlunoDietaPage() {
     to: today,
   });
 
-  return (
-    <div className="flex flex-col gap-4">
-      <ProtocolHeader
-        studentId={student.id}
-        type="diet"
-        protocol={protocol}
-        historyHref="/aluno/dieta/historico"
-        statusHref="/aluno/status"
-        editable={false}
-      />
+  if (failed) {
+    return (
+      <p className="py-12 text-center text-muted-foreground">
+        Não foi possível carregar as refeições. Atualize a página para tentar de novo.
+      </p>
+    );
+  }
+  if (!protocol || !meals || !hasDietContent(meals)) redirect("/aluno/dieta/plano");
 
-      {!protocol ? (
-        <p className="py-12 text-center text-muted-foreground">
-          Seu profissional ainda não cadastrou um protocolo alimentar.
-        </p>
-      ) : failed ? (
-        <p className="py-12 text-center text-muted-foreground">
-          Não foi possível carregar as refeições. Atualize a página para tentar de novo.
-        </p>
-      ) : !meals?.length ? (
-        <p className="py-12 text-center text-muted-foreground">
-          Seu profissional ainda não cadastrou nenhuma refeição.
-        </p>
-      ) : (
-        <DietDayTracker
-          meals={meals}
-          studentId={student.id}
-          startDate={protocol.start_date}
-          today={today}
-          initialLogs={logs}
-          editable={false}
-        />
-      )}
-    </div>
+  return (
+    <DietToday
+      studentId={student.id}
+      protocol={protocol}
+      meals={meals}
+      logs={logs}
+      today={today}
+      actionHref="/aluno/dieta/plano"
+      actionLabel="Ver plano completo"
+    />
   );
 }
