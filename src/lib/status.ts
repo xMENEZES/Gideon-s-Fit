@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/types/database.types";
 import { addDays } from "@/lib/dates";
+import { formatCardioAmount } from "@/lib/cardio";
 
 type Client = SupabaseClient<Database>;
 
@@ -16,9 +17,20 @@ export type WorkoutEntry = {
   date: string;
   day: string;
   exercise: string;
-  weight_kg: number;
+  // Musculação registra carga; cardio registra duração e/ou distância (carga nula).
+  weight_kg: number | null;
   reps_done: number | null;
+  duration_minutes: number | null;
+  distance_km: number | null;
 };
+
+// "Supino: 30 kg x 10" ou "Corrida: 32 min, 5 km".
+export function describeWorkoutEntry(entry: WorkoutEntry): string {
+  if (entry.weight_kg != null) {
+    return `${entry.exercise}: ${entry.weight_kg} kg${entry.reps_done ? ` x ${entry.reps_done}` : ""}`;
+  }
+  return `${entry.exercise}: ${formatCardioAmount(entry.duration_minutes, entry.distance_km)}`;
+}
 
 export type MealRow = {
   id: string;
@@ -52,7 +64,7 @@ export async function loadWorkoutEntries(supabase: Client, protocolIds: string[]
 
   const { data } = await supabase
     .from("workout_days")
-    .select("protocol_id, name, exercises(name, exercise_load_logs(logged_at, weight_kg, reps_done))")
+    .select("protocol_id, name, exercises(name, exercise_load_logs(logged_at, weight_kg, reps_done, duration_minutes, distance_km))")
     .in("protocol_id", protocolIds);
 
   for (const day of data ?? []) {
@@ -63,8 +75,10 @@ export async function loadWorkoutEntries(supabase: Client, protocolIds: string[]
           date: log.logged_at,
           day: day.name,
           exercise: exercise.name,
-          weight_kg: Number(log.weight_kg),
+          weight_kg: log.weight_kg == null ? null : Number(log.weight_kg),
           reps_done: log.reps_done,
+          duration_minutes: log.duration_minutes,
+          distance_km: log.distance_km == null ? null : Number(log.distance_km),
         });
       }
     }

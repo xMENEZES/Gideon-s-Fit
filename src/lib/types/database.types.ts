@@ -4,6 +4,7 @@
 
 export type UserRole = "admin" | "trainer" | "student" | "standard";
 export type ProtocolType = "workout" | "diet";
+export type ExerciseKind = "strength" | "cardio";
 export type JoinRequestStatus = "pending" | "approved" | "rejected";
 
 export interface Database {
@@ -161,10 +162,13 @@ export interface Database {
           id: string;
           workout_day_id: string;
           name: string;
-          sets: number;
-          reps: string;
+          kind: ExerciseKind;
+          sets: number | null;
+          reps: string | null;
           rest_seconds: number;
           recommended_load_kg: number | null;
+          target_minutes: number | null;
+          target_distance_km: number | null;
           video_url: string | null;
           notes: string | null;
           sort_order: number;
@@ -174,10 +178,13 @@ export interface Database {
           id?: string;
           workout_day_id: string;
           name: string;
-          sets: number;
-          reps: string;
+          kind?: ExerciseKind;
+          sets?: number | null;
+          reps?: string | null;
           rest_seconds?: number;
           recommended_load_kg?: number | null;
+          target_minutes?: number | null;
+          target_distance_km?: number | null;
           video_url?: string | null;
           notes?: string | null;
           sort_order?: number;
@@ -185,10 +192,12 @@ export interface Database {
         };
         Update: Partial<{
           name: string;
-          sets: number;
-          reps: string;
+          sets: number | null;
+          reps: string | null;
           rest_seconds: number;
           recommended_load_kg: number | null;
+          target_minutes: number | null;
+          target_distance_km: number | null;
           video_url: string | null;
           notes: string | null;
           sort_order: number;
@@ -208,8 +217,10 @@ export interface Database {
           id: string;
           exercise_id: string;
           logged_at: string;
-          weight_kg: number;
+          weight_kg: number | null;
           reps_done: number | null;
+          duration_minutes: number | null;
+          distance_km: number | null;
           notes: string | null;
           created_by: string;
           created_at: string;
@@ -218,16 +229,20 @@ export interface Database {
           id?: string;
           exercise_id: string;
           logged_at?: string;
-          weight_kg: number;
+          weight_kg?: number | null;
           reps_done?: number | null;
+          duration_minutes?: number | null;
+          distance_km?: number | null;
           notes?: string | null;
           created_by: string;
           created_at?: string;
         };
         Update: Partial<{
           logged_at: string;
-          weight_kg: number;
+          weight_kg: number | null;
           reps_done: number | null;
+          duration_minutes: number | null;
+          distance_km: number | null;
           notes: string | null;
         }>;
         Relationships: [

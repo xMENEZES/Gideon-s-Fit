@@ -2,6 +2,7 @@
 
 import { revalidateModule } from "@/lib/actions/revalidate";
 import { createClient } from "@/lib/supabase/server";
+import { todayBR } from "@/lib/dates";
 import {
   startProtocolSchema,
   updateProtocolNotesSchema,
@@ -26,6 +27,8 @@ export async function startNewProtocol(
     p_type: type,
     p_end_date: parsed.data.endDate,
     p_duplicate: parsed.data.duplicate,
+    // O banco usa UTC: sem isto, o protocolo criado à noite começaria "amanhã".
+    p_start_date: todayBR(),
   });
 
   if (error || !data) {

@@ -2,8 +2,11 @@ import { describe, expect, it } from "vitest";
 import {
   buildMealRangeStatus,
   buildMealStatus,
+  buildWorkoutStatus,
+  describeWorkoutEntry,
   type MealRow,
   type ProtocolPeriod,
+  type WorkoutEntry,
 } from "@/lib/status";
 
 const TODAY = "2026-10-10";
@@ -166,5 +169,47 @@ describe("buildMealRangeStatus (intervalo livre)", () => {
     expect(status.closedDays).toBe(0);
     expect(status.expectedTotal).toBe(0);
     expect(status.days).toHaveLength(1);
+  });
+});
+
+describe("treino com cardio", () => {
+  const strength = (date: string): WorkoutEntry => ({
+    date, day: "Treino A", exercise: "Supino", weight_kg: 30, reps_done: 10, duration_minutes: null, distance_km: null,
+  });
+  const cardio = (date: string, minutes: number | null, km: number | null): WorkoutEntry => ({
+    date, day: "Treino A", exercise: "Corrida", weight_kg: null, reps_done: null, duration_minutes: minutes, distance_km: km,
+  });
+  const workoutPeriod = (): ProtocolPeriod => ({
+    id: "w1", type: "workout", start_date: "2026-10-07", end_date: "2026-11-06", is_active: true,
+  });
+
+  it("descreve a carga e a sessão de cardio", () => {
+    expect(describeWorkoutEntry(strength("2026-10-08"))).toBe("Supino: 30 kg x 10");
+    expect(describeWorkoutEntry({ ...strength("2026-10-08"), reps_done: null })).toBe("Supino: 30 kg");
+    expect(describeWorkoutEntry(cardio("2026-10-08", 32, 5))).toBe("Corrida: 32 min, 5 km");
+    expect(describeWorkoutEntry(cardio("2026-10-08", null, 3.5))).toBe("Corrida: 3,5 km");
+    expect(describeWorkoutEntry(cardio("2026-10-08", 90, null))).toBe("Corrida: 1 h 30 min");
+  });
+
+  it("um dia só com cardio conta como treinado", () => {
+    const status = buildWorkoutStatus(workoutPeriod(), TODAY, [cardio("2026-10-08", 30, null)]);
+    expect(status.trainedCount).toBe(1);
+  });
+
+  it("musculação e cardio no mesmo dia contam uma vez, com as duas entradas", () => {
+    const status = buildWorkoutStatus(workoutPeriod(), TODAY, [
+      strength("2026-10-08"),
+      cardio("2026-10-08", 30, 5),
+    ]);
+    expect(status.trainedCount).toBe(1);
+    expect(status.entriesByDate.get("2026-10-08")).toHaveLength(2);
+  });
+
+  it("cardio e musculação em dias diferentes contam dois dias", () => {
+    const status = buildWorkoutStatus(workoutPeriod(), TODAY, [
+      cardio("2026-10-08", 30, null),
+      strength("2026-10-09"),
+    ]);
+    expect(status.trainedCount).toBe(2);
   });
 });

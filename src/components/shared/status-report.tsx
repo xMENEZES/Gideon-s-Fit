@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { ChevronDown } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { addDays, isIsoDate, todayBR } from "@/lib/dates";
 import {
+  describeWorkoutEntry,
   buildMealRangeStatus,
   buildMealStatus,
   buildWorkoutRangeStatus,
@@ -162,28 +164,39 @@ function WorkoutSection({
               })}
             </div>
             <p className="text-xs text-muted-foreground">
-              Um dia conta como treinado quando há carga registrada nele.
+              Um dia conta como treinado quando há exercício registrado nele (carga ou sessão de cardio).
             </p>
           </div>
 
           {trainedDates.length > 0 && (
             <div className="flex flex-col gap-2">
               <p className="text-sm font-medium">Dias treinados</p>
-              {trainedDates.map((date) => (
-                <div key={date} className="flex flex-col gap-1.5 rounded-lg border border-border px-3 py-2">
-                  <p className="text-sm font-medium">
-                    {weekday(date)}, {formatDate(date)}
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {status.entriesByDate.get(date)!.map((entry, index) => (
-                      <Badge key={index} variant="secondary" className="font-normal">
-                        {entry.exercise}: {entry.weight_kg} kg
-                        {entry.reps_done ? ` x ${entry.reps_done}` : ""}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              ))}
+              {trainedDates.map((date, position) => {
+                const entries = status.entriesByDate.get(date)!;
+                const exercises = new Set(entries.map((entry) => entry.exercise)).size;
+                return (
+                  // Dia recolhível: só o mais recente vem aberto, para a lista não crescer sem limite.
+                  <details key={date} open={position === 0} className="group rounded-lg border border-border">
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-3 py-2 [&::-webkit-details-marker]:hidden">
+                      <span className="whitespace-nowrap text-sm font-medium">
+                        {weekday(date)}, {formatDate(date)}
+                      </span>
+                      <span className="flex items-center gap-1.5 text-right text-xs text-muted-foreground">
+                        {exercises} {exercises === 1 ? "exercício" : "exercícios"} · {entries.length}{" "}
+                        {entries.length === 1 ? "registro" : "registros"}
+                        <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
+                      </span>
+                    </summary>
+                    <div className="flex flex-wrap gap-1.5 px-3 pb-2">
+                      {entries.map((entry, index) => (
+                        <Badge key={index} variant="secondary" className="font-normal">
+                          {describeWorkoutEntry(entry)}
+                        </Badge>
+                      ))}
+                    </div>
+                  </details>
+                );
+              })}
             </div>
           )}
         </>

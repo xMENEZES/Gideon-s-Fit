@@ -10,6 +10,7 @@ import {
   type ExerciseInput,
   type ExerciseFormInput,
 } from "@/lib/validations/workout.schema";
+import type { ExerciseKind } from "@/lib/types/database.types";
 import { updateExercise } from "@/lib/actions/workouts";
 import { Button } from "@/components/ui/button";
 import { ExerciseFormFields } from "@/components/shared/exercise-form-fields";
@@ -25,26 +26,41 @@ import {
 export type EditableExercise = {
   id: string;
   name: string;
-  sets: number;
-  reps: string;
+  kind: ExerciseKind;
+  sets: number | null;
+  reps: string | null;
   rest_seconds: number;
   recommended_load_kg: number | null;
+  target_minutes: number | null;
+  target_distance_km: number | null;
   video_url: string | null;
   notes: string | null;
 };
 
 function toFormValues(exercise: EditableExercise): ExerciseFormInput {
-  return {
+  const common = {
+    kind: exercise.kind,
     name: exercise.name,
-    sets: exercise.sets,
-    reps: exercise.reps,
-    restSeconds: exercise.rest_seconds,
-    recommendedLoadKg: exercise.recommended_load_kg ?? "",
     videoUrl: exercise.video_url ?? "",
     notes: exercise.notes ?? "",
   };
+  if (exercise.kind === "cardio") {
+    return {
+      ...common,
+      targetMinutes: exercise.target_minutes ?? "",
+      targetDistanceKm: exercise.target_distance_km ?? "",
+    };
+  }
+  return {
+    ...common,
+    sets: exercise.sets ?? "",
+    reps: exercise.reps ?? "",
+    restSeconds: exercise.rest_seconds,
+    recommendedLoadKg: exercise.recommended_load_kg ?? "",
+  };
 }
 
+// O tipo (musculação ou cardio) não muda depois de criado; só os dados do exercício.
 export function EditExerciseDialog({
   studentId,
   exercise,
@@ -53,8 +69,11 @@ export function EditExerciseDialog({
   exercise: EditableExercise;
 }) {
   const [open, setOpen] = useState(false);
+  // Remonta o menu de atividades a cada abertura, para ler o nome atual.
+  const [activityKey, setActivityKey] = useState(0);
   const {
     register,
+    control,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
@@ -64,7 +83,10 @@ export function EditExerciseDialog({
   });
 
   function handleOpenChange(next: boolean) {
-    if (next) reset(toFormValues(exercise));
+    if (next) {
+      reset(toFormValues(exercise));
+      setActivityKey((key) => key + 1);
+    }
     setOpen(next);
   }
 
@@ -94,10 +116,18 @@ export function EditExerciseDialog({
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Editar exercício</DialogTitle>
+          <DialogTitle>
+            {exercise.kind === "cardio" ? "Editar exercício de cardio" : "Editar exercício"}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-          <ExerciseFormFields register={register} errors={errors} />
+          <ExerciseFormFields
+            kind={exercise.kind}
+            register={register}
+            control={control}
+            errors={errors}
+            activityKey={activityKey}
+          />
           <DialogFooter>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? "Salvando..." : "Salvar"}

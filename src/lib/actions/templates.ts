@@ -179,6 +179,7 @@ export async function applyToStudents(
       p_source_protocol_id: sourceProtocolId,
       p_student_id: studentId,
       p_end_date: endDate,
+      p_start_date: todayBR(),
     });
     if (error) {
       console.error("applyToStudents falhou:", error.message);
@@ -228,6 +229,7 @@ export async function startFromSource(
     p_source_protocol_id: sourceProtocolId,
     p_student_id: studentId,
     p_end_date: endDate,
+    p_start_date: todayBR(),
   });
   if (error || !data) {
     console.error("startFromSource falhou:", error?.message ?? "sem retorno");

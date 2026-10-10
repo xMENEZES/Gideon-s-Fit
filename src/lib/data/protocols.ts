@@ -19,7 +19,7 @@ export async function loadActiveWorkout(supabase: Client, studentId: string) {
   const { data, error } = await supabase
     .from("protocols")
     .select(
-      "id, start_date, end_date, notes, workout_days(id, name, sort_order, exercises(id, name, sets, reps, rest_seconds, recommended_load_kg, video_url, notes, sort_order, exercise_load_logs(logged_at, weight_kg)))"
+      "id, start_date, end_date, notes, workout_days(id, name, sort_order, exercises(id, name, kind, sets, reps, rest_seconds, recommended_load_kg, target_minutes, target_distance_km, video_url, notes, sort_order, exercise_load_logs(logged_at, weight_kg, duration_minutes, distance_km)))"
     )
     .eq("student_id", studentId)
     .eq("type", "workout")

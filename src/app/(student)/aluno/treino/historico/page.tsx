@@ -44,7 +44,7 @@ export default async function AlunoTreinoHistoricoPage() {
       const { data: days } = await supabase
         .from("workout_days")
         .select(
-          "id, name, exercises(id, name, sets, reps, rest_seconds, recommended_load_kg, video_url, notes, exercise_load_logs(logged_at, weight_kg))"
+          "id, name, exercises(id, name, kind, sets, reps, rest_seconds, recommended_load_kg, target_minutes, target_distance_km, video_url, notes, exercise_load_logs(logged_at, weight_kg, duration_minutes, distance_km))"
         )
         .eq("protocol_id", protocol.id)
         .order("sort_order", { ascending: true })
