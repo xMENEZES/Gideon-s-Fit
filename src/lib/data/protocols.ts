@@ -48,7 +48,7 @@ export async function loadActiveDiet(
   logs?: { from: string; to: string }
 ) {
   const itemsSelect =
-    "meal_options(id, label, sort_order, meal_items(id, food_name, quantity, unit, notes, sort_order))";
+    "meal_options(id, label, sort_order, meal_items(id, food_name, quantity, unit, notes, choice_group, sort_order))";
 
   const query = supabase
     .from("protocols")

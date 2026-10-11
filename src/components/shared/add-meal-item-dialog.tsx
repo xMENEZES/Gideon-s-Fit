@@ -27,9 +27,12 @@ import {
 export function AddMealItemDialog({
   studentId,
   mealOptionId,
+  groups = [],
 }: {
   studentId: string;
   mealOptionId: string;
+  // Grupos de alternativas já usados nesta opção (sugestão ao digitar).
+  groups?: string[];
 }) {
   const [open, setOpen] = useState(false);
   // Remonta o menu de unidades quando o formulário é reiniciado.
@@ -103,6 +106,29 @@ export function AddMealItemDialog({
           <div className="flex flex-col gap-2">
             <Label htmlFor="notes">Observações (opcional)</Label>
             <Input id="notes" {...register("notes")} />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="choiceGroup">Grupo de alternativas (opcional)</Label>
+            <Input
+              id="choiceGroup"
+              list="choice-group-options"
+              maxLength={40}
+              placeholder="Ex.: Proteína"
+              autoComplete="off"
+              {...register("choiceGroup")}
+            />
+            <datalist id="choice-group-options">
+              {groups.map((group) => (
+                <option key={group} value={group} />
+              ))}
+            </datalist>
+            <p className="text-xs text-muted-foreground">
+              Alimentos da mesma opção com o mesmo grupo viram alternativas (&quot;escolha 1&quot;) e
+              aparecem juntos, lado a lado.
+            </p>
+            {errors.choiceGroup && (
+              <p className="text-sm text-destructive">{errors.choiceGroup.message}</p>
+            )}
           </div>
           <DialogFooter>
             <Button type="submit" disabled={isSubmitting}>

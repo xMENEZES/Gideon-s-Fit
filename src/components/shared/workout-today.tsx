@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { IncentiveBanner } from "@/components/shared/incentive-banner";
 import { TodayHeader } from "@/components/shared/today-header";
 import { WorkoutDaysTabs } from "@/components/shared/workout-days-tabs";
 import type { WorkoutDayWithExercises } from "@/components/shared/workout-day-card";
@@ -7,6 +9,8 @@ import { shortDate, suggestWorkoutDay } from "@/lib/today";
 // edição, só o registro de carga e o cronômetro de descanso.
 export function WorkoutToday({
   studentId,
+  trainerId,
+  nickname,
   protocol,
   days,
   today,
@@ -14,6 +18,9 @@ export function WorkoutToday({
   actionLabel,
 }: {
   studentId: string;
+  // Profissional do time (mensagens de incentivo dele); nulo no plano próprio.
+  trainerId: string | null;
+  nickname?: string | null;
   protocol: { end_date: string };
   days: WorkoutDayWithExercises[];
   today: string;
@@ -44,6 +51,16 @@ export function WorkoutToday({
       >
         {hint && <p className="text-sm">{hint}</p>}
       </TodayHeader>
+
+      <Suspense fallback={null}>
+        <IncentiveBanner
+          studentId={studentId}
+          trainerId={trainerId}
+          nickname={nickname}
+          module="workout"
+          today={today}
+        />
+      </Suspense>
 
       <WorkoutDaysTabs
         days={days}

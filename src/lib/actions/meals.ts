@@ -153,6 +153,7 @@ export async function createMealItem(
     quantity: parsed.data.quantity,
     unit: parsed.data.unit,
     notes: parsed.data.notes || null,
+    choice_group: parsed.data.choiceGroup || null,
   });
 
   if (error) return { error: quotaMessage(error) ?? "Não foi possível adicionar o item." };
@@ -173,6 +174,7 @@ export async function updateMealItem(studentId: string, mealItemId: string, inpu
       quantity: parsed.data.quantity,
       unit: parsed.data.unit,
       notes: parsed.data.notes || null,
+      choice_group: parsed.data.choiceGroup || null,
     })
     .eq("id", mealItemId)
     .select("id");

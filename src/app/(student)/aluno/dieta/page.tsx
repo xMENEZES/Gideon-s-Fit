@@ -39,6 +39,8 @@ export default async function AlunoDietaPage() {
   return (
     <DietToday
       studentId={student.id}
+      trainerId={student.trainer_id}
+      nickname={student.nickname}
       protocol={protocol}
       meals={meals}
       logs={logs}

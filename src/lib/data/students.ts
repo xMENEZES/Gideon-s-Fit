@@ -13,7 +13,7 @@ export const getOwnTeamStudent = cache(async () => {
   const supabase = await createClient();
   const { data } = await supabase
     .from("students")
-    .select("id, has_workout, has_diet")
+    .select("id, trainer_id, nickname, has_workout, has_diet")
     .eq("profile_id", userId)
     .neq("trainer_id", userId)
     .maybeSingle();

@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { BarChart3, BellRing, LayoutTemplate, Users } from "lucide-react";
+import { BarChart3, BellRing, LayoutTemplate, MessageSquareQuote, Users } from "lucide-react";
 import { getProfile } from "@/lib/auth/session";
 import { ONBOARDING_PATH, roleHome } from "@/lib/auth/roles";
 import { TopBar } from "@/components/shared/top-bar";
@@ -35,6 +35,10 @@ export default async function TrainerLayout({
         <NavLink href="/dashboard/modelos">
           <LayoutTemplate className="hidden size-4 sm:block" />
           Modelos
+        </NavLink>
+        <NavLink href="/dashboard/mensagens">
+          <MessageSquareQuote className="hidden size-4 sm:block" />
+          Mensagens
         </NavLink>
         <NavLink href="/dashboard/alertas">
           <BellRing className="hidden size-4 sm:block" />

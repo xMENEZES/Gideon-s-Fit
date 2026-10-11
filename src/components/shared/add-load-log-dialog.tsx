@@ -74,10 +74,6 @@ export function AddLoadLogDialog({
               <Input id="repsDone" type="number" min={0} {...register("repsDone")} />
             </div>
           </div>
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="loggedAt">Data</Label>
-            <Input id="loggedAt" type="date" {...register("loggedAt")} />
-          </div>
           <DialogFooter>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? "Salvando..." : "Salvar"}

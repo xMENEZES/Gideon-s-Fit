@@ -34,6 +34,8 @@ export default async function AlunoTreinoPage() {
   return (
     <WorkoutToday
       studentId={student.id}
+      trainerId={student.trainer_id}
+      nickname={student.nickname}
       protocol={protocol}
       days={days}
       today={todayBR()}

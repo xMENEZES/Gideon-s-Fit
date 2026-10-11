@@ -149,8 +149,9 @@ export async function createLoadLog(
     exercise_id: exerciseId,
     weight_kg: parsed.data.weightKg,
     reps_done: parsed.data.repsDone ?? null,
-    // Sem data escolhida, vale o dia de Brasília (o banco usa UTC e viraria o dia às 21h).
-    logged_at: parsed.data.loggedAt || todayBR(),
+    // Sempre hoje, no dia de Brasília (o banco usa UTC e viraria o dia às 21h). A data não vem
+    // do cliente: o histórico de treino não aceita datas passadas nem futuras.
+    logged_at: todayBR(),
     notes: parsed.data.notes || null,
     created_by: user.id,
   });
@@ -182,8 +183,9 @@ export async function createCardioLog(
     exercise_id: exerciseId,
     duration_minutes: parsed.data.durationMinutes ?? null,
     distance_km: parsed.data.distanceKm ?? null,
-    // Sem data escolhida, vale o dia de Brasília (o banco usa UTC e viraria o dia às 21h).
-    logged_at: parsed.data.loggedAt || todayBR(),
+    // Sempre hoje, no dia de Brasília (o banco usa UTC e viraria o dia às 21h). A data não vem
+    // do cliente: o histórico de treino não aceita datas passadas nem futuras.
+    logged_at: todayBR(),
     notes: parsed.data.notes || null,
     created_by: user.id,
   });

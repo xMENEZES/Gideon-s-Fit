@@ -79,10 +79,6 @@ export function AddCardioLogDialog({
             <p className="text-sm text-destructive">{errors.distanceKm.message}</p>
           )}
           <div className="flex flex-col gap-2">
-            <Label htmlFor="loggedAt">Data</Label>
-            <Input id="loggedAt" type="date" {...register("loggedAt")} />
-          </div>
-          <div className="flex flex-col gap-2">
             <Label htmlFor="notes">Observações (opcional)</Label>
             <Input id="notes" {...register("notes")} />
             {errors.notes && <p className="text-sm text-destructive">{errors.notes.message}</p>}

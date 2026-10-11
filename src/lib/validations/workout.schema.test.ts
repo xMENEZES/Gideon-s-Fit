@@ -117,13 +117,20 @@ describe("loadLogSchema (musculação)", () => {
     expect(loadLogSchema.safeParse({ weightKg: "20" }).success).toBe(true);
     expect(loadLogSchema.safeParse({ weightKg: "0" }).success).toBe(true);
   });
+
+  it("ignora uma data enviada: o registro vale sempre para hoje", () => {
+    const load = loadLogSchema.safeParse({ weightKg: "20", loggedAt: "2020-01-01" });
+    expect(load.success && "loggedAt" in load.data).toBe(false);
+    const cardio = cardioLogSchema.safeParse({ durationMinutes: "20", loggedAt: "2099-01-01" });
+    expect(cardio.success && "loggedAt" in cardio.data).toBe(false);
+  });
 });
 
 describe("cardioLogSchema (sessão de cardio)", () => {
   it("aceita duração, distância ou os dois", () => {
     expect(cardioLogSchema.safeParse({ durationMinutes: "32" }).success).toBe(true);
     expect(cardioLogSchema.safeParse({ distanceKm: "5" }).success).toBe(true);
-    const both = cardioLogSchema.safeParse({ durationMinutes: "32", distanceKm: "5.2", loggedAt: "2026-10-09" });
+    const both = cardioLogSchema.safeParse({ durationMinutes: "32", distanceKm: "5.2" });
     expect(both.success && both.data).toMatchObject({ durationMinutes: 32, distanceKm: 5.2 });
   });
 

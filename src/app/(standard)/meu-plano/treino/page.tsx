@@ -34,6 +34,7 @@ export default async function MeuTreinoPage() {
   return (
     <WorkoutToday
       studentId={studentId}
+      trainerId={null}
       protocol={protocol}
       days={days}
       today={todayBR()}

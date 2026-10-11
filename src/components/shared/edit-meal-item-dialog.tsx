@@ -30,6 +30,7 @@ export type EditableMealItem = {
   quantity: number;
   unit: string;
   notes: string | null;
+  choice_group: string | null;
 };
 
 function toFormValues(item: EditableMealItem): MealItemFormInput {
@@ -38,15 +39,19 @@ function toFormValues(item: EditableMealItem): MealItemFormInput {
     quantity: item.quantity,
     unit: item.unit,
     notes: item.notes ?? "",
+    choiceGroup: item.choice_group ?? "",
   };
 }
 
 export function EditMealItemDialog({
   studentId,
   item,
+  groups = [],
 }: {
   studentId: string;
   item: EditableMealItem;
+  // Grupos de alternativas já usados nesta opção (sugestão ao digitar).
+  groups?: string[];
 }) {
   const [open, setOpen] = useState(false);
   // Remonta o menu de unidades a cada abertura, para ler a unidade atual do item.
@@ -136,6 +141,29 @@ export function EditMealItemDialog({
             <Label htmlFor="notes">Observações (opcional)</Label>
             <Input id="notes" {...register("notes")} />
             {errors.notes && <p className="text-sm text-destructive">{errors.notes.message}</p>}
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="choiceGroup">Grupo de alternativas (opcional)</Label>
+            <Input
+              id="choiceGroup"
+              list="choice-group-options"
+              maxLength={40}
+              placeholder="Ex.: Proteína"
+              autoComplete="off"
+              {...register("choiceGroup")}
+            />
+            <datalist id="choice-group-options">
+              {groups.map((group) => (
+                <option key={group} value={group} />
+              ))}
+            </datalist>
+            <p className="text-xs text-muted-foreground">
+              Alimentos da mesma opção com o mesmo grupo viram alternativas (&quot;escolha 1&quot;) e
+              aparecem juntos, lado a lado.
+            </p>
+            {errors.choiceGroup && (
+              <p className="text-sm text-destructive">{errors.choiceGroup.message}</p>
+            )}
           </div>
           <DialogFooter>
             <Button type="submit" disabled={isSubmitting}>

@@ -5,7 +5,8 @@
 export type UserRole = "admin" | "trainer" | "student" | "standard";
 export type ProtocolType = "workout" | "diet";
 export type ExerciseKind = "strength" | "cardio";
-export type JoinRequestStatus = "pending" | "approved" | "rejected";
+export type IncentiveEvent = "workout" | "diet" | "day" | "streak";
+export type JoinRequestStatus ="pending" | "approved" | "rejected";
 
 export interface Database {
   public: {
@@ -324,6 +325,7 @@ export interface Database {
           quantity: number;
           unit: string;
           notes: string | null;
+          choice_group: string | null;
           sort_order: number;
           created_at: string;
         };
@@ -334,6 +336,7 @@ export interface Database {
           quantity: number;
           unit: string;
           notes?: string | null;
+          choice_group?: string | null;
           sort_order?: number;
           created_at?: string;
         };
@@ -342,6 +345,7 @@ export interface Database {
           quantity: number;
           unit: string;
           notes: string | null;
+          choice_group: string | null;
           sort_order: number;
         }>;
         Relationships: [
@@ -448,6 +452,37 @@ export interface Database {
             columns: ["meal_id"];
             isOneToOne: false;
             referencedRelation: "meals";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      incentive_messages: {
+        Row: {
+          id: string;
+          owner_id: string | null;
+          event: IncentiveEvent;
+          body: string;
+          active: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          owner_id: string | null;
+          event: IncentiveEvent;
+          body: string;
+          active?: boolean;
+          created_at?: string;
+        };
+        Update: Partial<{
+          body: string;
+          active: boolean;
+        }>;
+        Relationships: [
+          {
+            foreignKeyName: "incentive_messages_owner_id_fkey";
+            columns: ["owner_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
             referencedColumns: ["id"];
           },
         ];

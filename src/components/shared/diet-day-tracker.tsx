@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 import { addDays } from "@/lib/dates";
+import { nextPendingMealId } from "@/lib/meal-flow";
 import { Button } from "@/components/ui/button";
-import { MealCard, type MealWithOptions } from "@/components/shared/meal-card";
-import { MealLogControls, type MealLogValue } from "@/components/shared/meal-log-controls";
+import type { MealWithOptions } from "@/components/shared/meal-card";
+import { TrackedMealCard, type MealLogValue } from "@/components/shared/meal-log-controls";
 
 export type InitialMealLog = {
   meal_id: string;
@@ -52,6 +53,12 @@ export function DietDayTracker({
   );
   const selected = dates.includes(date) ? date : today;
 
+  // Refeições com registro ficam recolhidas na tela diária; as que a pessoa reabriu à mão ficam
+  // aqui. Na edição do plano nada é recolhido.
+  const [reopened, setReopened] = useState<Record<string, boolean>>({});
+  // Pedido de rolagem depois de marcar uma refeição ("top" = voltar ao início da página).
+  const [scrollRequest, setScrollRequest] = useState<{ id: string; seq: number } | null>(null);
+
   const doneCount = meals.filter((meal) => logs[`${meal.id}|${selected}`]?.done === true).length;
   const missedCount = meals.filter((meal) => logs[`${meal.id}|${selected}`]?.done === false).length;
 
@@ -64,6 +71,43 @@ export function DietDayTracker({
       return next;
     });
   }
+
+  // Marcou "Fiz": mostra a próxima refeição pendente no topo (ou volta ao início se acabaram).
+  // Marcou "Não fiz": mantém esta barra no topo, com a anotação do motivo à vista e a próxima
+  // refeição logo abaixo.
+  function handleChange(mealId: string, value: MealLogValue | null) {
+    updateLog(mealId, value);
+    if (!value) return;
+    const key = `${mealId}|${selected}`;
+    setReopened((current) => ({ ...current, [key]: false }));
+    if (editable) return;
+    const id = value.done ? `next:${mealId}` : mealId;
+    setScrollRequest((current) => ({ id, seq: (current?.seq ?? 0) + 1 }));
+  }
+
+  const scrollTo = useEffectEvent((request: { id: string }) => {
+    let targetId: string | null = request.id;
+    if (request.id.startsWith("next:")) {
+      const from = request.id.slice(5);
+      targetId = nextPendingMealId(
+        meals.map((meal) => meal.id),
+        (id) => logs[`${id}|${selected}`] !== undefined,
+        from
+      );
+    }
+    const element = targetId ? document.getElementById(`meal-${targetId}`) : null;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const behavior = reduceMotion ? "auto" : "smooth";
+    if (element) element.scrollIntoView({ block: "start", behavior });
+    else window.scrollTo({ top: 0, behavior });
+  });
+
+  useEffect(() => {
+    if (!scrollRequest) return;
+    // Espera o cartão encolher (layout novo) antes de rolar.
+    const frame = requestAnimationFrame(() => scrollTo(scrollRequest));
+    return () => cancelAnimationFrame(frame);
+  }, [scrollRequest]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -89,19 +133,24 @@ export function DietDayTracker({
 
       <div className="flex flex-col gap-4">
         {meals.map((meal) => (
-          <MealCard
-            key={meal.id}
+          <TrackedMealCard
+            // A chave inclui o dia: trocar de dia reinicia o rascunho da anotação.
+            key={`${meal.id}|${selected}`}
             meal={meal}
             studentId={studentId}
             editable={editable}
-            tracking={
-              <MealLogControls
-                key={`${meal.id}|${selected}`}
-                mealId={meal.id}
-                date={selected}
-                value={logs[`${meal.id}|${selected}`] ?? null}
-                onChange={(value) => updateLog(meal.id, value)}
-              />
+            date={selected}
+            value={logs[`${meal.id}|${selected}`] ?? null}
+            onChange={(value) => handleChange(meal.id, value)}
+            collapsed={!editable && !reopened[`${meal.id}|${selected}`]}
+            onToggleCollapsed={
+              editable
+                ? undefined
+                : () =>
+                    setReopened((current) => ({
+                      ...current,
+                      [`${meal.id}|${selected}`]: !current[`${meal.id}|${selected}`],
+                    }))
             }
           />
         ))}

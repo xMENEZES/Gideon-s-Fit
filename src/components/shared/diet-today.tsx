@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { IncentiveBanner } from "@/components/shared/incentive-banner";
 import { DietDayTracker, type InitialMealLog } from "@/components/shared/diet-day-tracker";
 import type { MealWithOptions } from "@/components/shared/meal-card";
 import { TodayHeader } from "@/components/shared/today-header";
@@ -6,6 +8,8 @@ import { TodayHeader } from "@/components/shared/today-header";
 // 3 dias anteriores, para quem esqueceu de marcar), sem botões de edição.
 export function DietToday({
   studentId,
+  trainerId,
+  nickname,
   protocol,
   meals,
   logs,
@@ -14,6 +18,9 @@ export function DietToday({
   actionLabel,
 }: {
   studentId: string;
+  // Profissional do time (mensagens de incentivo dele); nulo no plano próprio.
+  trainerId: string | null;
+  nickname?: string | null;
   protocol: { start_date: string; end_date: string };
   meals: MealWithOptions[];
   logs: InitialMealLog[];
@@ -30,6 +37,15 @@ export function DietToday({
         actionHref={actionHref}
         actionLabel={actionLabel}
       />
+      <Suspense fallback={null}>
+        <IncentiveBanner
+          studentId={studentId}
+          trainerId={trainerId}
+          nickname={nickname}
+          module="diet"
+          today={today}
+        />
+      </Suspense>
       <DietDayTracker
         meals={meals}
         studentId={studentId}

@@ -98,10 +98,10 @@ export const exerciseSchema = z
 export type ExerciseInput = z.infer<typeof exerciseSchema>;
 export type ExerciseFormInput = z.input<typeof exerciseSchema>;
 
+// O registro de carga e de cardio vale sempre para o dia de hoje (Brasília): não há campo de data.
 export const loadLogSchema = z.object({
   weightKg: z.coerce.number().min(0, "Informe a carga em kg"),
   repsDone: z.coerce.number().int().min(0).optional(),
-  loggedAt: z.string().optional(),
   notes: z.string().max(500, "No máximo 500 caracteres").optional(),
 });
 export type LoadLogInput = z.infer<typeof loadLogSchema>;
@@ -127,7 +127,6 @@ export const cardioLogSchema = z
         .max(1000, "Máximo 1000 km")
         .optional()
     ),
-    loggedAt: z.string().optional(),
     notes: z.string().max(500, "No máximo 500 caracteres").optional(),
   })
   .refine((value) => value.durationMinutes !== undefined || value.distanceKm !== undefined, {

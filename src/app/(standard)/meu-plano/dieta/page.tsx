@@ -38,6 +38,7 @@ export default async function MinhaDietaPage() {
   return (
     <DietToday
       studentId={studentId}
+      trainerId={null}
       protocol={protocol}
       meals={meals}
       logs={logs}

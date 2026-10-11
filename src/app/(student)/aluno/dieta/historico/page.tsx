@@ -44,7 +44,7 @@ export default async function AlunoDietaHistoricoPage() {
       const { data: meals } = await supabase
         .from("meals")
         .select(
-          "id, name, suggested_time, meal_options(id, label, sort_order, meal_items(id, food_name, quantity, unit, notes, sort_order))"
+          "id, name, suggested_time, meal_options(id, label, sort_order, meal_items(id, food_name, quantity, unit, notes, choice_group, sort_order))"
         )
         .eq("protocol_id", protocol.id)
         .order("sort_order", { ascending: true })

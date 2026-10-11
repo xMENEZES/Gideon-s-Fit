@@ -19,6 +19,8 @@ export const mealItemSchema = z.object({
   quantity: z.coerce.number().min(0, "Informe a quantidade"),
   unit: z.string().trim().min(1, "Escolha a unidade").max(30, "No máximo 30 caracteres"),
   notes: z.string().max(500, "No máximo 500 caracteres").optional(),
+  // Alternativas entre si ("escolha 1"): itens da mesma opção com o mesmo grupo.
+  choiceGroup: z.string().trim().max(40, "No máximo 40 caracteres").optional(),
 });
 export type MealItemInput = z.infer<typeof mealItemSchema>;
 export type MealItemFormInput = z.input<typeof mealItemSchema>;
