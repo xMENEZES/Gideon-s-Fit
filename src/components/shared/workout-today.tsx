@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { IncentiveBanner } from "@/components/shared/incentive-banner";
+import { SealStrip } from "@/components/shared/seal-strip";
 import { TodayHeader } from "@/components/shared/today-header";
 import { WorkoutDaysTabs } from "@/components/shared/workout-days-tabs";
 import type { WorkoutDayWithExercises } from "@/components/shared/workout-day-card";
@@ -50,6 +51,9 @@ export function WorkoutToday({
         actionLabel={actionLabel}
       >
         {hint && <p className="text-sm">{hint}</p>}
+        <Suspense fallback={null}>
+          <SealStrip studentId={studentId} lines={["workout", "both"]} />
+        </Suspense>
       </TodayHeader>
 
       <Suspense fallback={null}>

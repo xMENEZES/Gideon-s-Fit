@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { IncentiveBanner } from "@/components/shared/incentive-banner";
+import { SealStrip } from "@/components/shared/seal-strip";
 import { DietDayTracker, type InitialMealLog } from "@/components/shared/diet-day-tracker";
 import type { MealWithOptions } from "@/components/shared/meal-card";
 import { TodayHeader } from "@/components/shared/today-header";
@@ -36,7 +37,11 @@ export function DietToday({
         endDate={protocol.end_date}
         actionHref={actionHref}
         actionLabel={actionLabel}
-      />
+      >
+        <Suspense fallback={null}>
+          <SealStrip studentId={studentId} lines={["diet", "both"]} />
+        </Suspense>
+      </TodayHeader>
       <Suspense fallback={null}>
         <IncentiveBanner
           studentId={studentId}

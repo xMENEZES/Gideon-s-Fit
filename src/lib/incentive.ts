@@ -1,15 +1,17 @@
 // Regras das mensagens de incentivo. Funções puras, testadas em incentive.test.ts.
 import type { IncentiveEvent } from "@/lib/types/database.types";
 
-// Eventos que o profissional pode personalizar. "streak" (sequência) existe no banco e entra
-// na tela de mensagens junto com as sequências.
-export const EDITABLE_EVENTS: IncentiveEvent[] = ["workout", "diet", "day"];
+// Eventos que o profissional pode personalizar.
+export const EDITABLE_EVENTS: IncentiveEvent[] = ["workout", "diet", "day", "streak"];
 
 export const EVENT_LABELS: Record<IncentiveEvent, { title: string; hint: string }> = {
   workout: { title: "Treino concluído", hint: "Quando todos os exercícios do dia de treino foram registrados." },
   diet: { title: "Alimentação concluída", hint: "Quando todas as refeições do dia foram marcadas como feitas." },
   day: { title: "Dia completo", hint: "Quando o treino e a alimentação do dia foram concluídos." },
-  streak: { title: "Sequência", hint: "Quando a pessoa alcança uma sequência de dias." },
+  streak: {
+    title: "Sequência (novo selo)",
+    hint: "Quando a pessoa conquista um selo de sequência (3, 7, 14, 30, 60, 100 e 200 dias). Use {sequencia} para o número de dias.",
+  },
 };
 
 export const MESSAGE_MIN = 3;

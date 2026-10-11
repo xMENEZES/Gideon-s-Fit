@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database, IncentiveEvent } from "@/lib/types/database.types";
+import type { Database, IncentiveEvent, SealLine } from "@/lib/types/database.types";
 import { bodiesFor, dietDayComplete, workoutDayComplete, type DayProgress } from "@/lib/incentive";
 
 type Client = SupabaseClient<Database>;
@@ -55,4 +55,17 @@ export async function loadIncentiveBodies(
     .eq("active", true)
     .order("created_at", { ascending: true });
   return bodiesFor(data ?? [], event, trainerId);
+}
+
+// Selos já conquistados pelo plano (a celebração usa os de hoje; o ícone do topo, o maior de cada linha).
+export async function loadEarnedSeals(
+  supabase: Client,
+  studentId: string
+): Promise<{ line: SealLine; milestone: number; earned_on: string }[]> {
+  const { data } = await supabase
+    .from("achievements")
+    .select("line, milestone, earned_on")
+    .eq("student_id", studentId)
+    .order("milestone", { ascending: true });
+  return data ?? [];
 }

@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidateModule } from "@/lib/actions/revalidate";
 import { quotaMessage } from "@/lib/quota";
 import { todayBR } from "@/lib/dates";
+import { awardSeals } from "@/lib/gamification/award";
 import { exerciseFields } from "@/lib/exercise-row";
 import {
   workoutDaySchema,
@@ -158,6 +159,7 @@ export async function createLoadLog(
 
   if (error) return { error: "Não foi possível registrar a carga." };
 
+  await awardSeals(studentId);
   revalidateModule(studentId, "treino");
   return { success: true };
 }
@@ -192,6 +194,7 @@ export async function createCardioLog(
 
   if (error) return { error: "Não foi possível registrar a sessão." };
 
+  await awardSeals(studentId);
   revalidateModule(studentId, "treino");
   return { success: true };
 }

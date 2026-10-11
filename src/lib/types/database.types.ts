@@ -6,6 +6,8 @@ export type UserRole = "admin" | "trainer" | "student" | "standard";
 export type ProtocolType = "workout" | "diet";
 export type ExerciseKind = "strength" | "cardio";
 export type IncentiveEvent = "workout" | "diet" | "day" | "streak";
+// Linhas de selo: treino, dieta, ou os dois juntos.
+export type SealLine = "workout" | "diet" | "both";
 export type JoinRequestStatus ="pending" | "approved" | "rejected";
 
 export interface Database {
@@ -483,6 +485,68 @@ export interface Database {
             columns: ["owner_id"];
             isOneToOne: false;
             referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      daily_scores: {
+        Row: {
+          student_id: string;
+          score_date: string;
+          workout_done: boolean;
+          diet_done: boolean;
+          updated_at: string;
+        };
+        // Só os gatilhos do banco gravam (o cliente tem apenas leitura).
+        Insert: {
+          student_id: string;
+          score_date: string;
+          workout_done?: boolean;
+          diet_done?: boolean;
+          updated_at?: string;
+        };
+        Update: Partial<{
+          workout_done: boolean;
+          diet_done: boolean;
+          updated_at: string;
+        }>;
+        Relationships: [
+          {
+            foreignKeyName: "daily_scores_student_id_fkey";
+            columns: ["student_id"];
+            isOneToOne: false;
+            referencedRelation: "students";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      achievements: {
+        Row: {
+          id: string;
+          student_id: string;
+          line: SealLine;
+          milestone: number;
+          earned_on: string;
+          created_at: string;
+        };
+        // Só o servidor (service role) grava os selos.
+        Insert: {
+          id?: string;
+          student_id: string;
+          line: SealLine;
+          milestone: number;
+          earned_on: string;
+          created_at?: string;
+        };
+        Update: Partial<{
+          earned_on: string;
+        }>;
+        Relationships: [
+          {
+            foreignKeyName: "achievements_student_id_fkey";
+            columns: ["student_id"];
+            isOneToOne: false;
+            referencedRelation: "students";
             referencedColumns: ["id"];
           },
         ];

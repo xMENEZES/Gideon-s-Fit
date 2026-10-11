@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
@@ -16,6 +17,7 @@ import {
   type WorkoutStatus,
 } from "@/lib/status";
 import { Badge } from "@/components/ui/badge";
+import { AchievementsPanel } from "@/components/shared/achievements-panel";
 import { StatusPeriodBar, type PeriodPreset } from "@/components/shared/status-period-bar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -420,6 +422,10 @@ export async function StatusReport({
 
   return (
     <div className="flex flex-col gap-6">
+      <Suspense fallback={null}>
+        <AchievementsPanel studentId={studentId} />
+      </Suspense>
+
       <StatusPeriodBar
         key={customRange ? `${customRange.from}|${customRange.to}` : "protocolo"}
         basePath={basePath}

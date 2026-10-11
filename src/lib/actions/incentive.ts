@@ -16,7 +16,7 @@ const bodySchema = z
   .min(MESSAGE_MIN, `Escreva ao menos ${MESSAGE_MIN} caracteres.`)
   .max(MESSAGE_MAX, `A mensagem pode ter no máximo ${MESSAGE_MAX} caracteres.`);
 
-const eventSchema = z.enum(["workout", "diet", "day"]);
+const eventSchema = z.enum(["workout", "diet", "day", "streak"]);
 
 async function requireTrainer() {
   const userId = await getSessionUserId();
