@@ -13,7 +13,7 @@ const LAYOUT = {
     outer: "flex flex-col gap-3 px-6 py-3 lg:flex-row lg:items-center lg:justify-between lg:py-4",
     firstRow: "flex items-center justify-between lg:contents",
     compactControls: "flex items-center gap-1 lg:hidden",
-    nav: "flex flex-wrap items-center justify-center gap-x-3 gap-y-2 sm:gap-x-4 lg:flex-nowrap lg:justify-end [&_a]:whitespace-nowrap",
+    nav: "flex flex-wrap items-center justify-center gap-x-2 gap-y-2 min-[360px]:gap-x-3 sm:gap-x-4 lg:flex-nowrap lg:justify-end [&_a]:whitespace-nowrap",
     toggle: "hidden lg:block",
     name: "hidden text-sm text-muted-foreground xl:inline",
     signOut: "hidden lg:block",

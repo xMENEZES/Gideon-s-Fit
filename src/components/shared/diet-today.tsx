@@ -4,6 +4,7 @@ import { SealStrip } from "@/components/shared/seal-strip";
 import { DietDayTracker, type InitialMealLog } from "@/components/shared/diet-day-tracker";
 import type { MealWithOptions } from "@/components/shared/meal-card";
 import { TodayHeader } from "@/components/shared/today-header";
+import { dietDayCompleteFromLogs } from "@/lib/incentive";
 
 // Tela diária de alimentação: as refeições completas, com "Fiz" e "Não fiz" para hoje (e os
 // 3 dias anteriores, para quem esqueceu de marcar), sem botões de edição.
@@ -49,6 +50,11 @@ export function DietToday({
           nickname={nickname}
           module="diet"
           today={today}
+          ownComplete={dietDayCompleteFromLogs(
+            meals.map((meal) => meal.id),
+            logs,
+            today
+          )}
         />
       </Suspense>
       <DietDayTracker

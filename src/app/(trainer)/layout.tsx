@@ -23,7 +23,7 @@ export default async function TrainerLayout({
       <TopBar fullName={profile.full_name} homeHref="/dashboard">
         <NavLink href="/dashboard" exact alsoActiveFor={["/dashboard/alunos"]}>
           <Users className="hidden size-4 sm:block" />
-          Meus Alunos
+          Alunos
           <Suspense fallback={null}>
             <PendingRequestsBadge />
           </Suspense>

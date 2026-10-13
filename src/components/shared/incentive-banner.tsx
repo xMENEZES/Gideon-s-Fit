@@ -1,7 +1,11 @@
-import { createClient } from "@/lib/supabase/server";
 import { getProfile } from "@/lib/auth/session";
-import { loadDayProgress, loadEarnedSeals, loadIncentiveBodies } from "@/lib/data/incentive";
-import { eventFor, fillMessage, firstName, pickMessage } from "@/lib/incentive";
+import {
+  getDietProgress,
+  getEarnedSeals,
+  getIncentiveMessages,
+  getWorkoutProgress,
+} from "@/lib/data/incentive";
+import { bodiesFor, eventFor, fillMessage, firstName, pickMessage, type DayProgress } from "@/lib/incentive";
 import type { SealLine } from "@/lib/types/database.types";
 import { IncentiveCard } from "@/components/shared/incentive-card";
 import { SealCelebration } from "@/components/shared/seal-celebration";
@@ -10,41 +14,43 @@ import { SealCelebration } from "@/components/shared/seal-celebration";
 // dia está concluído; com treino e alimentação ambos concluídos, mostra a de "dia completo".
 // Um selo conquistado hoje aparece antes, em card com a mensagem de sequência (uma vez; depois
 // fica só o ícone no topo da tela, em SealStrip).
-// `trainerId` nulo = plano próprio (mensagens do sistema).
+// `ownComplete`: o módulo da própria tela já concluído, calculado com os dados que a tela
+// carregou (só o OUTRO módulo precisa de consulta). `trainerId` nulo = plano próprio.
 export async function IncentiveBanner({
   studentId,
   trainerId,
   nickname,
   module,
   today,
+  ownComplete,
 }: {
   studentId: string;
   trainerId: string | null;
   nickname?: string | null;
   module: "workout" | "diet";
   today: string;
+  ownComplete: boolean;
 }) {
-  const supabase = await createClient();
-  const [progress, earned] = await Promise.all([
-    loadDayProgress(supabase, studentId, today),
-    loadEarnedSeals(supabase, studentId),
+  // As consultas já foram disparadas pela tela (warmDailyScreen) e aqui só se espera o resultado.
+  const [other, earned, messages, profile] = await Promise.all([
+    module === "workout" ? getDietProgress(studentId, today) : getWorkoutProgress(studentId, today),
+    getEarnedSeals(studentId),
+    getIncentiveMessages(),
+    getProfile(),
   ]);
-  const sealsToday = earned.filter((seal) => seal.earned_on === today);
+  const progress: DayProgress =
+    module === "workout" ? { workout: ownComplete, diet: other } : { workout: other, diet: ownComplete };
+
   const event = eventFor(module, progress);
   // Cada tela mostra os selos da sua linha e os de treino + dieta.
   const lines: SealLine[] = module === "workout" ? ["workout", "both"] : ["diet", "both"];
-  const seals = sealsToday.filter((seal) => lines.includes(seal.line));
+  const seals = earned.filter((seal) => seal.earned_on === today && lines.includes(seal.line));
   if (!event && seals.length === 0) return null;
 
-  const [bodies, streakBodies, profile] = await Promise.all([
-    event ? loadIncentiveBodies(supabase, event, trainerId) : Promise.resolve([]),
-    seals.length > 0 ? loadIncentiveBodies(supabase, "streak", trainerId) : Promise.resolve([]),
-    getProfile(),
-  ]);
   const nome = firstName(profile?.full_name, nickname);
-
-  const picked = event ? pickMessage(bodies, `${studentId}|${today}|${event}`) : null;
+  const picked = event ? pickMessage(bodiesFor(messages, event, trainerId), `${studentId}|${today}|${event}`) : null;
   const message = picked ? fillMessage(picked, { nome }) : "";
+  const streakBodies = bodiesFor(messages, "streak", trainerId);
 
   return (
     <>

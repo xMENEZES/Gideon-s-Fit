@@ -16,7 +16,7 @@ export default async function StandardAreaLayout({
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <TopBar fullName={profile.full_name} homeHref="/meu-plano" />
+      <TopBar fullName={profile.full_name} homeHref="/meu-plano/treino" />
       <main className="flex-1 px-6 py-8 sm:px-10">{children}</main>
     </div>
   );

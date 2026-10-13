@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { todayBR } from "@/lib/dates";
 import { getSoloStudentId } from "@/lib/team/solo";
 import { loadActiveWorkout } from "@/lib/data/protocols";
+import { warmDailyScreen } from "@/lib/data/incentive";
 import { hasWorkoutContent } from "@/lib/today";
 import { WorkoutToday } from "@/components/shared/workout-today";
 
@@ -20,6 +21,7 @@ export default async function MeuTreinoPage() {
   }
 
   const supabase = await createClient();
+  warmDailyScreen(studentId, todayBR(), "workout");
   const { protocol, days, failed } = await loadActiveWorkout(supabase, studentId);
 
   if (failed) {

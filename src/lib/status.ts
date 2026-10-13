@@ -182,7 +182,7 @@ function buildMealDay(date: string, today: string, meals: MealRow[]): MealDaySta
 }
 
 // Totais e porcentagem consideram só os dias encerrados.
-function summarizeMeals(days: MealDayStatus[], mealsPerDay: number, partial: boolean): MealStatus {
+export function summarizeMeals(days: MealDayStatus[], mealsPerDay: number, partial: boolean): MealStatus {
   const closed = days.filter((day) => !day.inProgress);
   const doneTotal = closed.reduce((sum, day) => sum + day.done, 0);
   const missedTotal = closed.reduce((sum, day) => sum + day.missed.length, 0);
@@ -268,3 +268,19 @@ export function buildMealRangeStatus(
 
   return summarizeMeals(days, Math.max(0, ...days.map((day) => day.total)), false);
 }
+
+// Lista do Status sem rolagem infinita: ficam à vista só os dias mais recentes e o resto vai
+// para "Dias anteriores". `daysNewestFirst` já vem do mais novo para o mais antigo.
+export function splitRecentDays<T>(daysNewestFirst: T[], visible: number): { recent: T[]; older: T[] } {
+  const count = Math.max(visible, 0);
+  return { recent: daysNewestFirst.slice(0, count), older: daysNewestFirst.slice(count) };
+}
+
+// Alimentação: o dia de hoje (em andamento) e o último dia encerrado. Sem dia em andamento (período
+// que já terminou), só o último dia.
+export function visibleMealDays(daysNewestFirst: { inProgress: boolean }[]): number {
+  return daysNewestFirst[0]?.inProgress ? 2 : 1;
+}
+
+// Treino: os 2 últimos dias treinados.
+export const VISIBLE_TRAINED_DAYS = 2;

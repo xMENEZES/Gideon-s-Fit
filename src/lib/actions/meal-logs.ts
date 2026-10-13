@@ -3,7 +3,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUserId } from "@/lib/auth/session";
 import { addDays, isIsoDate, todayBR } from "@/lib/dates";
-import { revalidateDaily } from "@/lib/actions/revalidate";
 import { awardSeals } from "@/lib/gamification/award";
 
 // A pessoa pode marcar hoje e até 3 dias antes, nunca datas futuras.
@@ -57,7 +56,6 @@ export async function saveMealLog(mealId: string, date: string, done: boolean, n
   if (error) return { error: "Não foi possível salvar o registro." };
 
   if (done) await awardSeals(target.studentId);
-  revalidateDaily();
   return { success: true, note: cleanNote };
 }
 
@@ -72,6 +70,5 @@ export async function clearMealLog(mealId: string, date: string) {
     .eq("log_date", date);
   if (error) return { error: "Não foi possível desfazer o registro." };
 
-  revalidateDaily();
   return { success: true };
 }

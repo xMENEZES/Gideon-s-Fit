@@ -16,10 +16,3 @@ export function revalidateModule(studentId: string, module: "treino" | "dieta") 
   revalidatePath(`/dashboard/modelos/${studentId}`);
 }
 
-// As telas diárias mostram a mensagem de incentivo, que depende do treino E da alimentação do
-// dia: registrar um deles pode concluir o dia e mudar a tela do outro.
-export function revalidateDaily() {
-  for (const path of ["/aluno/treino", "/aluno/dieta", "/meu-plano/treino", "/meu-plano/dieta"]) {
-    revalidatePath(path);
-  }
-}

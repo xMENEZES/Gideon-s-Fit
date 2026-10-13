@@ -4,6 +4,7 @@ import { SealStrip } from "@/components/shared/seal-strip";
 import { TodayHeader } from "@/components/shared/today-header";
 import { WorkoutDaysTabs } from "@/components/shared/workout-days-tabs";
 import type { WorkoutDayWithExercises } from "@/components/shared/workout-day-card";
+import { workoutDayComplete } from "@/lib/incentive";
 import { shortDate, suggestWorkoutDay } from "@/lib/today";
 
 // Tela diária de treino: o dia sugerido já vem selecionado (dá para trocar), sem botões de
@@ -63,6 +64,7 @@ export function WorkoutToday({
           nickname={nickname}
           module="workout"
           today={today}
+          ownComplete={workoutDayComplete(days, today)}
         />
       </Suspense>
 

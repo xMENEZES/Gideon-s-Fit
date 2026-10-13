@@ -13,40 +13,38 @@ import { MealCard, type MealWithOptions } from "@/components/shared/meal-card";
 export type MealLogValue = { done: boolean; note: string | null };
 
 // Estado e ações do registro de uma refeição em um dia. Tocar de novo no botão já marcado
-// desfaz o registro.
+// desfaz o registro. A tela muda NA HORA (otimista); se o servidor recusar, volta ao que era e
+// mostra o motivo. `onSaved` avisa quando o servidor já gravou.
 function useMealLog({
   mealId,
   date,
   value,
   onChange,
+  onSaved,
 }: {
   mealId: string;
   date: string;
   value: MealLogValue | null;
   onChange: (value: MealLogValue | null) => void;
+  onSaved?: () => void;
 }) {
   const [pending, startTransition] = useTransition();
   const [draft, setDraft] = useState(value?.note ?? "");
 
   function toggle(done: boolean) {
+    const previous = value;
+    const clearing = value?.done === done;
+    onChange(clearing ? null : { done, note: null });
+    setDraft("");
     startTransition(async () => {
-      if (value?.done === done) {
-        const result = await clearMealLog(mealId, date);
-        if (result?.error) {
-          toast.error(result.error);
-          return;
-        }
-        setDraft("");
-        onChange(null);
-        return;
-      }
-      const result = await saveMealLog(mealId, date, done);
+      const result = clearing ? await clearMealLog(mealId, date) : await saveMealLog(mealId, date, done);
       if (result?.error) {
         toast.error(result.error);
+        onChange(previous);
+        setDraft(previous?.note ?? "");
         return;
       }
-      setDraft("");
-      onChange({ done, note: null });
+      onSaved?.();
     });
   }
 
@@ -73,7 +71,17 @@ const ROUND =
   "inline-flex size-11 shrink-0 items-center justify-center rounded-full border-2 transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50";
 
 // Dois botões redondos: ✓ (fiz) e ✕ (não fiz). Marcado = preenchido; tocar de novo desfaz.
-function MealLogButtons({ log, value, mealName }: { log: MealLog; value: MealLogValue | null; mealName: string }) {
+function MealLogButtons({
+  log,
+  value,
+  mealName,
+  disabled = false,
+}: {
+  log: MealLog;
+  value: MealLogValue | null;
+  mealName: string;
+  disabled?: boolean;
+}) {
   return (
     <div role="group" aria-label={`Registro de ${mealName}`} className="flex items-center gap-2">
       <button
@@ -84,7 +92,7 @@ function MealLogButtons({ log, value, mealName }: { log: MealLog; value: MealLog
             ? "border-primary bg-primary text-primary-foreground"
             : "border-border text-muted-foreground hover:border-primary hover:text-primary"
         )}
-        disabled={log.pending}
+        disabled={log.pending || disabled}
         onClick={() => log.toggle(true)}
         aria-pressed={value?.done === true}
         aria-label="Fiz"
@@ -100,7 +108,7 @@ function MealLogButtons({ log, value, mealName }: { log: MealLog; value: MealLog
             ? "border-destructive bg-destructive text-white"
             : "border-border text-muted-foreground hover:border-destructive hover:text-destructive"
         )}
-        disabled={log.pending}
+        disabled={log.pending || disabled}
         onClick={() => log.toggle(false)}
         aria-pressed={value?.done === false}
         aria-label="Não fiz"
@@ -165,6 +173,8 @@ export function TrackedMealCard({
   date,
   value,
   onChange,
+  onSaved,
+  disabled = false,
   collapsed = false,
   onToggleCollapsed,
 }: {
@@ -174,11 +184,15 @@ export function TrackedMealCard({
   date: string;
   value: MealLogValue | null;
   onChange: (value: MealLogValue | null) => void;
+  // O servidor gravou o registro (a tela já tinha mudado).
+  onSaved?: () => void;
+  // Fora do período do protocolo (ainda não começou): os ícones ficam desativados.
+  disabled?: boolean;
   collapsed?: boolean;
   onToggleCollapsed?: () => void;
 }) {
-  const log = useMealLog({ mealId: meal.id, date, value, onChange });
-  const buttons = <MealLogButtons log={log} value={value} mealName={meal.name} />;
+  const log = useMealLog({ mealId: meal.id, date, value, onChange, onSaved });
+  const buttons = <MealLogButtons log={log} value={value} mealName={meal.name} disabled={disabled} />;
   const note = value?.done === false ? <MealLogNote log={log} /> : null;
 
   if (editable) {

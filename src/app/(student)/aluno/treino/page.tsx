@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { todayBR } from "@/lib/dates";
 import { getOwnTeamStudent } from "@/lib/data/students";
 import { loadActiveWorkout } from "@/lib/data/protocols";
+import { warmDailyScreen } from "@/lib/data/incentive";
 import { hasWorkoutContent } from "@/lib/today";
 import { WorkoutToday } from "@/components/shared/workout-today";
 
@@ -10,6 +11,9 @@ import { WorkoutToday } from "@/components/shared/workout-today";
 // montado o treino, segue para o plano completo, que explica o que falta.
 export default async function AlunoTreinoPage() {
   const student = await getOwnTeamStudent();
+
+  // Quem só tem o módulo de alimentação segue para ele (a raiz /aluno aponta para o treino).
+  if (student && !student.has_workout && student.has_diet) redirect("/aluno/dieta");
 
   if (!student?.has_workout) {
     return (
@@ -20,6 +24,7 @@ export default async function AlunoTreinoPage() {
   }
 
   const supabase = await createClient();
+  warmDailyScreen(student.id, todayBR(), "workout");
   const { protocol, days, failed } = await loadActiveWorkout(supabase, student.id);
 
   if (failed) {

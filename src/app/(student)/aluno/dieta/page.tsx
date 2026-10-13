@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { addDays, todayBR } from "@/lib/dates";
 import { getOwnTeamStudent } from "@/lib/data/students";
 import { loadActiveDiet } from "@/lib/data/protocols";
+import { warmDailyScreen } from "@/lib/data/incentive";
 import { hasDietContent } from "@/lib/today";
 import { DietToday } from "@/components/shared/diet-today";
 
@@ -22,6 +23,7 @@ export default async function AlunoDietaPage() {
   // Protocolo, refeições, opções, alimentos e os registros dos últimos dias, numa só consulta.
   const supabase = await createClient();
   const today = todayBR();
+  warmDailyScreen(student.id, today, "diet");
   const { protocol, meals, logs, failed } = await loadActiveDiet(supabase, student.id, {
     from: addDays(today, -3),
     to: today,

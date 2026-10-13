@@ -2,6 +2,8 @@ import type { UserRole } from "@/lib/types/database.types";
 
 export const ONBOARDING_PATH = "/escolher-perfil";
 
+// Destino final de cada papel. Aponta direto para a tela de abertura (e não para uma rota que só
+// redireciona): cada salto a mais renderiza o layout e consulta o perfil só para redirecionar.
 export function roleHome(role: UserRole | null | undefined) {
   switch (role) {
     case "admin":
@@ -9,8 +11,8 @@ export function roleHome(role: UserRole | null | undefined) {
     case "trainer":
       return "/dashboard";
     case "standard":
-      return "/meu-plano";
+      return "/meu-plano/treino";
     default:
-      return "/aluno";
+      return "/aluno/treino";
   }
 }

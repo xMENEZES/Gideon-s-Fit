@@ -4,6 +4,8 @@ import {
   buildMealStatus,
   buildWorkoutStatus,
   describeWorkoutEntry,
+  splitRecentDays,
+  visibleMealDays,
   type MealRow,
   type ProtocolPeriod,
   type WorkoutEntry,
@@ -211,5 +213,29 @@ describe("treino com cardio", () => {
       strength("2026-10-09"),
     ]);
     expect(status.trainedCount).toBe(2);
+  });
+});
+
+describe("lista do Status sem rolagem infinita", () => {
+  it("separa os dias mais recentes dos anteriores, mantendo a ordem", () => {
+    expect(splitRecentDays(["d5", "d4", "d3", "d2", "d1"], 2)).toEqual({
+      recent: ["d5", "d4"],
+      older: ["d3", "d2", "d1"],
+    });
+  });
+
+  it("com poucos dias, não sobra nada em 'anteriores'", () => {
+    expect(splitRecentDays(["d2", "d1"], 2)).toEqual({ recent: ["d2", "d1"], older: [] });
+    expect(splitRecentDays(["d1"], 2)).toEqual({ recent: ["d1"], older: [] });
+    expect(splitRecentDays([], 2)).toEqual({ recent: [], older: [] });
+  });
+
+  it("a alimentação mostra hoje (em andamento) e o último dia encerrado", () => {
+    expect(visibleMealDays([{ inProgress: true }, { inProgress: false }, { inProgress: false }])).toBe(2);
+  });
+
+  it("sem dia em andamento (período encerrado), só o último dia", () => {
+    expect(visibleMealDays([{ inProgress: false }, { inProgress: false }])).toBe(1);
+    expect(visibleMealDays([])).toBe(1);
   });
 });

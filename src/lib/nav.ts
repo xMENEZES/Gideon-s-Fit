@@ -2,7 +2,7 @@
 // - Por padrão vale a própria rota e qualquer rota filha ("/dashboard/status/x" ativa "/dashboard/status").
 // - `exact` limita à própria rota (para "/dashboard", que é pai de todas as outras).
 // - `alsoActiveFor` lista prefixos extras que também ativam o item (por exemplo, a ficha de um
-//   aluno ativa "Meus Alunos").
+//   aluno ativa "Alunos").
 export function isNavActive(
   pathname: string,
   href: string,

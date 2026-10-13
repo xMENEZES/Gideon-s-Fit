@@ -41,6 +41,17 @@ export function dietDayComplete(meals: MealLike[] | null | undefined, date: stri
   return meals.every((meal) => (meal.meal_logs ?? []).some((log) => log.log_date === date && log.done));
 }
 
+// Alimentação concluída a partir da lista de refeições e dos registros que a própria tela já
+// carregou (evita uma consulta a mais): todas as refeições têm "fiz" na data.
+export function dietDayCompleteFromLogs(
+  mealIds: string[],
+  logs: { meal_id: string; log_date: string; done: boolean }[],
+  date: string
+): boolean {
+  if (mealIds.length === 0) return false;
+  return mealIds.every((id) => logs.some((log) => log.meal_id === id && log.log_date === date && log.done));
+}
+
 export type DayProgress = { workout: boolean | null; diet: boolean | null };
 
 // Qual mensagem mostrar na tela de um módulo: null = ainda não concluiu (ou o módulo não

@@ -16,7 +16,7 @@ Produção: <https://gideons-fit.vercel.app>
 - **Telas do dia:** com o protocolo pronto, as abas de treino e de alimentação mostram o **treino de hoje** (o dia sugerido pela sequência) e a **alimentação de hoje**. A montagem do plano fica em "Editar plano".
 - **Registro diário de refeições:** ícones de feita (✓) e não feita (✕, com o motivo), para hoje e os 3 dias anteriores. A refeição marcada recolhe e a tela rola até a próxima pendente.
 - **Registro de carga e de cardio:** o aluno registra o que realmente fez, e isso alimenta o histórico e o gráfico. O registro vale sempre para o dia de hoje: não há campo de data.
-- **Status avaliativo:** dias treinados (musculação ou cardio, cada dia recolhível), refeições feitas por dia (o dia só entra na conta depois de encerrado), aproveitamento em % e justificativas. O período pode ser o do protocolo, os últimos 7, 14 ou 30 dias, ou qualquer intervalo.
+- **Status avaliativo:** dias treinados (musculação ou cardio, cada dia recolhível), refeições feitas por dia (o dia só entra na conta depois de encerrado), aproveitamento em % e justificativas. Um calendário permite escolher um dia (detalhe dele) ou um período (totais e só as refeições não feitas, com o motivo), além dos atalhos do protocolo atual e dos últimos 7, 14 ou 30 dias.
 
 **Gamificação**
 - **Mensagens de incentivo:** ao concluir o treino (todos os exercícios do dia registrados), a alimentação ou o dia completo, e ao conquistar um selo. O aluno de um time vê as mensagens do profissional, que parte das padrão do sistema e pode editar, adicionar e desativar. O Usuário Padrão vê as do sistema.

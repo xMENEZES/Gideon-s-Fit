@@ -41,6 +41,14 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  // As raízes das áreas só redirecionam. Feito aqui, o redirecionamento acontece antes de
+  // renderizar o layout (que consultaria o perfil), poupando uma ida ao banco por visita.
+  async redirects() {
+    return [
+      { source: "/meu-plano", destination: "/meu-plano/treino", permanent: false },
+      { source: "/aluno", destination: "/aluno/treino", permanent: false },
+    ];
+  },
 };
 
 export default nextConfig;

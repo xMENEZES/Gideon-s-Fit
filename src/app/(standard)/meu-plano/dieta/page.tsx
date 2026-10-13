@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { addDays, todayBR } from "@/lib/dates";
 import { getSoloStudentId } from "@/lib/team/solo";
 import { loadActiveDiet } from "@/lib/data/protocols";
+import { warmDailyScreen } from "@/lib/data/incentive";
 import { hasDietContent } from "@/lib/today";
 import { DietToday } from "@/components/shared/diet-today";
 
@@ -21,6 +22,7 @@ export default async function MinhaDietaPage() {
   // Protocolo, refeições, opções, alimentos e os registros dos últimos dias, numa só consulta.
   const supabase = await createClient();
   const today = todayBR();
+  warmDailyScreen(studentId, today, "diet");
   const { protocol, meals, logs, failed } = await loadActiveDiet(supabase, studentId, {
     from: addDays(today, -3),
     to: today,

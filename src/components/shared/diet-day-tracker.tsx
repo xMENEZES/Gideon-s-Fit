@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useEffectEvent, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { addDays } from "@/lib/dates";
+import { dietDayCompleteFromLogs } from "@/lib/incentive";
 import { nextPendingMealId } from "@/lib/meal-flow";
 import { Button } from "@/components/ui/button";
 import type { MealWithOptions } from "@/components/shared/meal-card";
@@ -52,12 +54,37 @@ export function DietDayTracker({
     (d) => d >= startDate
   );
   const selected = dates.includes(date) ? date : today;
+  // Protocolo que ainda não começou: não há dia para registrar (o servidor recusaria).
+  const notStarted = today < startDate;
 
   // Refeições com registro ficam recolhidas na tela diária; as que a pessoa reabriu à mão ficam
   // aqui. Na edição do plano nada é recolhido.
   const [reopened, setReopened] = useState<Record<string, boolean>>({});
   // Pedido de rolagem depois de marcar uma refeição ("top" = voltar ao início da página).
   const [scrollRequest, setScrollRequest] = useState<{ id: string; seq: number } | null>(null);
+
+  // O servidor só precisa refazer a tela (mensagem de incentivo e selos) quando a alimentação de
+  // HOJE passa a concluída ou deixa de ser: nos demais toques a tela já está certa.
+  const router = useRouter();
+  const todayComplete =
+    !editable && meals.length > 0 && meals.every((meal) => logs[`${meal.id}|${today}`]?.done === true);
+  const todayCompleteRef = useRef(todayComplete);
+  useEffect(() => {
+    todayCompleteRef.current = todayComplete;
+  }, [todayComplete]);
+  const shownByServer = useRef(
+    dietDayCompleteFromLogs(
+      meals.map((meal) => meal.id),
+      initialLogs,
+      today
+    )
+  );
+
+  function handleSaved() {
+    if (editable || todayCompleteRef.current === shownByServer.current) return;
+    shownByServer.current = todayCompleteRef.current;
+    router.refresh();
+  }
 
   const doneCount = meals.filter((meal) => logs[`${meal.id}|${selected}`]?.done === true).length;
   const missedCount = meals.filter((meal) => logs[`${meal.id}|${selected}`]?.done === false).length;
@@ -129,6 +156,11 @@ export function DietDayTracker({
           {doneCount} de {meals.length} {meals.length === 1 ? "refeição feita" : "refeições feitas"}
           {missedCount > 0 && `, ${missedCount} não ${missedCount === 1 ? "feita" : "feitas"}`}
         </p>
+        {notStarted && (
+          <p className="text-sm text-muted-foreground">
+            O protocolo começa em {startDate.slice(8)}/{startDate.slice(5, 7)}. Os registros abrem nessa data.
+          </p>
+        )}
       </div>
 
       <div className="flex flex-col gap-4">
@@ -142,6 +174,8 @@ export function DietDayTracker({
             date={selected}
             value={logs[`${meal.id}|${selected}`] ?? null}
             onChange={(value) => handleChange(meal.id, value)}
+            onSaved={handleSaved}
+            disabled={notStarted}
             collapsed={!editable && !reopened[`${meal.id}|${selected}`]}
             onToggleCollapsed={
               editable

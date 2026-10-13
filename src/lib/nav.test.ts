@@ -5,13 +5,13 @@ import { isNavActive } from "@/lib/nav";
 const alunos = { exact: true, alsoActiveFor: ["/dashboard/alunos"] };
 
 describe("isNavActive (menu do profissional)", () => {
-  it("Meus Alunos fica ativo na lista e na ficha de um aluno", () => {
+  it("Alunos fica ativo na lista e na ficha de um aluno", () => {
     expect(isNavActive("/dashboard", "/dashboard", alunos)).toBe(true);
     expect(isNavActive("/dashboard/alunos/abc", "/dashboard", alunos)).toBe(true);
     expect(isNavActive("/dashboard/alunos/abc/treino/historico", "/dashboard", alunos)).toBe(true);
   });
 
-  it("Meus Alunos não fica ativo nas outras telas do painel", () => {
+  it("Alunos não fica ativo nas outras telas do painel", () => {
     expect(isNavActive("/dashboard/status", "/dashboard", alunos)).toBe(false);
     expect(isNavActive("/dashboard/modelos", "/dashboard", alunos)).toBe(false);
     expect(isNavActive("/dashboard/alertas", "/dashboard", alunos)).toBe(false);
