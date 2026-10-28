@@ -118,6 +118,20 @@ describe("loadLogSchema (musculação)", () => {
     expect(loadLogSchema.safeParse({ weightKg: "0" }).success).toBe(true);
   });
 
+  it("aceita exercício conjugado (mais de um valor com +) na carga e nas repetições", () => {
+    expect(loadLogSchema.safeParse({ weightKg: "10 + 15", repsDone: "12 + 10" }).success).toBe(true);
+    expect(loadLogSchema.safeParse({ weightKg: "7,5+10" }).success).toBe(true);
+    expect(loadLogSchema.safeParse({ weightKg: 20, repsDone: 10 }).success).toBe(true);
+  });
+
+  it("recusa carga e repetições que não são números", () => {
+    expect(loadLogSchema.safeParse({ weightKg: "" }).success).toBe(false);
+    expect(loadLogSchema.safeParse({ weightKg: "pesado" }).success).toBe(false);
+    expect(loadLogSchema.safeParse({ weightKg: "10 + " }).success).toBe(false);
+    expect(loadLogSchema.safeParse({ weightKg: "20", repsDone: "dez" }).success).toBe(false);
+    expect(loadLogSchema.safeParse({ weightKg: "20", repsDone: "7,5" }).success).toBe(false);
+  });
+
   it("ignora uma data enviada: o registro vale sempre para hoje", () => {
     const load = loadLogSchema.safeParse({ weightKg: "20", loggedAt: "2020-01-01" });
     expect(load.success && "loggedAt" in load.data).toBe(false);

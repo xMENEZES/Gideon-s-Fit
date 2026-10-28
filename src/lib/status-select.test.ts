@@ -27,6 +27,7 @@ const mealDay = (
   done,
   missed: missed.map((meal) => ({ meal, note: null })),
   unmarked: total - done - missed.length,
+  meals: [],
   inProgress,
 });
 

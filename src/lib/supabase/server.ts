@@ -5,7 +5,7 @@ import type { Database } from "@/lib/types/database.types";
 // Cliente Supabase para Server Components, Server Actions e Route Handlers.
 // Em Server Components puros o `set` de cookies falha silenciosamente
 // (Next não permite setar cookies durante a renderização) — nesse caso o
-// refresh de sessão é feito pelo proxy.ts a cada request.
+// refresh de sessão é feito pelo middleware.ts a cada request.
 export async function createClient() {
   const cookieStore = await cookies();
 
@@ -23,7 +23,7 @@ export async function createClient() {
               cookieStore.set(name, value, options)
             );
           } catch {
-            // chamado de um Server Component — ignorado, o proxy.ts cuida do refresh
+            // chamado de um Server Component — ignorado, o middleware.ts cuida do refresh
           }
         },
       },

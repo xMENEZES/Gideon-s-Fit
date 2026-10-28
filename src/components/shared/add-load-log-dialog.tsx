@@ -64,16 +64,36 @@ export function AddLoadLogDialog({
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
               <Label htmlFor="weightKg">Carga (kg)</Label>
-              <Input id="weightKg" type="number" step="0.5" min={0} {...register("weightKg")} />
+              <Input
+                id="weightKg"
+                type="text"
+                inputMode="decimal"
+                autoComplete="off"
+                placeholder="20 ou 10 + 15"
+                {...register("weightKg")}
+              />
               {errors.weightKg && (
                 <p className="text-sm text-destructive">{errors.weightKg.message}</p>
               )}
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="repsDone">Repetições feitas</Label>
-              <Input id="repsDone" type="number" min={0} {...register("repsDone")} />
+              <Input
+                id="repsDone"
+                type="text"
+                inputMode="numeric"
+                autoComplete="off"
+                placeholder="12 ou 12 + 10"
+                {...register("repsDone")}
+              />
+              {errors.repsDone && (
+                <p className="text-sm text-destructive">{errors.repsDone.message}</p>
+              )}
             </div>
           </div>
+          <p className="text-xs text-muted-foreground">
+            Exercício conjugado? Separe os valores com +, por exemplo 10 + 15.
+          </p>
           <DialogFooter>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? "Salvando..." : "Salvar"}

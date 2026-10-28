@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { parseLoadValue } from "@/lib/load-values";
 
 export const workoutDaySchema = z.object({
   name: z.string().min(2, "Dê um nome para o dia de treino").max(80, "No máximo 80 caracteres"),
@@ -99,9 +100,26 @@ export type ExerciseInput = z.infer<typeof exerciseSchema>;
 export type ExerciseFormInput = z.input<typeof exerciseSchema>;
 
 // O registro de carga e de cardio vale sempre para o dia de hoje (Brasília): não há campo de data.
+// Carga e repetições são texto: além de um número aceitam vários separados por "+", que é como o
+// aluno descreve um exercício conjugado (ex.: "10 + 15"). A conversão está em lib/load-values.ts.
+const toText = (value: unknown) => (typeof value === "number" ? String(value) : value);
+
 export const loadLogSchema = z.object({
-  weightKg: z.coerce.number().min(0, "Informe a carga em kg"),
-  repsDone: z.coerce.number().int().min(0).optional(),
+  weightKg: z.preprocess(
+    toText,
+    z
+      .string("Informe a carga em kg")
+      .trim()
+      .refine((value) => parseLoadValue(value, "weight") !== null, "Informe a carga (ex.: 20 ou 10 + 15)")
+  ),
+  repsDone: z.preprocess(
+    toText,
+    z
+      .string()
+      .trim()
+      .refine((value) => value === "" || parseLoadValue(value, "reps") !== null, "Repetições: números inteiros (ex.: 12 ou 12 + 10)")
+      .optional()
+  ),
   notes: z.string().max(500, "No máximo 500 caracteres").optional(),
 });
 export type LoadLogInput = z.infer<typeof loadLogSchema>;

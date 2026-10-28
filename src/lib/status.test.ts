@@ -4,6 +4,7 @@ import {
   buildMealStatus,
   buildWorkoutStatus,
   describeWorkoutEntry,
+  groupWorkoutEntries,
   splitRecentDays,
   visibleMealDays,
   type MealRow,
@@ -237,5 +238,66 @@ describe("lista do Status sem rolagem infinita", () => {
   it("sem dia em andamento (período encerrado), só o último dia", () => {
     expect(visibleMealDays([{ inProgress: false }, { inProgress: false }])).toBe(1);
     expect(visibleMealDays([])).toBe(1);
+  });
+});
+
+describe("histórico do dia", () => {
+  it("lista cada refeição do dia com a situação e a anotação", () => {
+    const meals = [
+      meal("m1", "Café da manhã", { "2026-10-09": true }),
+      meal("m2", "Almoço", { "2026-10-09": [false, "Almocei fora"] }),
+      meal("m3", "Jantar", {}),
+    ];
+    const status = buildMealStatus(period({}), TODAY, meals);
+    const day = status.days.find((item) => item.date === "2026-10-09");
+    expect(day?.meals).toEqual([
+      { name: "Café da manhã", state: "done", note: null },
+      { name: "Almoço", state: "missed", note: "Almocei fora" },
+      { name: "Jantar", state: "none", note: null },
+    ]);
+  });
+
+  it("mostra o registro conjugado com o texto completo", () => {
+    const conjugated: WorkoutEntry = {
+      date: "2026-10-09",
+      day: "Treino A",
+      exercise: "Rosca + tríceps",
+      weight_kg: 10,
+      weight_text: "10 + 15",
+      reps_done: 12,
+      reps_text: "12 + 10",
+      duration_minutes: null,
+      distance_km: null,
+    };
+    expect(describeWorkoutEntry(conjugated)).toBe("Rosca + tríceps: 10 + 15 kg x 12 + 10");
+    expect(groupWorkoutEntries([conjugated])[0].exercises[0].sets).toEqual(["10 + 15 kg x 12 + 10"]);
+  });
+
+  it("agrupa os registros do treino por dia do protocolo e exercício", () => {
+    const entry = (day: string, exercise: string, weight: number | null, reps: number | null): WorkoutEntry => ({
+      date: "2026-10-09",
+      day,
+      exercise,
+      weight_kg: weight,
+      reps_done: reps,
+      duration_minutes: weight == null ? 30 : null,
+      distance_km: null,
+    });
+    const groups = groupWorkoutEntries([
+      entry("Treino A", "Supino reto", 30, 10),
+      entry("Treino A", "Supino reto", 30, 8),
+      entry("Treino A", "Corrida", null, null),
+      entry("Treino B", "Agachamento", 60, 12),
+    ]);
+    expect(groups).toEqual([
+      {
+        day: "Treino A",
+        exercises: [
+          { name: "Supino reto", sets: ["30 kg x 10", "30 kg x 8"] },
+          { name: "Corrida", sets: ["30 min"] },
+        ],
+      },
+      { day: "Treino B", exercises: [{ name: "Agachamento", sets: ["60 kg x 12"] }] },
+    ]);
   });
 });

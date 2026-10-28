@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { splitRecentDays, visibleMealDays, VISIBLE_TRAINED_DAYS, type MealDayStatus, type WorkoutEntry } from "@/lib/status";
+import { splitRecentDays, type MealDayStatus, type WorkoutEntry } from "@/lib/status";
 import { formatDate, weekday } from "@/lib/status-format";
 import {
   dayMarks,
@@ -17,7 +17,13 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusCalendar, type PeriodPreset } from "@/components/shared/status-calendar";
-import { MealDayCard, MissedDay, MoreDetails, StatTile, TrainedDay } from "@/components/shared/status-parts";
+import {
+  MealDayHistory,
+  MissedDay,
+  MoreDetails,
+  StatTile,
+  WorkoutDayHistory,
+} from "@/components/shared/status-parts";
 
 export type WorkoutPanel = {
   description: string;
@@ -38,200 +44,165 @@ export type DietPanel = {
 // Quantas ocorrências ("não fez") aparecem de cara num período; o resto fica recolhido.
 const VISIBLE_OCCURRENCES = 5;
 
-function WorkoutCard({
-  panel,
-  selection,
-}: {
-  panel: WorkoutPanel;
-  selection: Selection | null;
-}) {
-  const data = panel.data;
-  const kind = selectionKind(selection);
-  const summary = data ? summarizeWorkoutSelection(data.range, data.entries, selection) : null;
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Protocolo de treino</CardTitle>
-        <CardDescription>{panel.description}</CardDescription>
-      </CardHeader>
-      {data && summary && (
-        <CardContent className="flex flex-col gap-4">
-          {panel.chips}
-
-          {data.range.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Nenhum dia com protocolo neste período.</p>
-          ) : kind === "day" && selection ? (
-            <WorkoutDay date={selection.from} range={data.range} entries={data.entries} />
-          ) : (
-            <>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                <StatTile label="Dias treinados" value={String(summary.trained)} tone="good" />
-                <StatTile label="Dias no período" value={String(summary.total)} />
-                <StatTile label="Sem treino" value={String(Math.max(summary.total - summary.trained, 0))} />
-              </div>
-              {kind === "none" && summary.trainedDatesNewestFirst.length > 0 && (
-                <div className="flex flex-col gap-2">
-                  <p className="text-sm font-medium">Últimos dias treinados</p>
-                  {splitRecentDays(summary.trainedDatesNewestFirst, VISIBLE_TRAINED_DAYS).recent.map(
-                    (date, position) => (
-                      <TrainedDay key={date} date={date} entries={data.entries[date]} open={position === 0} />
-                    )
-                  )}
-                </div>
-              )}
-              <p className="text-xs text-muted-foreground">
-                Um dia conta como treinado quando há exercício registrado nele (carga ou sessão de cardio).
-                {kind === "none" && " Para ver um dia específico, toque nele no calendário."}
-              </p>
-            </>
-          )}
-          {kind === "none" && panel.note}
-        </CardContent>
-      )}
-    </Card>
-  );
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return <h3 className="text-sm font-semibold">{children}</h3>;
 }
 
-function WorkoutDay({
+// ---- Um dia: treino e refeições juntos ----
+
+function DayCard({
   date,
-  range,
-  entries,
+  today,
+  workout,
+  diet,
 }: {
   date: string;
-  range: string[];
-  entries: Record<string, WorkoutEntry[]>;
+  today: string;
+  workout: WorkoutPanel | null;
+  diet: DietPanel | null;
 }) {
-  if (!range.includes(date)) {
-    return <p className="text-sm text-muted-foreground">Sem protocolo de treino neste dia.</p>;
-  }
-  const day = entries[date] ?? [];
-  if (day.length === 0) {
-    return (
-      <div className="flex items-center justify-between gap-2 rounded-lg border border-border px-3 py-2">
-        <span className="text-sm font-medium">
-          {weekday(date)}, {formatDate(date)}
-        </span>
-        <Badge variant="secondary" className="font-normal">
-          Não treinou
-        </Badge>
-      </div>
-    );
-  }
-  return <TrainedDay date={date} entries={day} open />;
-}
-
-function DietCard({ panel, selection }: { panel: DietPanel; selection: Selection | null }) {
-  const data = panel.data;
-  const kind = selectionKind(selection);
+  const workoutData = workout?.data ?? null;
+  const dietDay = diet?.data?.days.find((day) => day.date === date) ?? null;
+  const entries = workoutData?.entries[date] ?? [];
+  const inWorkoutRange = !!workoutData?.range.includes(date);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Protocolo alimentar</CardTitle>
-        <CardDescription>{panel.description}</CardDescription>
+        <CardTitle className="flex flex-wrap items-center gap-2">
+          {weekday(date)}, {formatDate(date)}
+          {date === today && (
+            <Badge variant="secondary" className="font-normal">
+              Hoje
+            </Badge>
+          )}
+        </CardTitle>
+        <CardDescription>Histórico de treino e refeições do dia.</CardDescription>
       </CardHeader>
-      {data && (
-        <CardContent className="flex flex-col gap-4">
-          {panel.chips}
-          <DietBody days={data.days} mealsPerDay={data.mealsPerDay} selection={selection} kind={kind} />
-          {kind === "none" && panel.note}
-        </CardContent>
-      )}
-    </Card>
-  );
-}
-
-function DietBody({
-  days,
-  mealsPerDay,
-  selection,
-  kind,
-}: {
-  days: MealDayStatus[];
-  mealsPerDay: number;
-  selection: Selection | null;
-  kind: "none" | "day" | "period";
-}) {
-  if (days.length === 0) {
-    return <p className="text-sm text-muted-foreground">Nenhum dia com protocolo alimentar neste período.</p>;
-  }
-  if (mealsPerDay === 0) {
-    return <p className="text-sm text-muted-foreground">Este protocolo não tem refeições cadastradas.</p>;
-  }
-
-  // Um dia: só o detalhe dele.
-  if (kind === "day" && selection) {
-    const day = days.find((item) => item.date === selection.from);
-    if (!day) return <p className="text-sm text-muted-foreground">Sem protocolo alimentar neste dia.</p>;
-    return (
-      <>
-        <MealDayCard day={day} />
-        {day.inProgress && (
+      <CardContent className="flex flex-col gap-5">
+        {workout && (
+          <section className="flex flex-col gap-2">
+            <SectionTitle>Treino</SectionTitle>
+            {!workoutData || !inWorkoutRange ? (
+              <p className="text-sm text-muted-foreground">Sem protocolo de treino neste dia.</p>
+            ) : entries.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Não treinou.</p>
+            ) : (
+              <WorkoutDayHistory entries={entries} />
+            )}
+          </section>
+        )}
+        {diet && (
+          <section className="flex flex-col gap-2">
+            <SectionTitle>Refeições</SectionTitle>
+            {!dietDay ? (
+              <p className="text-sm text-muted-foreground">Sem protocolo alimentar neste dia.</p>
+            ) : dietDay.total === 0 ? (
+              <p className="text-sm text-muted-foreground">Este protocolo não tem refeições cadastradas.</p>
+            ) : (
+              <MealDayHistory day={dietDay} />
+            )}
+          </section>
+        )}
+        {dietDay?.inProgress && (
           <p className="text-xs text-muted-foreground">
             Hoje está em andamento e só entra nos totais e no aproveitamento quando o dia terminar.
           </p>
         )}
-      </>
-    );
-  }
+      </CardContent>
+    </Card>
+  );
+}
 
-  const summary = summarizeMealSelection(days, selection);
+// ---- Um período: totais e só as ocorrências ----
+
+function WorkoutPeriodCard({ panel, selection }: { panel: WorkoutPanel; selection: Selection }) {
+  const data = panel.data;
+  if (!data) return null;
+  const summary = summarizeWorkoutSelection(data.range, data.entries, selection);
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Treino no período</CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3">
+        {summary.total === 0 ? (
+          <p className="text-sm text-muted-foreground">Nenhum dia com protocolo neste período.</p>
+        ) : (
+          <div className="grid grid-cols-3 gap-3">
+            <StatTile label="Treinados" value={String(summary.trained)} tone="good" />
+            <StatTile label="Dias" value={String(summary.total)} />
+            <StatTile label="Sem treino" value={String(Math.max(summary.total - summary.trained, 0))} />
+          </div>
+        )}
+        <p className="text-xs text-muted-foreground">
+          Um dia conta como treinado quando há exercício registrado nele (carga ou sessão de cardio). Toque
+          num dia para ver o detalhe.
+        </p>
+        {panel.note}
+      </CardContent>
+    </Card>
+  );
+}
+
+function DietPeriodCard({ panel, selection }: { panel: DietPanel; selection: Selection }) {
+  const data = panel.data;
+  if (!data) return null;
+  const summary = summarizeMealSelection(data.days, selection);
   const noClosedDay = summary.closedDays === 0;
   const hasInProgress = summary.days.some((day) => day.inProgress);
-  const newestFirst = [...summary.days].reverse();
 
   return (
-    <>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <StatTile
-          label="Refeições feitas"
-          value={noClosedDay ? "-" : `${summary.doneTotal} de ${summary.expectedTotal}`}
-          tone="good"
-        />
-        <StatTile label="Aproveitamento" value={noClosedDay ? "-" : `${summary.percent}%`} tone="good" />
-        <StatTile
-          label="Não feitas"
-          value={noClosedDay ? "-" : String(summary.missedTotal)}
-          tone={summary.missedTotal ? "bad" : undefined}
-        />
-        <StatTile label="Sem registro" value={noClosedDay ? "-" : String(summary.unmarkedTotal)} />
-      </div>
-      {hasInProgress && (
-        <p className="text-xs text-muted-foreground">
-          {noClosedDay
-            ? "Ainda não há dia encerrado: o aproveitamento aparece quando o dia de hoje terminar."
-            : "Hoje está em andamento e só entra nos totais e no aproveitamento quando o dia terminar."}
-        </p>
-      )}
-
-      {kind === "none" ? (
-        // Sem seleção: hoje (em andamento) e o último dia encerrado; o resto está no calendário.
-        <div className="flex flex-col gap-2">
-          {splitRecentDays(newestFirst, visibleMealDays(newestFirst)).recent.map((day) => (
-            <MealDayCard key={day.date} day={day} />
-          ))}
-          <p className="text-xs text-muted-foreground">Para ver outro dia, toque nele no calendário.</p>
-        </div>
-      ) : (
-        // Período: só as ocorrências, isto é, os dias com refeição "não feita" e o motivo.
-        <Occurrences days={summary.days} />
-      )}
-    </>
+    <Card>
+      <CardHeader>
+        <CardTitle>Alimentação no período</CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        {data.days.length === 0 || data.mealsPerDay === 0 ? (
+          <p className="text-sm text-muted-foreground">Nenhuma refeição neste período.</p>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <StatTile
+                label="Refeições feitas"
+                value={noClosedDay ? "-" : `${summary.doneTotal} de ${summary.expectedTotal}`}
+                tone="good"
+              />
+              <StatTile label="Aproveitamento" value={noClosedDay ? "-" : `${summary.percent}%`} tone="good" />
+              <StatTile
+                label="Não feitas"
+                value={noClosedDay ? "-" : String(summary.missedTotal)}
+                tone={summary.missedTotal ? "bad" : undefined}
+              />
+              <StatTile label="Sem registro" value={noClosedDay ? "-" : String(summary.unmarkedTotal)} />
+            </div>
+            {hasInProgress && (
+              <p className="text-xs text-muted-foreground">
+                {noClosedDay
+                  ? "Ainda não há dia encerrado: o aproveitamento aparece quando o dia de hoje terminar."
+                  : "Hoje está em andamento e só entra nos totais e no aproveitamento quando o dia terminar."}
+              </p>
+            )}
+            <Occurrences days={summary.days} />
+          </>
+        )}
+        {panel.note}
+      </CardContent>
+    </Card>
   );
 }
 
 function Occurrences({ days }: { days: MealDayStatus[] }) {
   const missed = missedDaysNewestFirst(days);
   if (missed.length === 0) {
-    return (
-      <p className="text-sm text-muted-foreground">Nenhuma refeição marcada como não feita neste período.</p>
-    );
+    return <p className="text-sm text-muted-foreground">Nenhuma refeição marcada como não feita neste período.</p>;
   }
   const { recent, older } = splitRecentDays(missed, VISIBLE_OCCURRENCES);
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-sm font-medium">Refeições não feitas ({missed.length} {missed.length === 1 ? "dia" : "dias"})</p>
+      <p className="text-sm font-medium">
+        Refeições não feitas ({missed.length} {missed.length === 1 ? "dia" : "dias"})
+      </p>
       {recent.map((day) => (
         <MissedDay key={day.date} day={day} />
       ))}
@@ -246,8 +217,21 @@ function Occurrences({ days }: { days: MealDayStatus[] }) {
   );
 }
 
-// Calendário + cards de treino e de alimentação da tela de Status. A seleção (um dia ou um
-// período) vive aqui no cliente e é instantânea: os dados do período já vieram do servidor.
+// Protocolo escolhido (treino ou alimentar): descrição e, havendo mais de um, a troca.
+function ProtocolInfo({ label, description, chips }: { label: string; description: string; chips: React.ReactNode }) {
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="text-sm">
+        <span className="font-medium">{label}:</span>{" "}
+        <span className="text-muted-foreground">{description}</span>
+      </p>
+      {chips}
+    </div>
+  );
+}
+
+// Calendário + histórico da tela de Status. A seleção (um dia ou um período) vive aqui no
+// cliente e é instantânea: os dados do período já vieram do servidor. A tela abre no dia de hoje.
 export function StatusExplorer({
   today,
   presets,
@@ -270,9 +254,22 @@ export function StatusExplorer({
     marks[date] = dayMarks((workout?.data?.entries[date]?.length ?? 0) > 0, mealByDate.get(date));
   }
 
+  // Sem escolha do usuário, vale hoje (ou o último dia com dados, se hoje estiver fora do período).
+  const defaultDay = dates.includes(today) ? today : (dates.at(-1) ?? null);
+  const chosen = selection && dates.some((date) => isInSelection(date, selection)) ? selection : null;
+  const effective: Selection | null = chosen ?? (defaultDay ? { from: defaultDay, to: defaultDay } : null);
+  const kind = selectionKind(effective);
+
+  const protocolInfo = (workout || diet) && (
+    <div className="flex flex-col gap-3 border-t border-border pt-3">
+      {workout && <ProtocolInfo label="Treino" description={workout.description} chips={workout.chips} />}
+      {diet && <ProtocolInfo label="Alimentar" description={diet.description} chips={diet.chips} />}
+    </div>
+  );
+
   return (
     <>
-      {dates.length > 0 && (
+      {dates.length > 0 ? (
         <StatusCalendar
           // Recomeça no mês de hoje quando o período muda (os atalhos recarregam a página).
           key={`${dates[0]}|${dates[dates.length - 1]}`}
@@ -280,14 +277,32 @@ export function StatusExplorer({
           first={dates[0]}
           last={dates[dates.length - 1]}
           marks={marks}
-          selection={selection && dates.some((date) => isInSelection(date, selection)) ? selection : null}
+          selection={effective}
+          clearable={!!chosen}
           onSelect={(date) => setSelection((current) => nextSelection(current, date))}
           onClear={() => setSelection(null)}
           presets={presets}
+          footer={protocolInfo}
         />
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle>Status</CardTitle>
+            <CardDescription>Nenhum protocolo para mostrar ainda.</CardDescription>
+          </CardHeader>
+          {protocolInfo && <CardContent>{protocolInfo}</CardContent>}
+        </Card>
       )}
-      {workout && <WorkoutCard panel={workout} selection={selection} />}
-      {diet && <DietCard panel={diet} selection={selection} />}
+
+      {effective && kind === "day" && (
+        <DayCard date={effective.from} today={today} workout={workout} diet={diet} />
+      )}
+      {effective && kind === "period" && (
+        <>
+          {workout && <WorkoutPeriodCard panel={workout} selection={effective} />}
+          {diet && <DietPeriodCard panel={diet} selection={effective} />}
+        </>
+      )}
     </>
   );
 }

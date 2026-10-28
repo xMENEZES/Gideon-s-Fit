@@ -20,16 +20,47 @@ export type WorkoutEntry = {
   // Musculação registra carga; cardio registra duração e/ou distância (carga nula).
   weight_kg: number | null;
   reps_done: number | null;
+  // Exercício conjugado: o texto completo ("10 + 15" e "12 + 10"); os numéricos guardam o primeiro valor.
+  weight_text?: string | null;
+  reps_text?: string | null;
   duration_minutes: number | null;
   distance_km: number | null;
 };
 
+// Um registro, sem o nome do exercício: "30 kg x 10" ou "32 min, 5 km".
+export function describeWorkoutSet(entry: WorkoutEntry): string {
+  if (entry.weight_kg != null) {
+    const reps = entry.reps_text ?? entry.reps_done;
+    return `${entry.weight_text ?? entry.weight_kg} kg${reps ? ` x ${reps}` : ""}`;
+  }
+  return formatCardioAmount(entry.duration_minutes, entry.distance_km);
+}
+
 // "Supino: 30 kg x 10" ou "Corrida: 32 min, 5 km".
 export function describeWorkoutEntry(entry: WorkoutEntry): string {
-  if (entry.weight_kg != null) {
-    return `${entry.exercise}: ${entry.weight_kg} kg${entry.reps_done ? ` x ${entry.reps_done}` : ""}`;
+  return `${entry.exercise}: ${describeWorkoutSet(entry)}`;
+}
+
+export type WorkoutDayGroup = { day: string; exercises: { name: string; sets: string[] }[] };
+
+// Registros de um dia agrupados por dia do protocolo e por exercício, na ordem em que aparecem:
+// cada exercício lista as suas séries ("30 kg x 10", "30 kg x 8"...).
+export function groupWorkoutEntries(entries: WorkoutEntry[]): WorkoutDayGroup[] {
+  const groups: WorkoutDayGroup[] = [];
+  for (const entry of entries) {
+    let group = groups.find((item) => item.day === entry.day);
+    if (!group) {
+      group = { day: entry.day, exercises: [] };
+      groups.push(group);
+    }
+    let exercise = group.exercises.find((item) => item.name === entry.exercise);
+    if (!exercise) {
+      exercise = { name: entry.exercise, sets: [] };
+      group.exercises.push(exercise);
+    }
+    exercise.sets.push(describeWorkoutSet(entry));
   }
-  return `${entry.exercise}: ${formatCardioAmount(entry.duration_minutes, entry.distance_km)}`;
+  return groups;
 }
 
 export type MealRow = {
@@ -64,7 +95,7 @@ export async function loadWorkoutEntries(supabase: Client, protocolIds: string[]
 
   const { data } = await supabase
     .from("workout_days")
-    .select("protocol_id, name, exercises(name, exercise_load_logs(logged_at, weight_kg, reps_done, duration_minutes, distance_km))")
+    .select("protocol_id, name, exercises(name, exercise_load_logs(logged_at, weight_kg, weight_text, reps_done, reps_text, duration_minutes, distance_km))")
     .in("protocol_id", protocolIds);
 
   for (const day of data ?? []) {
@@ -76,7 +107,9 @@ export async function loadWorkoutEntries(supabase: Client, protocolIds: string[]
           day: day.name,
           exercise: exercise.name,
           weight_kg: log.weight_kg == null ? null : Number(log.weight_kg),
+          weight_text: log.weight_text,
           reps_done: log.reps_done,
+          reps_text: log.reps_text,
           duration_minutes: log.duration_minutes,
           distance_km: log.distance_km == null ? null : Number(log.distance_km),
         });
@@ -139,12 +172,17 @@ export function buildWorkoutStatus(
   };
 }
 
+// Situação de cada refeição no dia: feita, "não fez" (com a anotação) ou sem registro.
+export type MealDayItem = { name: string; state: "done" | "missed" | "none"; note: string | null };
+
 export type MealDayStatus = {
   date: string;
   total: number;
   done: number;
   missed: { meal: string; note: string | null }[];
   unmarked: number;
+  // Cada refeição do dia, na ordem do protocolo (para mostrar o histórico do dia).
+  meals: MealDayItem[];
   // Dia ainda em andamento (hoje): aparece na lista, mas só entra nos totais e na
   // porcentagem depois que o dia terminar.
   inProgress: boolean;
@@ -170,13 +208,21 @@ function buildMealDay(date: string, today: string, meals: MealRow[]): MealDaySta
     done: 0,
     missed: [],
     unmarked: 0,
+    meals: [],
     inProgress: date >= today,
   };
   for (const meal of meals) {
     const log = meal.logs.get(date);
-    if (!log) day.unmarked += 1;
-    else if (log.done) day.done += 1;
-    else day.missed.push({ meal: meal.name, note: log.note });
+    if (!log) {
+      day.unmarked += 1;
+      day.meals.push({ name: meal.name, state: "none", note: null });
+    } else if (log.done) {
+      day.done += 1;
+      day.meals.push({ name: meal.name, state: "done", note: null });
+    } else {
+      day.missed.push({ meal: meal.name, note: log.note });
+      day.meals.push({ name: meal.name, state: "missed", note: log.note });
+    }
   }
   return day;
 }

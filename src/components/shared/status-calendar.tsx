@@ -62,6 +62,8 @@ export function StatusCalendar({
   onSelect,
   onClear,
   presets,
+  clearable = true,
+  footer,
 }: {
   today: string;
   first: string;
@@ -71,6 +73,10 @@ export function StatusCalendar({
   onSelect: (date: string) => void;
   onClear: () => void;
   presets: PeriodPreset[];
+  // Mostra "Limpar" só quando a seleção veio de um toque (o dia padrão não tem o que limpar).
+  clearable?: boolean;
+  // Conteúdo extra no fim do cartão (protocolo escolhido e troca de protocolo).
+  footer?: React.ReactNode;
 }) {
   const [month, setMonth] = useState(() => clampMonth(monthOf(today), first, last));
   const cells = monthCells(month);
@@ -180,11 +186,14 @@ export function StatusCalendar({
             <span>
               Selecionado: <span className="font-medium">{selectionLabel(selection)}</span>
             </span>
-            <Button type="button" variant="ghost" size="sm" onClick={onClear}>
-              Limpar
-            </Button>
+            {clearable && (
+              <Button type="button" variant="ghost" size="sm" onClick={onClear}>
+                Limpar
+              </Button>
+            )}
           </div>
         )}
+        {footer}
       </CardContent>
     </Card>
   );

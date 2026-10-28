@@ -1,7 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/lib/types/database.types";
-import { ONBOARDING_PATH, roleHome } from "@/lib/auth/roles";
+import { HOME_HINT_COOKIE, ONBOARDING_PATH, roleHome } from "@/lib/auth/roles";
+import { SUPABASE_JWKS } from "@/lib/supabase/jwks";
 
 const TRAINER_HOME = "/dashboard";
 const STUDENT_HOME = "/aluno";
@@ -36,7 +37,7 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  const { data: claimsData } = await supabase.auth.getClaims();
+  const { data: claimsData } = await supabase.auth.getClaims(undefined, { jwks: SUPABASE_JWKS });
   const userId = claimsData?.claims?.sub;
   const { pathname } = request.nextUrl;
   const isPublicPath = PUBLIC_PATHS.some((p) => pathname.startsWith(p));
@@ -62,6 +63,11 @@ export async function updateSession(request: NextRequest) {
   const needsHome = pathname === "/" || (isPublicPath && !isAuthReturn);
   if (!needsHome) return supabaseResponse;
 
+  // Dica da home já descoberta (cookie): evita a ida ao banco no momento da abertura do app.
+  // É só uma dica de navegação, sem valor de segurança: os layouts de cada área validam o papel.
+  const hinted = readHomeHint(request.cookies.get(HOME_HINT_COOKIE)?.value, userId);
+  if (hinted) return redirectTo(hinted, request, supabaseResponse);
+
   const { data: profile } = await supabase
     .from("profiles")
     .select("role, onboarded")
@@ -69,6 +75,34 @@ export async function updateSession(request: NextRequest) {
     .single();
 
   const home = profile?.onboarded === false ? ONBOARDING_PATH : roleHome(profile?.role);
+  const response = redirectTo(home, request, supabaseResponse);
+  // Só guarda a home definitiva; o perfil ainda não escolhido (onboarding) é consultado de novo.
+  if (profile && home !== ONBOARDING_PATH) {
+    response.cookies.set(HOME_HINT_COOKIE, `${userId}|${home}`, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: HOME_HINT_MAX_AGE,
+    });
+  }
+  return response;
+}
 
-  return NextResponse.redirect(new URL(home, request.url));
+const HOME_HINT_MAX_AGE = 60 * 60 * 24 * 30;
+const KNOWN_HOMES = new Set(["/admin", "/dashboard", "/meu-plano/treino", "/aluno/treino"]);
+
+// O cookie guarda "<id do usuário>|<home>": vale só para o mesmo usuário e para homes conhecidas.
+function readHomeHint(value: string | undefined, userId: string): string | null {
+  if (!value) return null;
+  const [owner, home] = value.split("|");
+  return owner === userId && KNOWN_HOMES.has(home) ? home : null;
+}
+
+// Redireciona levando junto os cookies da sessão renovada pelo Supabase (um redirect novo
+// perderia o refresh e a próxima requisição renovaria a sessão de novo).
+function redirectTo(path: string, request: NextRequest, session: NextResponse) {
+  const response = NextResponse.redirect(new URL(path, request.url));
+  session.cookies.getAll().forEach((cookie) => response.cookies.set(cookie));
+  return response;
 }

@@ -13,14 +13,22 @@ import { cn } from "@/lib/utils";
 export function SectionTabs({
   basePath,
   items,
+  desktopOnly = false,
 }: {
   basePath: string;
   items: { href: string; label: string; shortLabel?: string }[];
+  // No celular o menu vai para a barra de baixo (BottomNav); aqui ficam só as telas largas.
+  desktopOnly?: boolean;
 }) {
   const pathname = usePathname();
 
   return (
-    <div className="flex w-full items-center gap-1 overflow-x-auto overflow-y-hidden rounded-lg bg-muted p-1 text-muted-foreground sm:inline-flex sm:h-9 sm:w-fit sm:max-w-full">
+    <div
+      className={cn(
+        "flex w-full items-center gap-1 overflow-x-auto overflow-y-hidden rounded-lg bg-muted p-1 text-muted-foreground sm:inline-flex sm:h-9 sm:w-fit sm:max-w-full",
+        desktopOnly && "max-sm:hidden"
+      )}
+    >
       {items.map((item) => {
         const href = `${basePath}${item.href}`;
         // Vale também nas subtelas (editar, plano completo, histórico).

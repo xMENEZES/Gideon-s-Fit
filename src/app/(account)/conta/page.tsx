@@ -62,7 +62,7 @@ export default async function ContaPage() {
           {role === "student" && (
             <p className="rounded-lg border border-border bg-muted/40 p-3 text-sm text-muted-foreground">
               Se você só quer deixar o time do seu profissional e manter a conta, use o botão &quot;Sair
-              do time&quot; em Meu plano.
+              do time&quot; na aba Time.
             </p>
           )}
           {role === "admin" ? (

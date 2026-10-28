@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidateModule } from "@/lib/actions/revalidate";
 import { quotaMessage } from "@/lib/quota";
 import { todayBR } from "@/lib/dates";
+import { parseLoadValue } from "@/lib/load-values";
 import { awardSeals } from "@/lib/gamification/award";
 import { exerciseFields } from "@/lib/exercise-row";
 import {
@@ -146,10 +147,18 @@ export async function createLoadLog(
   if (!kind) return { error: "Exercício não encontrado." };
   if (kind !== "strength") return { error: "Este exercício é de cardio: registre a sessão." };
 
+  // Carga e repetições podem vir conjugadas ("10 + 15"): o primeiro valor vai para a coluna
+  // numérica e o texto completo para weight_text / reps_text.
+  const weight = parseLoadValue(parsed.data.weightKg, "weight");
+  const reps = parsed.data.repsDone ? parseLoadValue(parsed.data.repsDone, "reps") : null;
+  if (!weight) return { error: "Informe a carga em kg." };
+
   const { error } = await supabase.from("exercise_load_logs").insert({
     exercise_id: exerciseId,
-    weight_kg: parsed.data.weightKg,
-    reps_done: parsed.data.repsDone ?? null,
+    weight_kg: weight.first,
+    weight_text: weight.text,
+    reps_done: reps?.first ?? null,
+    reps_text: reps?.text ?? null,
     // Sempre hoje, no dia de Brasília (o banco usa UTC e viraria o dia às 21h). A data não vem
     // do cliente: o histórico de treino não aceita datas passadas nem futuras.
     logged_at: todayBR(),

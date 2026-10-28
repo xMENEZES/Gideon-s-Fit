@@ -5,6 +5,8 @@ import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "rec
 export type LoadLogPoint = {
   logged_at: string;
   weight_kg: number;
+  // Exercício conjugado: o texto completo ("10 + 15"); o gráfico usa o primeiro valor.
+  weight_text?: string | null;
 };
 
 export function LoadChart({ logs }: { logs: LoadLogPoint[] }) {
@@ -19,6 +21,7 @@ export function LoadChart({ logs }: { logs: LoadLogPoint[] }) {
       timeZone: "UTC",
     }).format(new Date(log.logged_at)),
     carga: log.weight_kg,
+    texto: log.weight_text ?? String(log.weight_kg),
   }));
 
   return (
@@ -39,7 +42,7 @@ export function LoadChart({ logs }: { logs: LoadLogPoint[] }) {
               borderRadius: 8,
               fontSize: 12,
             }}
-            formatter={(value) => [`${value} kg`, "Carga"]}
+            formatter={(value, _name, item) => [`${item?.payload?.texto ?? value} kg`, "Carga"]}
           />
           <Line
             type="monotone"

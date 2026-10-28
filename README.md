@@ -15,8 +15,8 @@ Produção: <https://gideons-fit.vercel.app>
 **Acompanhamento**
 - **Telas do dia:** com o protocolo pronto, as abas de treino e de alimentação mostram o **treino de hoje** (o dia sugerido pela sequência) e a **alimentação de hoje**. A montagem do plano fica em "Editar plano".
 - **Registro diário de refeições:** ícones de feita (✓) e não feita (✕, com o motivo), para hoje e os 3 dias anteriores. A refeição marcada recolhe e a tela rola até a próxima pendente.
-- **Registro de carga e de cardio:** o aluno registra o que realmente fez, e isso alimenta o histórico e o gráfico. O registro vale sempre para o dia de hoje: não há campo de data.
-- **Status avaliativo:** dias treinados (musculação ou cardio, cada dia recolhível), refeições feitas por dia (o dia só entra na conta depois de encerrado), aproveitamento em % e justificativas. Um calendário permite escolher um dia (detalhe dele) ou um período (totais e só as refeições não feitas, com o motivo), além dos atalhos do protocolo atual e dos últimos 7, 14 ou 30 dias.
+- **Registro de carga e de cardio:** o aluno registra o que realmente fez, e isso alimenta o histórico e o gráfico. O registro vale sempre para o dia de hoje: não há campo de data. Em **exercício conjugado** a carga e as repetições aceitam mais de um valor (`10 + 15`): o primeiro valor vai para o gráfico e o texto completo aparece nas telas.
+- **Status avaliativo:** dias treinados (musculação ou cardio, cada dia recolhível), refeições feitas por dia (o dia só entra na conta depois de encerrado), aproveitamento em % e justificativas. A tela abre no dia de hoje e o calendário permite escolher um dia (um cartão com o treino e cada refeição do dia, feita, não feita com o motivo ou sem registro) ou um período (totais e só as refeições não feitas), além dos atalhos do protocolo atual e dos últimos 7, 14 ou 30 dias.
 
 **Gamificação**
 - **Mensagens de incentivo:** ao concluir o treino (todos os exercícios do dia registrados), a alimentação ou o dia completo, e ao conquistar um selo. O aluno de um time vê as mensagens do profissional, que parte das padrão do sistema e pode editar, adicionar e desativar. O Usuário Padrão vê as do sistema.
@@ -25,7 +25,8 @@ Produção: <https://gideons-fit.vercel.app>
 **Perfis**
 - **Usuário Padrão:** monta o próprio treino e a própria alimentação e vê só o próprio status.
 - **Profissional:** gerencia o time, vê o status de todos os alunos de uma vez e o detalhe de cada um, e personaliza as mensagens de incentivo.
-- **Aluno:** acompanha o protocolo montado pelo profissional, registra cargas e refeições.
+- **Aluno:** acompanha o protocolo montado pelo profissional, registra cargas e refeições e, na aba Time, pode sair do time.
+- **Navegação no celular:** o menu de abas (Treino, Alimentar, Status, Time) fica numa barra inferior que some ao rolar para baixo e volta ao rolar para cima; no computador as abas ficam no topo.
 
 **Times e modelos**
 - **Time por código:** o profissional gera um código de 8 caracteres, a pessoa o digita e o profissional aprova a entrada. O aluno pode sair do time quando quiser e volta a ser Usuário Padrão.
@@ -86,7 +87,7 @@ supabase/
 - **Pontos não vêm do cliente:** o resultado diário (treino concluído e dieta completa) é gravado por gatilhos do banco a partir dos registros, e os selos só pelo servidor. O registro de carga só aceita a data de hoje.
 - **Dependências:** Dependabot semanal, e `npm audit` de produção sem vulnerabilidades.
 
-Os scripts em `supabase/tests` verificam o isolamento entre contas (`rls_isolation_probe.sql`) e as regras de cada migração (cotas, cardio, mensagens, grupos de escolha e resultado diário). Rode-os no SQL Editor; os de migração terminam com um erro de propósito que desfaz tudo o que criam.
+Os scripts em `supabase/tests` verificam o isolamento entre contas (`rls_isolation_probe.sql`) e as regras de cada migração (cotas, cardio, mensagens, grupos de escolha, resultado diário e registros conjugados). Rode-os no SQL Editor; os de migração terminam com um erro de propósito que desfaz tudo o que criam.
 
 ## Deploy
 

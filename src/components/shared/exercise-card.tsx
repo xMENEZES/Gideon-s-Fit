@@ -29,6 +29,7 @@ export type ExerciseWithLogs = {
   exercise_load_logs: {
     logged_at: string;
     weight_kg: number | null;
+    weight_text?: string | null;
     duration_minutes: number | null;
     distance_km: number | null;
   }[];
@@ -55,7 +56,7 @@ export function ExerciseCard({
   const loggedToday = !!today && exercise.exercise_load_logs.some((log) => log.logged_at === today);
 
   const strengthLogs = exercise.exercise_load_logs.flatMap((log) =>
-    log.weight_kg == null ? [] : [{ logged_at: log.logged_at, weight_kg: log.weight_kg }]
+    log.weight_kg == null ? [] : [{ logged_at: log.logged_at, weight_kg: log.weight_kg, weight_text: log.weight_text ?? null }]
   );
   const cardioLogs = exercise.exercise_load_logs.filter((log) => log.weight_kg == null);
 

@@ -32,7 +32,7 @@ export function LoadHistoryDialog({
           <Badge className="cursor-pointer hover:opacity-80" title="Ver histórico de carga" />
         }
       >
-        {lastLog.weight_kg} kg atual
+        {lastLog.weight_text ?? lastLog.weight_kg} kg atual
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
