@@ -34,6 +34,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--normal-text": "var(--popover-foreground)",
           "--normal-border": "var(--border)",
           "--border-radius": "var(--radius)",
+          // Sucesso no roxo da marca (o verde do sonner não combina com o resto do app); erro, aviso
+          // e informação mantêm as cores padrão.
+          "--success-bg": "color-mix(in oklab, var(--primary) 14%, var(--popover))",
+          "--success-border": "color-mix(in oklab, var(--primary) 40%, var(--popover))",
+          "--success-text": "var(--primary-ink)",
         } as React.CSSProperties
       }
       toastOptions={{

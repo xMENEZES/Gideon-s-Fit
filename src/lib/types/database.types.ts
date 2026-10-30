@@ -49,6 +49,7 @@ export interface Database {
           notes: string | null;
           has_workout: boolean;
           has_diet: boolean;
+          ranking_opt_in: boolean;
           created_at: string;
         };
         Insert: {
@@ -61,6 +62,7 @@ export interface Database {
           notes?: string | null;
           has_workout?: boolean;
           has_diet?: boolean;
+          ranking_opt_in?: boolean;
           created_at?: string;
         };
         Update: Partial<{
@@ -70,6 +72,7 @@ export interface Database {
           notes: string | null;
           has_workout: boolean;
           has_diet: boolean;
+          ranking_opt_in: boolean;
         }>;
         Relationships: [
           {
@@ -529,6 +532,32 @@ export interface Database {
           },
         ];
       };
+      trainer_settings: {
+        Row: {
+          trainer_id: string;
+          ranking_enabled: boolean;
+          updated_at: string;
+        };
+        // Só o próprio profissional lê e grava (RLS).
+        Insert: {
+          trainer_id: string;
+          ranking_enabled?: boolean;
+          updated_at?: string;
+        };
+        Update: Partial<{
+          ranking_enabled: boolean;
+          updated_at: string;
+        }>;
+        Relationships: [
+          {
+            foreignKeyName: "trainer_settings_trainer_id_fkey";
+            columns: ["trainer_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       rest_days: {
         Row: {
           student_id: string;
@@ -612,6 +641,18 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
+      my_ranking_state: {
+        Args: Record<string, never>;
+        Returns: { enabled: boolean; opted_in: boolean; participants: number }[];
+      };
+      set_ranking_participation: {
+        Args: { p_join: boolean };
+        Returns: boolean;
+      };
+      team_leaderboard: {
+        Args: { p_month: string };
+        Returns: { display_name: string; total_points: number; is_me: boolean }[];
+      };
       start_new_protocol: {
         Args: {
           p_student_id: string;

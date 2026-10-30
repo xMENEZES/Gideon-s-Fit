@@ -1,16 +1,20 @@
 import { getOwnTeamStudent } from "@/lib/data/students";
+import { getRankingState } from "@/lib/data/ranking";
 import { SectionTabs } from "@/components/shared/section-tabs";
 import { BottomNav, type BottomNavItem } from "@/components/shared/bottom-nav";
 
 type Tab = { href: string; label: string; nav: string; icon: BottomNavItem["icon"] };
 
 export default async function AlunoLayout({ children }: { children: React.ReactNode }) {
-  const student = await getOwnTeamStudent();
+  // As duas consultas não dependem uma da outra: rodam juntas.
+  const [student, ranking] = await Promise.all([getOwnTeamStudent(), getRankingState()]);
 
   const tabs = [
     (student?.has_workout ?? true) && { href: "/treino", label: "Prot. Treino", nav: "Treino", icon: "treino" },
     (student?.has_diet ?? true) && { href: "/dieta", label: "Prot. Alimentar", nav: "Alimentar", icon: "dieta" },
     { href: "/status", label: "Status", nav: "Status", icon: "status" },
+    // A aba só existe quando o profissional ligou o ranking do time.
+    ranking?.enabled && { href: "/ranking", label: "Ranking", nav: "Ranking", icon: "ranking" },
     { href: "/time", label: "Time", nav: "Time", icon: "time" },
   ].filter((tab): tab is Tab => Boolean(tab));
 

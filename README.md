@@ -22,6 +22,8 @@ Produção: <https://gideons-fit.vercel.app>
 - **Mensagens de incentivo:** ao concluir o treino (todos os exercícios do dia registrados), a alimentação ou o dia completo, e ao conquistar um selo. O aluno de um time vê as mensagens do profissional, que parte das padrão do sistema e pode editar, adicionar e desativar. O Usuário Padrão vê as do sistema.
 - **Sequências e selos:** a sequência de treino quebra no 3º dia seguido sem treinar, a de dieta no 2º dia incompleto, e a de treino + dieta conta só os dias com os dois. São 21 selos em SVG (3 linhas, marcos de 3 a 200 dias). O card da conquista aparece uma vez; depois fica o ícone do maior selo no topo das telas do dia, e a tela de Status mostra as sequências e os selos conquistados.
 
+- **Ranking mensal do time:** o profissional liga o ranking (desligado por padrão) na tela de Mensagens, e os alunos do time ganham a aba **Ranking**. Cada aluno decide se participa; quem não participa não vê o ranking. Quem participa vê só posição, apelido (ou primeiro nome) e pontos do mês: 1 ponto por dia de treino completo e 1 por dia de alimentação completa (máximo 2 por dia), zerando no dia 1; empate divide a posição. O ranking só sai por uma função do banco (`team_leaderboard`), que não expõe a linha de nenhum aluno. O Usuário Padrão não tem ranking.
+
 **Perfis**
 - **Usuário Padrão:** monta o próprio treino e a própria alimentação e vê só o próprio status.
 - **Profissional:** gerencia o time, vê o status de todos os alunos de uma vez e o detalhe de cada um, e personaliza as mensagens de incentivo.
@@ -87,7 +89,7 @@ supabase/
 - **Pontos não vêm do cliente:** o resultado diário (treino concluído e dieta completa) é gravado por gatilhos do banco a partir dos registros, e os selos só pelo servidor. O registro de carga só aceita a data de hoje.
 - **Dependências:** Dependabot semanal, e `npm audit` de produção sem vulnerabilidades.
 
-Os scripts em `supabase/tests` verificam o isolamento entre contas (`rls_isolation_probe.sql`) e as regras de cada migração (cotas, cardio, mensagens, grupos de escolha, resultado diário, registros conjugados, séries feitas e dias de descanso). Rode-os no SQL Editor; os de migração terminam com um erro de propósito que desfaz tudo o que criam.
+Os scripts em `supabase/tests` verificam o isolamento entre contas (`rls_isolation_probe.sql`) e as regras de cada migração (cotas, cardio, mensagens, grupos de escolha, resultado diário, registros conjugados, séries feitas, dias de descanso e ranking do time). Rode-os no SQL Editor; os de migração terminam com um erro de propósito que desfaz tudo o que criam.
 
 ## Deploy
 

@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getSessionUserId } from "@/lib/auth/session";
 import { EDITABLE_EVENTS, EVENT_LABELS } from "@/lib/incentive";
 import { IncentiveEventCard } from "@/components/shared/incentive-event-card";
+import { TeamRankingCard } from "@/components/shared/team-ranking-card";
 
 export default async function MensagensPage() {
   const userId = await getSessionUserId();
@@ -21,6 +22,8 @@ export default async function MensagensPage() {
           suas, eles recebem as padrão do sistema. Quem usa o plano próprio sempre vê as padrão.
         </p>
       </div>
+
+      <TeamRankingCard />
 
       {EDITABLE_EVENTS.map((event) => (
         <IncentiveEventCard

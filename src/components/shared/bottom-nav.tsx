@@ -3,11 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChartNoAxesColumn, Dumbbell, Users, Utensils, type LucideIcon } from "lucide-react";
+import { ChartNoAxesColumn, Dumbbell, Trophy, Users, Utensils, type LucideIcon } from "lucide-react";
 import { isNavActive } from "@/lib/nav";
 import { cn } from "@/lib/utils";
 
-export type BottomNavIcon = "treino" | "dieta" | "status" | "time";
+export type BottomNavIcon = "treino" | "dieta" | "status" | "ranking" | "time";
 export type BottomNavItem = { href: string; label: string; icon: BottomNavIcon };
 
 // Ícones por nome: um componente não atravessa do servidor (layout) para o cliente.
@@ -15,6 +15,7 @@ const ICONS: Record<BottomNavIcon, LucideIcon> = {
   treino: Dumbbell,
   dieta: Utensils,
   status: ChartNoAxesColumn,
+  ranking: Trophy,
   time: Users,
 };
 
