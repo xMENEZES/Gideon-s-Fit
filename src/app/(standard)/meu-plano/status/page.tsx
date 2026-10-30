@@ -20,6 +20,7 @@ export default async function MeuStatusPage({
       studentId={studentId}
       basePath="/meu-plano/status"
       searchParams={await searchParams}
+      canMarkRest
     />
   );
 }

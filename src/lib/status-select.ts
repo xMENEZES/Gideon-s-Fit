@@ -77,23 +77,47 @@ export function monthCells(month: string): (string | null)[] {
 
 // ---- Marcas de cada dia ----
 
-export type DietMark = "complete" | "missed" | "pending" | "progress" | null;
-export type DayMarks = { workout: boolean; diet: DietMark };
+// Cada dia do calendário tem dois círculos fixos: o da esquerda é o treino e o da direita a
+// alimentação. Estado de cada um:
+//   complete = verde (treino completo ou todas as refeições feitas)
+//   partial  = amarelo (fez uma parte, não importa quanto faltou)
+//   missed   = vermelho (nada feito)
+//   rest     = azul (só no treino: dia de descanso marcado pela pessoa)
+//   none     = só o contorno, sem avaliação (hoje, dia sem protocolo daquele tipo)
+export type CircleState = "none" | "complete" | "partial" | "missed" | "rest";
+export type DayMarks = { workout: CircleState; diet: CircleState };
 
-// Treino: houve registro no dia. Alimentação: todas feitas (complete), alguma "não fez"
-// (missed), dia encerrado sem tudo marcado (pending) ou hoje ainda em andamento (progress).
-export function dayMarks(
-  trained: boolean,
-  mealDay: Pick<MealDayStatus, "total" | "done" | "missed" | "inProgress"> | undefined
-): DayMarks {
-  let diet: DietMark = null;
-  if (mealDay && mealDay.total > 0) {
-    if (mealDay.done === mealDay.total) diet = "complete";
-    else if (mealDay.inProgress) diet = "progress";
-    else if (mealDay.missed.length > 0) diet = "missed";
-    else diet = "pending";
+export type DayMarksInput = {
+  date: string;
+  today: string;
+  // O dia está dentro do período do protocolo de treino mostrado.
+  inWorkoutRange: boolean;
+  // Há exercício registrado no dia.
+  trained: boolean;
+  // Todos os exercícios de um mesmo dia do protocolo foram registrados (resultado diário do banco).
+  workoutDone: boolean;
+  // A pessoa marcou o dia como descanso.
+  rest: boolean;
+  mealDay: Pick<MealDayStatus, "total" | "done"> | undefined;
+};
+
+// A cor só vale depois que o dia termina: hoje (e qualquer data a partir dele) fica sem cor.
+export function dayMarks(input: DayMarksInput): DayMarks {
+  const { date, today, inWorkoutRange, trained, workoutDone, rest, mealDay } = input;
+  if (date >= today) return { workout: "none", diet: "none" };
+
+  let workout: CircleState = "none";
+  if (inWorkoutRange) {
+    if (trained) workout = workoutDone ? "complete" : "partial";
+    else workout = rest ? "rest" : "missed";
   }
-  return { workout: trained, diet };
+
+  let diet: CircleState = "none";
+  if (mealDay && mealDay.total > 0) {
+    if (mealDay.done >= mealDay.total) diet = "complete";
+    else diet = mealDay.done > 0 ? "partial" : "missed";
+  }
+  return { workout, diet };
 }
 
 // ---- Resumos da seleção (mesmas regras do Status inteiro) ----
@@ -116,13 +140,17 @@ export function missedDaysNewestFirst(days: MealDayStatus[]): MealDayStatus[] {
 export function summarizeWorkoutSelection(
   range: string[],
   entriesByDate: Record<string, unknown[]>,
-  selection: Selection | null
-): { total: number; trained: number; trainedDatesNewestFirst: string[] } {
+  selection: Selection | null,
+  restDates: string[] = []
+): { total: number; trained: number; rest: number; trainedDatesNewestFirst: string[] } {
   const inside = selection ? range.filter((date) => isInSelection(date, selection)) : range;
   const trainedDates = inside.filter((date) => (entriesByDate[date]?.length ?? 0) > 0);
+  // Descanso só conta no dia em que não houve treino (se houve, vale o treino).
+  const rest = inside.filter((date) => restDates.includes(date) && !trainedDates.includes(date));
   return {
     total: inside.length,
     trained: trainedDates.length,
+    rest: rest.length,
     trainedDatesNewestFirst: [...trainedDates].sort().reverse(),
   };
 }

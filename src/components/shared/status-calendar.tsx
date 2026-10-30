@@ -12,8 +12,8 @@ import {
   monthOf,
   selectionLabel,
   shiftMonth,
+  type CircleState,
   type DayMarks,
-  type DietMark,
   type Selection,
 } from "@/lib/status-select";
 import { Button } from "@/components/ui/button";
@@ -24,29 +24,55 @@ export type PeriodPreset = { label: string; href: string; active: boolean };
 
 const chipClass = "inline-flex h-8 items-center rounded-lg border px-3 text-sm font-medium transition-colors";
 
-const DIET_LABEL: Record<Exclude<DietMark, null>, string> = {
+// Cores do calendário (verde, amarelo e vermelho de status, e azul para o descanso): são cores de
+// significado e valem só aqui, o resto do app usa o roxo da marca. Sem estado = só o contorno.
+const CIRCLE_CLASS: Record<CircleState, string> = {
+  none: "border border-muted-foreground/60",
+  complete: "bg-green-500",
+  partial: "bg-amber-400",
+  missed: "bg-red-500",
+  rest: "bg-sky-400",
+};
+
+const WORKOUT_LABEL: Record<CircleState, string | null> = {
+  none: null,
+  complete: "treino completo",
+  partial: "treino incompleto",
+  missed: "nenhum exercício feito",
+  rest: "dia de descanso",
+};
+
+const DIET_LABEL: Record<CircleState, string | null> = {
+  none: null,
   complete: "alimentação completa",
-  missed: "alimentação com refeição não feita",
-  pending: "alimentação sem registro",
-  progress: "alimentação em andamento",
+  partial: "alimentação incompleta",
+  missed: "nenhuma refeição feita",
+  rest: null,
 };
 
 function describeDay(date: string, marks: DayMarks | undefined) {
   const parts = [formatDate(date)];
-  if (marks?.workout) parts.push("treinou");
-  if (marks?.diet) parts.push(DIET_LABEL[marks.diet]);
+  const workout = marks && WORKOUT_LABEL[marks.workout];
+  const diet = marks && DIET_LABEL[marks.diet];
+  if (workout) parts.push(workout);
+  if (diet) parts.push(diet);
   return parts.join(", ");
 }
 
+// Sempre dois círculos: o da esquerda é o treino, o da direita a alimentação.
 function Dots({ marks }: { marks: DayMarks | undefined }) {
-  if (!marks || (!marks.workout && !marks.diet)) return <span className="h-1.5" />;
   return (
-    <span className="flex h-1.5 items-center gap-0.5">
-      {marks.workout && <span className="size-1.5 rounded-full bg-sky-400" />}
-      {marks.diet === "complete" && <span className="size-1.5 rounded-full bg-primary" />}
-      {marks.diet === "missed" && <span className="size-1.5 rounded-full bg-destructive" />}
-      {marks.diet === "pending" && <span className="size-1.5 rounded-full border border-muted-foreground" />}
-      {marks.diet === "progress" && <span className="size-1.5 rounded-full border border-primary-ink" />}
+    <span className="flex h-2 items-center gap-1" aria-hidden="true">
+      <span className={cn("size-2 rounded-full", CIRCLE_CLASS[marks?.workout ?? "none"])} />
+      <span className={cn("size-2 rounded-full", CIRCLE_CLASS[marks?.diet ?? "none"])} />
+    </span>
+  );
+}
+
+function LegendDot({ state, label }: { state: CircleState; label: string }) {
+  return (
+    <span className="flex items-center gap-1">
+      <span className={cn("size-2 rounded-full", CIRCLE_CLASS[state])} /> {label}
     </span>
   );
 }
@@ -159,25 +185,22 @@ export function StatusCalendar({
                   )}
                 >
                   {Number(date.slice(8))}
-                  <Dots marks={available ? marks[date] : undefined} />
+                  <Dots marks={marks[date]} />
                 </button>
               );
             })}
           </div>
 
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1">
-              <span className="size-1.5 rounded-full bg-sky-400" /> treino
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="size-1.5 rounded-full bg-primary" /> alimentação completa
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="size-1.5 rounded-full bg-destructive" /> não feita
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="size-1.5 rounded-full border border-muted-foreground" /> sem registro
-            </span>
+          <div className="flex flex-col gap-1 text-xs text-muted-foreground">
+            <p>Em cada dia, o círculo da esquerda é o treino e o da direita é a alimentação.</p>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <LegendDot state="complete" label="completo" />
+              <LegendDot state="partial" label="incompleto" />
+              <LegendDot state="missed" label="nada feito" />
+              <LegendDot state="rest" label="descanso" />
+              <LegendDot state="none" label="sem avaliação" />
+            </div>
+            <p>A cor aparece quando o dia termina. Hoje e dias sem protocolo ficam só com o contorno.</p>
           </div>
         </div>
 

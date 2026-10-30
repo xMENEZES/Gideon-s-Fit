@@ -98,12 +98,15 @@ export async function StatusReport({
   searchParams,
   showWorkout = true,
   showDiet = true,
+  canMarkRest = false,
 }: {
   studentId: string;
   basePath: string;
   searchParams: StatusSearchParams;
   showWorkout?: boolean;
   showDiet?: boolean;
+  // Só a própria pessoa (aluno do time ou Usuário Padrão) marca dia de descanso; o profissional só vê.
+  canMarkRest?: boolean;
 }) {
   const supabase = await createClient();
   const today = todayBR();
@@ -136,10 +139,31 @@ export async function StatusReport({
   const dietIds =
     customRange && showDiet ? dietPeriods.map((period) => period.id) : diet ? [diet.id] : [];
 
-  const [workoutEntries, mealRows] = await Promise.all([
+  // Resultado diário (dia de treino completo, calculado pelo banco) e dias de descanso marcados:
+  // os mais recentes primeiro, que são os que o calendário mostra. Só interessam ao treino.
+  const [workoutEntries, mealRows, scoresResult, restResult] = await Promise.all([
     loadWorkoutEntries(supabase, workoutIds),
     loadMealRows(supabase, dietIds),
+    showWorkout
+      ? supabase
+          .from("daily_scores")
+          .select("score_date")
+          .eq("student_id", studentId)
+          .eq("workout_done", true)
+          .order("score_date", { ascending: false })
+          .limit(1000)
+      : null,
+    showWorkout
+      ? supabase
+          .from("rest_days")
+          .select("rest_date")
+          .eq("student_id", studentId)
+          .order("rest_date", { ascending: false })
+          .limit(1000)
+      : null,
   ]);
+  const doneDates = (scoresResult?.data ?? []).map((row) => row.score_date);
+  const restDates = (restResult?.data ?? []).map((row) => row.rest_date);
 
   const workoutStatus = customRange
     ? buildWorkoutRangeStatus(workoutPeriods, workoutEntries, customRange.from, customRange.to)
@@ -191,6 +215,8 @@ export async function StatusReport({
             ? {
                 range: workoutStatus.range,
                 entries: Object.fromEntries(workoutStatus.entriesByDate),
+                done: doneDates,
+                rest: restDates,
               }
             : null,
         chips:
@@ -232,6 +258,8 @@ export async function StatusReport({
         // A seleção recomeça quando o período (atalho ou protocolo) muda.
         key={customRange ? `${customRange.from}|${customRange.to}` : `${workout?.id}|${diet?.id}`}
         today={today}
+        studentId={studentId}
+        canMarkRest={canMarkRest}
         presets={presets}
         workout={workoutPanel}
         diet={dietPanel}

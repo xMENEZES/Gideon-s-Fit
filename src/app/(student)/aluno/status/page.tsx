@@ -19,6 +19,7 @@ export default async function AlunoStatusPage({
       searchParams={await searchParams}
       showWorkout={student.has_workout}
       showDiet={student.has_diet}
+      canMarkRest
     />
   );
 }

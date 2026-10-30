@@ -16,6 +16,7 @@ import {
 } from "@/lib/status-select";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { RestDayButton } from "@/components/shared/rest-day-button";
 import { StatusCalendar, type PeriodPreset } from "@/components/shared/status-calendar";
 import {
   MealDayHistory,
@@ -27,8 +28,9 @@ import {
 
 export type WorkoutPanel = {
   description: string;
-  // null = sem protocolo de treino para mostrar.
-  data: { range: string[]; entries: Record<string, WorkoutEntry[]> } | null;
+  // null = sem protocolo de treino para mostrar. `done` = dias em que todos os exercícios de um dia
+  // do protocolo foram registrados (resultado diário do banco); `rest` = dias de descanso marcados.
+  data: { range: string[]; entries: Record<string, WorkoutEntry[]>; done: string[]; rest: string[] } | null;
   // Troca de protocolo (quando há mais de um) e nota do período, já montados no servidor.
   chips: React.ReactNode;
   note: React.ReactNode;
@@ -53,11 +55,15 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 function DayCard({
   date,
   today,
+  studentId,
+  canMarkRest,
   workout,
   diet,
 }: {
   date: string;
   today: string;
+  studentId: string;
+  canMarkRest: boolean;
   workout: WorkoutPanel | null;
   diet: DietPanel | null;
 }) {
@@ -65,6 +71,7 @@ function DayCard({
   const dietDay = diet?.data?.days.find((day) => day.date === date) ?? null;
   const entries = workoutData?.entries[date] ?? [];
   const inWorkoutRange = !!workoutData?.range.includes(date);
+  const isRest = !!workoutData?.rest.includes(date);
 
   return (
     <Card>
@@ -86,9 +93,14 @@ function DayCard({
             {!workoutData || !inWorkoutRange ? (
               <p className="text-sm text-muted-foreground">Sem protocolo de treino neste dia.</p>
             ) : entries.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Não treinou.</p>
+              <p className="text-sm text-muted-foreground">
+                {isRest ? "Dia de descanso." : date === today ? "Ainda sem treino registrado hoje." : "Não treinou."}
+              </p>
             ) : (
               <WorkoutDayHistory entries={entries} />
+            )}
+            {canMarkRest && inWorkoutRange && entries.length === 0 && (
+              <RestDayButton studentId={studentId} date={date} rest={isRest} />
             )}
           </section>
         )}
@@ -119,7 +131,7 @@ function DayCard({
 function WorkoutPeriodCard({ panel, selection }: { panel: WorkoutPanel; selection: Selection }) {
   const data = panel.data;
   if (!data) return null;
-  const summary = summarizeWorkoutSelection(data.range, data.entries, selection);
+  const summary = summarizeWorkoutSelection(data.range, data.entries, selection, data.rest);
   return (
     <Card>
       <CardHeader>
@@ -129,15 +141,19 @@ function WorkoutPeriodCard({ panel, selection }: { panel: WorkoutPanel; selectio
         {summary.total === 0 ? (
           <p className="text-sm text-muted-foreground">Nenhum dia com protocolo neste período.</p>
         ) : (
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <StatTile label="Treinados" value={String(summary.trained)} tone="good" />
+            <StatTile label="Descanso" value={String(summary.rest)} />
+            <StatTile
+              label="Sem treino"
+              value={String(Math.max(summary.total - summary.trained - summary.rest, 0))}
+            />
             <StatTile label="Dias" value={String(summary.total)} />
-            <StatTile label="Sem treino" value={String(Math.max(summary.total - summary.trained, 0))} />
           </div>
         )}
         <p className="text-xs text-muted-foreground">
-          Um dia conta como treinado quando há exercício registrado nele (carga ou sessão de cardio). Toque
-          num dia para ver o detalhe.
+          Um dia conta como treinado quando há exercício registrado nele (carga ou sessão de cardio). Dias de
+          descanso marcados não entram em &quot;Sem treino&quot;. Toque num dia para ver o detalhe.
         </p>
         {panel.note}
       </CardContent>
@@ -234,11 +250,16 @@ function ProtocolInfo({ label, description, chips }: { label: string; descriptio
 // cliente e é instantânea: os dados do período já vieram do servidor. A tela abre no dia de hoje.
 export function StatusExplorer({
   today,
+  studentId,
+  canMarkRest,
   presets,
   workout,
   diet,
 }: {
   today: string;
+  studentId: string;
+  // Só a própria pessoa marca dia de descanso (o profissional só vê).
+  canMarkRest: boolean;
   presets: PeriodPreset[];
   workout: WorkoutPanel | null;
   diet: DietPanel | null;
@@ -249,9 +270,20 @@ export function StatusExplorer({
   const mealByDate = new Map((diet?.data?.days ?? []).map((day) => [day.date, day]));
   const workoutRange = workout?.data?.range ?? [];
   const dates = [...new Set([...workoutRange, ...mealByDate.keys()])].sort();
+  const inWorkoutRange = new Set(workoutRange);
+  const doneDates = new Set(workout?.data?.done ?? []);
+  const restDates = new Set(workout?.data?.rest ?? []);
   const marks: Record<string, DayMarks> = {};
   for (const date of dates) {
-    marks[date] = dayMarks((workout?.data?.entries[date]?.length ?? 0) > 0, mealByDate.get(date));
+    marks[date] = dayMarks({
+      date,
+      today,
+      inWorkoutRange: inWorkoutRange.has(date),
+      trained: (workout?.data?.entries[date]?.length ?? 0) > 0,
+      workoutDone: doneDates.has(date),
+      rest: restDates.has(date),
+      mealDay: mealByDate.get(date),
+    });
   }
 
   // Sem escolha do usuário, vale hoje (ou o último dia com dados, se hoje estiver fora do período).
@@ -295,7 +327,14 @@ export function StatusExplorer({
       )}
 
       {effective && kind === "day" && (
-        <DayCard date={effective.from} today={today} workout={workout} diet={diet} />
+        <DayCard
+          date={effective.from}
+          today={today}
+          studentId={studentId}
+          canMarkRest={canMarkRest}
+          workout={workout}
+          diet={diet}
+        />
       )}
       {effective && kind === "period" && (
         <>

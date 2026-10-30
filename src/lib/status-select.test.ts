@@ -106,22 +106,57 @@ describe("calendário do mês", () => {
 });
 
 describe("dayMarks", () => {
-  it("treino: só marca quando houve registro", () => {
-    expect(dayMarks(true, undefined).workout).toBe(true);
-    expect(dayMarks(false, undefined)).toEqual({ workout: false, diet: null });
+  const TODAY = "2026-10-13";
+  const base = {
+    date: "2026-10-09",
+    today: TODAY,
+    inWorkoutRange: true,
+    trained: false,
+    workoutDone: false,
+    rest: false,
+    mealDay: undefined as MealDayStatus | undefined,
+  };
+
+  it("treino: completo (verde), parcial (amarelo), nada feito (vermelho) e descanso (azul)", () => {
+    expect(dayMarks({ ...base, trained: true, workoutDone: true }).workout).toBe("complete");
+    expect(dayMarks({ ...base, trained: true, workoutDone: false }).workout).toBe("partial");
+    expect(dayMarks(base).workout).toBe("missed");
+    expect(dayMarks({ ...base, rest: true }).workout).toBe("rest");
   });
 
-  it("alimentação: completa, com 'não fez', pendente e em andamento", () => {
-    expect(dayMarks(false, mealDay("2026-10-09", 2)).diet).toBe("complete");
-    expect(dayMarks(false, mealDay("2026-10-09", 1, 2, ["Almoço"])).diet).toBe("missed");
-    expect(dayMarks(false, mealDay("2026-10-09", 1)).diet).toBe("pending");
-    expect(dayMarks(false, mealDay("2026-10-09", 0)).diet).toBe("pending");
-    expect(dayMarks(false, mealDay("2026-10-13", 1, 2, [], true)).diet).toBe("progress");
-    expect(dayMarks(false, mealDay("2026-10-13", 2, 2, [], true)).diet).toBe("complete");
+  it("treino: se houve exercício num dia marcado como descanso, vale o treino", () => {
+    expect(dayMarks({ ...base, trained: true, workoutDone: true, rest: true }).workout).toBe("complete");
+    expect(dayMarks({ ...base, trained: true, rest: true }).workout).toBe("partial");
   });
 
-  it("dia sem refeições não tem marca", () => {
-    expect(dayMarks(false, mealDay("2026-10-09", 0, 0)).diet).toBeNull();
+  it("treino: dia fora do período do protocolo fica sem cor", () => {
+    expect(dayMarks({ ...base, inWorkoutRange: false }).workout).toBe("none");
+    expect(dayMarks({ ...base, inWorkoutRange: false, rest: true }).workout).toBe("none");
+  });
+
+  it("alimentação: completa, parcial (qualquer quantidade) e nenhuma feita", () => {
+    expect(dayMarks({ ...base, mealDay: mealDay("2026-10-09", 2) }).diet).toBe("complete");
+    expect(dayMarks({ ...base, mealDay: mealDay("2026-10-09", 1) }).diet).toBe("partial");
+    expect(dayMarks({ ...base, mealDay: mealDay("2026-10-09", 1, 5) }).diet).toBe("partial");
+    expect(dayMarks({ ...base, mealDay: mealDay("2026-10-09", 4, 5) }).diet).toBe("partial");
+    expect(dayMarks({ ...base, mealDay: mealDay("2026-10-09", 0) }).diet).toBe("missed");
+    // "não fez" com motivo continua valendo como refeição não feita.
+    expect(dayMarks({ ...base, mealDay: mealDay("2026-10-09", 0, 2, ["Almoço", "Jantar"]) }).diet).toBe("missed");
+    expect(dayMarks({ ...base, mealDay: mealDay("2026-10-09", 1, 2, ["Almoço"]) }).diet).toBe("partial");
+  });
+
+  it("alimentação: dia sem refeições ou sem protocolo fica sem cor", () => {
+    expect(dayMarks({ ...base, mealDay: mealDay("2026-10-09", 0, 0) }).diet).toBe("none");
+    expect(dayMarks(base).diet).toBe("none");
+  });
+
+  it("a cor só vale depois que o dia termina: hoje e depois ficam sem cor", () => {
+    const full = { trained: true, workoutDone: true, mealDay: mealDay(TODAY, 2) };
+    expect(dayMarks({ ...base, ...full, date: TODAY })).toEqual({ workout: "none", diet: "none" });
+    expect(dayMarks({ ...base, ...full, date: "2026-10-14" })).toEqual({ workout: "none", diet: "none" });
+    expect(dayMarks({ ...base, date: TODAY, rest: true })).toEqual({ workout: "none", diet: "none" });
+    // O dia anterior já tem cor.
+    expect(dayMarks({ ...base, ...full, date: "2026-10-12" })).toEqual({ workout: "complete", diet: "complete" });
   });
 });
 
@@ -172,6 +207,7 @@ describe("resumo do treino na seleção", () => {
     expect(summarizeWorkoutSelection(range, entries, null)).toEqual({
       total: 4,
       trained: 2,
+      rest: 0,
       trainedDatesNewestFirst: ["2026-10-10", "2026-10-08"],
     });
   });
@@ -180,8 +216,17 @@ describe("resumo do treino na seleção", () => {
     expect(summarizeWorkoutSelection(range, entries, { from: "2026-10-08", to: "2026-10-09" })).toEqual({
       total: 2,
       trained: 1,
+      rest: 0,
       trainedDatesNewestFirst: ["2026-10-08"],
     });
+  });
+
+  it("descanso conta só nos dias sem treino e dentro do período", () => {
+    // 2026-10-08 treinou (e foi marcado descanso: vale o treino); 2026-10-09 descanso; fora do período: ignorado.
+    const rest = ["2026-10-08", "2026-10-09", "2026-09-01"];
+    expect(summarizeWorkoutSelection(range, entries, null, rest).rest).toBe(1);
+    expect(summarizeWorkoutSelection(range, entries, { from: "2026-10-09", to: "2026-10-09" }, rest).rest).toBe(1);
+    expect(summarizeWorkoutSelection(range, entries, { from: "2026-10-08", to: "2026-10-08" }, rest).rest).toBe(0);
   });
 
   it("um dia sem treino", () => {

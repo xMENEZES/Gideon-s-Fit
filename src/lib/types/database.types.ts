@@ -529,6 +529,31 @@ export interface Database {
           },
         ];
       };
+      rest_days: {
+        Row: {
+          student_id: string;
+          rest_date: string;
+          created_at: string;
+        };
+        // Só o dono do plano grava e apaga (o profissional só lê).
+        Insert: {
+          student_id: string;
+          rest_date: string;
+          created_at?: string;
+        };
+        Update: Partial<{
+          rest_date: string;
+        }>;
+        Relationships: [
+          {
+            foreignKeyName: "rest_days_student_id_fkey";
+            columns: ["student_id"];
+            isOneToOne: false;
+            referencedRelation: "students";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       achievements: {
         Row: {
           id: string;
