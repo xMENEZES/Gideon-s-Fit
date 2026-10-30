@@ -72,7 +72,7 @@ export function BottomNav({ basePath, items }: { basePath: string; items: Bottom
                   aria-current={active ? "page" : undefined}
                   className={cn(
                     "flex h-16 flex-col items-center justify-center gap-1 px-1 text-[11px] font-medium transition-colors",
-                    active ? "font-semibold text-primary" : "text-muted-foreground"
+                    active ? "font-semibold text-primary-ink" : "text-muted-foreground"
                   )}
                 >
                   <Icon className="size-5" strokeWidth={active ? 2.5 : 2} />

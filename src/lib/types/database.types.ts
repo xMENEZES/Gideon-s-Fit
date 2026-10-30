@@ -222,6 +222,7 @@ export interface Database {
           logged_at: string;
           weight_kg: number | null;
           reps_done: number | null;
+          sets_done: number | null;
           weight_text: string | null;
           reps_text: string | null;
           duration_minutes: number | null;
@@ -236,6 +237,7 @@ export interface Database {
           logged_at?: string;
           weight_kg?: number | null;
           reps_done?: number | null;
+          sets_done?: number | null;
           weight_text?: string | null;
           reps_text?: string | null;
           duration_minutes?: number | null;
@@ -248,6 +250,7 @@ export interface Database {
           logged_at: string;
           weight_kg: number | null;
           reps_done: number | null;
+          sets_done: number | null;
           weight_text: string | null;
           reps_text: string | null;
           duration_minutes: number | null;

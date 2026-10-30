@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Dumbbell } from "lucide-react";
+import { BrandMark } from "@/components/shared/brand-mark";
 
 export const metadata = {
   title: "Como excluir sua conta | Gideon's Fit",
@@ -13,7 +13,7 @@ export default function ExcluirContaPage() {
     <div className="min-h-screen bg-background">
       <header className="border-b border-border px-6 py-4">
         <Link href="/" className="flex w-fit items-center gap-2 text-brand">
-          <Dumbbell className="size-6" strokeWidth={2.5} />
+          <BrandMark className="h-6 w-auto" />
           <span className="text-lg font-bold tracking-tight text-foreground">
             Gideon&apos;s Fit
           </span>
@@ -41,7 +41,7 @@ export default function ExcluirContaPage() {
           </ol>
           <p className="text-sm text-muted-foreground">
             Se você ainda não entrou, faça o{" "}
-            <Link className="text-primary underline" href="/login">
+            <Link className="text-primary-ink underline" href="/login">
               login
             </Link>{" "}
             primeiro.
@@ -52,7 +52,7 @@ export default function ExcluirContaPage() {
           <h2 className="text-lg font-semibold">Por e-mail</h2>
           <p className="text-sm leading-relaxed text-muted-foreground">
             Se não conseguir acessar a conta, escreva para{" "}
-            <a className="text-primary underline" href={`mailto:${CONTACT_EMAIL}`}>
+            <a className="text-primary-ink underline" href={`mailto:${CONTACT_EMAIL}`}>
               {CONTACT_EMAIL}
             </a>{" "}
             a partir do e-mail cadastrado, com o assunto &quot;Excluir minha conta&quot;. Para sua
@@ -77,7 +77,7 @@ export default function ExcluirContaPage() {
             A exclusão é definitiva e não pode ser desfeita. Cópias de segurança do provedor de
             hospedagem podem manter os dados por um período limitado antes de serem descartadas. Mais
             detalhes na{" "}
-            <Link className="text-primary underline" href="/privacidade">
+            <Link className="text-primary-ink underline" href="/privacidade">
               Política de Privacidade
             </Link>
             .

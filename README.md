@@ -15,7 +15,7 @@ Produção: <https://gideons-fit.vercel.app>
 **Acompanhamento**
 - **Telas do dia:** com o protocolo pronto, as abas de treino e de alimentação mostram o **treino de hoje** (o dia sugerido pela sequência) e a **alimentação de hoje**. A montagem do plano fica em "Editar plano".
 - **Registro diário de refeições:** ícones de feita (✓) e não feita (✕, com o motivo), para hoje e os 3 dias anteriores. A refeição marcada recolhe e a tela rola até a próxima pendente.
-- **Registro de carga e de cardio:** o aluno registra o que realmente fez, e isso alimenta o histórico e o gráfico. O registro vale sempre para o dia de hoje: não há campo de data. Em **exercício conjugado** a carga e as repetições aceitam mais de um valor (`10 + 15`): o primeiro valor vai para o gráfico e o texto completo aparece nas telas.
+- **Registro de carga e de cardio:** o aluno registra o que realmente fez, e isso alimenta o histórico e o gráfico. O registro vale sempre para o dia de hoje: não há campo de data. Em **exercício conjugado** a carga e as repetições aceitam mais de um valor (`10 + 15`, com o botão **+** ao lado do campo, já que o teclado numérico do celular não tem esse sinal): o primeiro valor vai para o gráfico e o texto completo aparece nas telas. O campo opcional **Séries feitas** guarda quantas séries foram feitas; em branco, vale o número de séries definido no exercício. O cronômetro de descanso avisa o fim com cerca de 3 s de bipes e de vibração (a vibração não existe no iPhone).
 - **Status avaliativo:** dias treinados (musculação ou cardio, cada dia recolhível), refeições feitas por dia (o dia só entra na conta depois de encerrado), aproveitamento em % e justificativas. A tela abre no dia de hoje e o calendário permite escolher um dia (um cartão com o treino e cada refeição do dia, feita, não feita com o motivo ou sem registro) ou um período (totais e só as refeições não feitas), além dos atalhos do protocolo atual e dos últimos 7, 14 ou 30 dias.
 
 **Gamificação**
@@ -35,10 +35,10 @@ Produção: <https://gideons-fit.vercel.app>
 **Conta**
 - Cadastro com Google ou e-mail, com aceite da Política de Privacidade.
 - Confirmação por e-mail e recuperação de senha.
-- Tema claro e escuro.
+- Tema claro e escuro. A cor da marca é o roxo `#6C0077` (em `globals.css`): `--primary` é o roxo exato, usado como fundo de botões e chips, e `--primary-ink`/`--brand` são o roxo para texto e ícones, que no tema escuro fica mais claro para dar contraste. As medalhas e conquistas mantêm cores próprias.
 - **Exclusão de conta pelo próprio usuário** (menu "Minha conta"), com confirmação digitando o e-mail. Página pública de instruções em `/excluir-conta`.
 - Política de privacidade em `/privacidade`.
-- Funciona como PWA instalável e foi ajustado para telas pequenas.
+- Funciona como PWA instalável e foi ajustado para telas pequenas. Quem abre o app já logado vê na hora uma tela de abertura estática (`/abrindo/<destino>`, servida por rewrite no middleware a partir de `/`) que leva à home do perfil, em vez de esperar o servidor frio responder.
 
 ## Tecnologias
 
@@ -87,7 +87,7 @@ supabase/
 - **Pontos não vêm do cliente:** o resultado diário (treino concluído e dieta completa) é gravado por gatilhos do banco a partir dos registros, e os selos só pelo servidor. O registro de carga só aceita a data de hoje.
 - **Dependências:** Dependabot semanal, e `npm audit` de produção sem vulnerabilidades.
 
-Os scripts em `supabase/tests` verificam o isolamento entre contas (`rls_isolation_probe.sql`) e as regras de cada migração (cotas, cardio, mensagens, grupos de escolha, resultado diário e registros conjugados). Rode-os no SQL Editor; os de migração terminam com um erro de propósito que desfaz tudo o que criam.
+Os scripts em `supabase/tests` verificam o isolamento entre contas (`rls_isolation_probe.sql`) e as regras de cada migração (cotas, cardio, mensagens, grupos de escolha, resultado diário, registros conjugados e séries feitas). Rode-os no SQL Editor; os de migração terminam com um erro de propósito que desfaz tudo o que criam.
 
 ## Deploy
 

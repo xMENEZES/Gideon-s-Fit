@@ -84,7 +84,7 @@ export function ExerciseCard({
               </>
             )}
             {loggedToday && (
-              <Badge variant="outline" className="gap-1 border-primary text-primary">
+              <Badge variant="outline" className="gap-1 border-primary-ink text-primary-ink">
                 <Check className="size-3" />
                 Registrado hoje
               </Badge>
@@ -117,7 +117,7 @@ export function ExerciseCard({
           ) : (
             <>
               <RestTimer seconds={exercise.rest_seconds} />
-              <AddLoadLogDialog studentId={studentId} exerciseId={exercise.id} />
+              <AddLoadLogDialog studentId={studentId} exerciseId={exercise.id} plannedSets={exercise.sets} />
             </>
           )}
         </div>

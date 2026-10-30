@@ -52,7 +52,7 @@ function PeriodChips({
           className={cn(
             "inline-flex h-8 items-center gap-1.5 rounded-lg border px-3 text-sm font-medium transition-colors",
             period.id === selectedId
-              ? "border-primary bg-primary text-primary-foreground"
+              ? "border-primary-ink bg-primary text-primary-foreground"
               : "border-border hover:bg-muted"
           )}
         >

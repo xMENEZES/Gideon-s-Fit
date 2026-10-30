@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Dumbbell, LogOut, UserRound } from "lucide-react";
+import { LogOut, UserRound } from "lucide-react";
+import { BrandMark } from "@/components/shared/brand-mark";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { signOut } from "@/lib/actions/auth";
@@ -60,7 +61,7 @@ export function TopBar({
       <div className={layout.outer}>
         <div className={layout.firstRow}>
           <Link href={homeHref} className="flex items-center gap-2 text-brand">
-            <Dumbbell className="size-6" strokeWidth={2.5} />
+            <BrandMark className="h-7 w-auto" />
             <span className="text-lg font-bold tracking-tight text-foreground">
               Gideon&apos;s Fit
             </span>

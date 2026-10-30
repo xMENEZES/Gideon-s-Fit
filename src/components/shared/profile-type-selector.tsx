@@ -48,11 +48,11 @@ export function ProfileTypeSelector({
             className={cn(
               "flex items-start gap-3 rounded-lg border p-3 text-left transition-colors",
               selected
-                ? "border-primary bg-accent"
-                : "border-border hover:border-primary/60"
+                ? "border-primary-ink bg-accent"
+                : "border-border hover:border-primary-ink/60"
             )}
           >
-            <option.icon className="mt-0.5 size-5 shrink-0 text-primary" />
+            <option.icon className="mt-0.5 size-5 shrink-0 text-primary-ink" />
             <span className="flex flex-col gap-0.5">
               <span className="text-sm font-medium">{option.title}</span>
               <span className="text-xs text-muted-foreground">{option.description}</span>

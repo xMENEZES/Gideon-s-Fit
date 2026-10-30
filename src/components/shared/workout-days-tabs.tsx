@@ -39,7 +39,7 @@ export function WorkoutDaysTabs({
           <TabsTrigger
             key={day.id}
             value={day.id}
-            className="flex-none px-4 data-active:font-semibold data-active:text-primary dark:data-active:text-primary"
+            className="flex-none px-4 data-active:font-semibold data-active:text-primary-ink dark:data-active:text-primary-ink"
           >
             {shortLabel(day.name)}
           </TabsTrigger>

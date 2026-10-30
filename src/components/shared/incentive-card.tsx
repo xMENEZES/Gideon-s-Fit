@@ -22,9 +22,9 @@ export function IncentiveCard({ message, storageKey }: { message: string; storag
   return (
     <div
       role="status"
-      className="flex items-start gap-3 rounded-xl border border-primary/40 bg-primary/10 px-4 py-3"
+      className="flex items-start gap-3 rounded-xl border border-primary-ink/40 bg-primary/10 px-4 py-3"
     >
-      <Sparkles className="mt-0.5 size-5 shrink-0 text-primary" />
+      <Sparkles className="mt-0.5 size-5 shrink-0 text-primary-ink" />
       <p className="text-sm font-medium">{message}</p>
     </div>
   );

@@ -73,7 +73,7 @@ export default async function StatusOverviewPage() {
         <div className="flex flex-col gap-3">
           {rows.map(({ student, workout, diet }) => (
             <Link key={student.id} href={`/dashboard/alunos/${student.id}/status`}>
-              <Card className="transition-colors hover:border-primary/60">
+              <Card className="transition-colors hover:border-primary-ink/60">
                 <CardContent className="flex flex-wrap items-center gap-x-8 gap-y-3 py-4">
                   <div className="flex min-w-48 flex-1 items-center gap-3">
                     <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">

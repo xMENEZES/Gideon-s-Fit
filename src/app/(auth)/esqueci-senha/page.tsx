@@ -87,7 +87,7 @@ export default function EsqueciSenhaPage() {
           <Button type="submit" className="w-full" disabled={isSubmitting}>
             {isSubmitting ? "Enviando..." : "Enviar link"}
           </Button>
-          <Link href="/login" className="text-sm text-primary hover:underline">
+          <Link href="/login" className="text-sm text-primary-ink hover:underline">
             Voltar para o login
           </Link>
         </CardFooter>

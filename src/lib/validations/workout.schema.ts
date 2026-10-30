@@ -120,6 +120,16 @@ export const loadLogSchema = z.object({
       .refine((value) => value === "" || parseLoadValue(value, "reps") !== null, "Repetições: números inteiros (ex.: 12 ou 12 + 10)")
       .optional()
   ),
+  // Séries feitas: opcional. Em branco, o servidor assume as séries definidas no exercício.
+  setsDone: z.preprocess(
+    emptyToUndefined,
+    z.coerce
+      .number("Séries: informe um número inteiro")
+      .int("Séries: informe um número inteiro")
+      .min(1, "Mínimo 1 série")
+      .max(99, "Máximo 99 séries")
+      .optional()
+  ),
   notes: z.string().max(500, "No máximo 500 caracteres").optional(),
 });
 export type LoadLogInput = z.infer<typeof loadLogSchema>;

@@ -132,6 +132,22 @@ describe("loadLogSchema (musculação)", () => {
     expect(loadLogSchema.safeParse({ weightKg: "20", repsDone: "7,5" }).success).toBe(false);
   });
 
+  it("séries feitas é opcional: em branco vale as séries definidas no exercício", () => {
+    const blank = loadLogSchema.safeParse({ weightKg: "20", setsDone: "" });
+    expect(blank.success && blank.data.setsDone).toBe(undefined);
+    const absent = loadLogSchema.safeParse({ weightKg: "20" });
+    expect(absent.success && absent.data.setsDone).toBe(undefined);
+    const filled = loadLogSchema.safeParse({ weightKg: "20", setsDone: "4" });
+    expect(filled.success && filled.data.setsDone).toBe(4);
+  });
+
+  it("séries feitas recusa zero, decimais, texto e mais de 99", () => {
+    for (const setsDone of ["0", "-1", "2,5", "três", "100"]) {
+      expect(loadLogSchema.safeParse({ weightKg: "20", setsDone }).success).toBe(false);
+    }
+    expect(loadLogSchema.safeParse({ weightKg: "20", setsDone: "99" }).success).toBe(true);
+  });
+
   it("ignora uma data enviada: o registro vale sempre para hoje", () => {
     const load = loadLogSchema.safeParse({ weightKg: "20", loggedAt: "2020-01-01" });
     expect(load.success && "loggedAt" in load.data).toBe(false);

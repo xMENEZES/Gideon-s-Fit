@@ -46,7 +46,7 @@ function Dots({ marks }: { marks: DayMarks | undefined }) {
       {marks.diet === "complete" && <span className="size-1.5 rounded-full bg-primary" />}
       {marks.diet === "missed" && <span className="size-1.5 rounded-full bg-destructive" />}
       {marks.diet === "pending" && <span className="size-1.5 rounded-full border border-muted-foreground" />}
-      {marks.diet === "progress" && <span className="size-1.5 rounded-full border border-primary" />}
+      {marks.diet === "progress" && <span className="size-1.5 rounded-full border border-primary-ink" />}
     </span>
   );
 }
@@ -98,7 +98,7 @@ export function StatusCalendar({
               scroll={false}
               className={cn(
                 chipClass,
-                preset.active ? "border-primary bg-primary text-primary-foreground" : "border-border hover:bg-muted"
+                preset.active ? "border-primary-ink bg-primary text-primary-foreground" : "border-border hover:bg-muted"
               )}
             >
               {preset.label}
@@ -153,8 +153,8 @@ export function StatusCalendar({
                   className={cn(
                     "flex h-10 flex-col items-center justify-center gap-0.5 rounded-md border text-xs font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring",
                     available ? "border-border hover:bg-muted" : "border-transparent opacity-30",
-                    selected && "border-primary bg-primary/15",
-                    edge && "bg-primary/30 ring-2 ring-primary",
+                    selected && "border-primary-ink bg-primary/15",
+                    edge && "bg-primary/30 ring-2 ring-primary-ink",
                     date === today && !selected && "ring-2 ring-ring"
                   )}
                 >

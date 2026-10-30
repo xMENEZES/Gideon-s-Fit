@@ -124,7 +124,7 @@ export default function CadastroPage() {
                 <Link
                   href="/privacidade"
                   target="_blank"
-                  className="font-medium text-primary hover:underline"
+                  className="font-medium text-primary-ink hover:underline"
                 >
                   Política de Privacidade
                 </Link>
@@ -181,7 +181,7 @@ export default function CadastroPage() {
           </Button>
           <p className="text-sm text-muted-foreground">
             Já tem conta?{" "}
-            <Link href="/login" className="font-medium text-primary hover:underline">
+            <Link href="/login" className="font-medium text-primary-ink hover:underline">
               Entrar
             </Link>
           </p>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Dumbbell } from "lucide-react";
+import { BrandMark } from "@/components/shared/brand-mark";
 
 export const metadata = {
   title: "Política de Privacidade — Gideon's Fit",
@@ -16,7 +16,7 @@ const sections: { title: string; body: React.ReactNode }[] = [
         O Gideon&apos;s Fit é uma plataforma para profissionais (personal trainers e nutricionistas)
         e pessoas que treinam organizarem protocolos de treino e protocolos alimentares. Para qualquer
         assunto sobre seus dados pessoais, fale com a gente em{" "}
-        <a className="text-primary underline" href={`mailto:${CONTACT_EMAIL}`}>
+        <a className="text-primary-ink underline" href={`mailto:${CONTACT_EMAIL}`}>
           {CONTACT_EMAIL}
         </a>
         .
@@ -92,7 +92,7 @@ const sections: { title: string; body: React.ReactNode }[] = [
         Mantemos seus dados enquanto sua conta existir. Você pode excluir a sua conta e todos os
         dados associados a qualquer momento, direto no aplicativo (menu &quot;Minha conta&quot;), ou
         pedir a exclusão pelo e-mail de contato. Veja o passo a passo em{" "}
-        <Link className="text-primary underline" href="/excluir-conta">
+        <Link className="text-primary-ink underline" href="/excluir-conta">
           Como excluir sua conta
         </Link>
         . Cópias de segurança do provedor de hospedagem podem manter os dados por um período limitado
@@ -107,7 +107,7 @@ const sections: { title: string; body: React.ReactNode }[] = [
         Conforme a Lei Geral de Proteção de Dados (Lei 13.709/2018), você pode solicitar a
         confirmação do tratamento, acesso, correção, anonimização, portabilidade, eliminação dos
         dados, informação sobre compartilhamento e a revogação do consentimento. Basta escrever para{" "}
-        <a className="text-primary underline" href={`mailto:${CONTACT_EMAIL}`}>
+        <a className="text-primary-ink underline" href={`mailto:${CONTACT_EMAIL}`}>
           {CONTACT_EMAIL}
         </a>
         .
@@ -147,7 +147,7 @@ export default function PrivacidadePage() {
     <div className="min-h-screen bg-background">
       <header className="border-b border-border px-6 py-4">
         <Link href="/" className="flex w-fit items-center gap-2 text-brand">
-          <Dumbbell className="size-6" strokeWidth={2.5} />
+          <BrandMark className="h-6 w-auto" />
           <span className="text-lg font-bold tracking-tight text-foreground">
             Gideon&apos;s Fit
           </span>

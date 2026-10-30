@@ -89,8 +89,8 @@ function MealLogButtons({
         className={cn(
           ROUND,
           value?.done === true
-            ? "border-primary bg-primary text-primary-foreground"
-            : "border-border text-muted-foreground hover:border-primary hover:text-primary"
+            ? "border-primary-ink bg-primary text-primary-foreground"
+            : "border-border text-muted-foreground hover:border-primary-ink hover:text-primary-ink"
         )}
         disabled={log.pending || disabled}
         onClick={() => log.toggle(true)}
@@ -150,7 +150,7 @@ function MealLogNote({ log }: { log: MealLog }) {
 // Estado da refeição na barra recolhida.
 function MealStatusBadge({ value }: { value: MealLogValue }) {
   return value.done ? (
-    <Badge className="gap-1 bg-primary/15 font-normal text-primary">
+    <Badge className="gap-1 bg-primary/15 font-normal text-primary-ink">
       <Check className="size-3" strokeWidth={3} />
       Feita
     </Badge>

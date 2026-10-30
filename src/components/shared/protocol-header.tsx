@@ -73,14 +73,14 @@ export function ProtocolHeader({
           <div className="flex items-center gap-4">
             <Link
               href={historyHref}
-              className="whitespace-nowrap text-sm font-medium text-primary hover:underline"
+              className="whitespace-nowrap text-sm font-medium text-primary-ink hover:underline"
             >
               Ver histórico
             </Link>
             {statusHref && (
               <Link
                 href={statusHref}
-                className="whitespace-nowrap text-sm font-medium text-primary hover:underline"
+                className="whitespace-nowrap text-sm font-medium text-primary-ink hover:underline"
               >
                 Ver status
               </Link>

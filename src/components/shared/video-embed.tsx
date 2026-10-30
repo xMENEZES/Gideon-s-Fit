@@ -84,7 +84,7 @@ export function VideoEmbed({ url }: { url: string }) {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
+      className="inline-flex items-center gap-2 text-sm font-medium text-primary-ink hover:underline"
     >
       <PlayCircle className="size-4" />
       Ver vídeo do exercício

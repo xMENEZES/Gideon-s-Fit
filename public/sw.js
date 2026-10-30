@@ -7,7 +7,7 @@
 // autenticados (treino, dieta, alunos) — isso exigiria uma sessão Supabase
 // viva e ficaria incorreto/desatualizado sem conexão.
 
-const STATIC_CACHE = "gideons-fit-static-v1";
+const STATIC_CACHE = "gideons-fit-static-v3";
 const PRECACHE_URLS = [
   "/offline",
   "/manifest.webmanifest",

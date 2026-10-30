@@ -49,7 +49,7 @@ export default async function DashboardPage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {students.map((s) => (
             <Link key={s.id} href={`/dashboard/alunos/${s.id}`}>
-              <Card className="h-full transition-colors hover:border-primary/60">
+              <Card className="h-full transition-colors hover:border-primary-ink/60">
                 <CardContent className="flex items-center gap-3 py-5">
                   <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
                     <User className="size-5" />

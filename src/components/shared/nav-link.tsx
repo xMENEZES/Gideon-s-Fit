@@ -26,7 +26,7 @@ export function NavLink({
       aria-current={active ? "page" : undefined}
       className={cn(
         "flex items-center gap-1.5 text-sm font-medium transition-colors",
-        active ? "font-semibold text-primary" : "text-muted-foreground hover:text-foreground"
+        active ? "font-semibold text-primary-ink" : "text-muted-foreground hover:text-foreground"
       )}
     >
       {children}

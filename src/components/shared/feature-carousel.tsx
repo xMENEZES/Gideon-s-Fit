@@ -60,7 +60,7 @@ export function FeatureCarousel() {
         {features.map((feature) => (
           <div key={feature.title} className="w-full shrink-0 snap-center snap-always">
             <div className="flex h-full flex-col items-center gap-2 rounded-xl border border-border bg-card p-5 text-center short:gap-1 short:p-3">
-              <feature.icon className="size-7 text-primary short:size-5" strokeWidth={1.75} />
+              <feature.icon className="size-7 text-primary-ink short:size-5" strokeWidth={1.75} />
               <h3 className="font-semibold">{feature.title}</h3>
               <p className="text-sm text-muted-foreground">{feature.description}</p>
             </div>

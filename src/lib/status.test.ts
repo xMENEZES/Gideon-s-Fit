@@ -273,6 +273,23 @@ describe("histórico do dia", () => {
     expect(groupWorkoutEntries([conjugated])[0].exercises[0].sets).toEqual(["10 + 15 kg x 12 + 10"]);
   });
 
+  it("mostra as séries feitas quando o registro tem esse dado", () => {
+    const base: WorkoutEntry = {
+      date: "2026-10-09",
+      day: "Treino A",
+      exercise: "Supino",
+      weight_kg: 30,
+      reps_done: 10,
+      duration_minutes: null,
+      distance_km: null,
+    };
+    expect(describeWorkoutEntry({ ...base, sets_done: 4 })).toBe("Supino: 4 séries · 30 kg x 10");
+    expect(describeWorkoutEntry({ ...base, sets_done: 1 })).toBe("Supino: 1 série · 30 kg x 10");
+    // Registro anterior ao campo (nulo) continua como antes.
+    expect(describeWorkoutEntry({ ...base, sets_done: null })).toBe("Supino: 30 kg x 10");
+    expect(describeWorkoutEntry(base)).toBe("Supino: 30 kg x 10");
+  });
+
   it("agrupa os registros do treino por dia do protocolo e exercício", () => {
     const entry = (day: string, exercise: string, weight: number | null, reps: number | null): WorkoutEntry => ({
       date: "2026-10-09",

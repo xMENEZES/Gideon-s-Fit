@@ -23,15 +23,18 @@ export type WorkoutEntry = {
   // Exercício conjugado: o texto completo ("10 + 15" e "12 + 10"); os numéricos guardam o primeiro valor.
   weight_text?: string | null;
   reps_text?: string | null;
+  // Séries feitas com essa carga e repetições; nulo nos registros anteriores ao campo.
+  sets_done?: number | null;
   duration_minutes: number | null;
   distance_km: number | null;
 };
 
-// Um registro, sem o nome do exercício: "30 kg x 10" ou "32 min, 5 km".
+// Um registro, sem o nome do exercício: "3 séries · 30 kg x 10" ou "32 min, 5 km".
 export function describeWorkoutSet(entry: WorkoutEntry): string {
   if (entry.weight_kg != null) {
     const reps = entry.reps_text ?? entry.reps_done;
-    return `${entry.weight_text ?? entry.weight_kg} kg${reps ? ` x ${reps}` : ""}`;
+    const load = `${entry.weight_text ?? entry.weight_kg} kg${reps ? ` x ${reps}` : ""}`;
+    return entry.sets_done ? `${entry.sets_done} ${entry.sets_done === 1 ? "série" : "séries"} · ${load}` : load;
   }
   return formatCardioAmount(entry.duration_minutes, entry.distance_km);
 }
@@ -95,7 +98,7 @@ export async function loadWorkoutEntries(supabase: Client, protocolIds: string[]
 
   const { data } = await supabase
     .from("workout_days")
-    .select("protocol_id, name, exercises(name, exercise_load_logs(logged_at, weight_kg, weight_text, reps_done, reps_text, duration_minutes, distance_km))")
+    .select("protocol_id, name, exercises(name, exercise_load_logs(logged_at, weight_kg, weight_text, reps_done, reps_text, sets_done, duration_minutes, distance_km))")
     .in("protocol_id", protocolIds);
 
   for (const day of data ?? []) {
@@ -110,6 +113,7 @@ export async function loadWorkoutEntries(supabase: Client, protocolIds: string[]
           weight_text: log.weight_text,
           reps_done: log.reps_done,
           reps_text: log.reps_text,
+          sets_done: log.sets_done,
           duration_minutes: log.duration_minutes,
           distance_km: log.distance_km == null ? null : Number(log.distance_km),
         });

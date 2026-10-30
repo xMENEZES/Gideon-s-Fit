@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/lib/types/database.types";
-import { HOME_HINT_COOKIE, ONBOARDING_PATH, roleHome } from "@/lib/auth/roles";
+import { HOME_BY_KEY, HOME_HINT_COOKIE, ONBOARDING_PATH, homeKeyOf, roleHome } from "@/lib/auth/roles";
 import { SUPABASE_JWKS } from "@/lib/supabase/jwks";
 
 const TRAINER_HOME = "/dashboard";
@@ -66,7 +66,12 @@ export async function updateSession(request: NextRequest) {
   // Dica da home já descoberta (cookie): evita a ida ao banco no momento da abertura do app.
   // É só uma dica de navegação, sem valor de segurança: os layouts de cada área validam o papel.
   const hinted = readHomeHint(request.cookies.get(HOME_HINT_COOKIE)?.value, userId);
-  if (hinted) return redirectTo(hinted, request, supabaseResponse);
+  if (hinted) {
+    // Na abertura do app (raiz) mostra a tela estática de abertura, que responde na hora mesmo com
+    // o servidor frio, e ela leva à home. Nas páginas públicas (login etc.) segue o redirect direto.
+    const key = pathname === "/" ? homeKeyOf(hinted) : null;
+    return key ? rewriteTo(`/abrindo/${key}`, request, supabaseResponse) : redirectTo(hinted, request, supabaseResponse);
+  }
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -90,13 +95,20 @@ export async function updateSession(request: NextRequest) {
 }
 
 const HOME_HINT_MAX_AGE = 60 * 60 * 24 * 30;
-const KNOWN_HOMES = new Set(["/admin", "/dashboard", "/meu-plano/treino", "/aluno/treino"]);
+const KNOWN_HOMES = new Set<string>(Object.values(HOME_BY_KEY));
 
 // O cookie guarda "<id do usuário>|<home>": vale só para o mesmo usuário e para homes conhecidas.
 function readHomeHint(value: string | undefined, userId: string): string | null {
   if (!value) return null;
   const [owner, home] = value.split("|");
   return owner === userId && KNOWN_HOMES.has(home) ? home : null;
+}
+
+// Serve outra página no mesmo endereço, levando junto os cookies da sessão renovada.
+function rewriteTo(path: string, request: NextRequest, session: NextResponse) {
+  const response = NextResponse.rewrite(new URL(path, request.url), { request });
+  session.cookies.getAll().forEach((cookie) => response.cookies.set(cookie));
+  return response;
 }
 
 // Redireciona levando junto os cookies da sessão renovada pelo Supabase (um redirect novo

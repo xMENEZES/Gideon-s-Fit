@@ -23,7 +23,7 @@ export function StatTile({
       <span
         className={cn(
           "text-lg font-semibold",
-          tone === "good" && "text-primary",
+          tone === "good" && "text-primary-ink",
           tone === "bad" && "text-destructive"
         )}
       >

@@ -47,7 +47,7 @@ export default async function AlertasPage() {
 
             return (
               <Link key={alert.id} href={`/dashboard/alunos/${student?.id ?? ""}`}>
-                <Card className="transition-colors hover:border-primary/60">
+                <Card className="transition-colors hover:border-primary-ink/60">
                   <CardContent className="flex items-center justify-between gap-3 py-4">
                     <div className="flex items-center gap-3">
                       <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">

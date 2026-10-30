@@ -68,7 +68,7 @@ export default function LoginPage() {
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Senha</Label>
-              <Link href="/esqueci-senha" className="text-xs text-primary hover:underline">
+              <Link href="/esqueci-senha" className="text-xs text-primary-ink hover:underline">
                 Esqueci minha senha
               </Link>
             </div>
@@ -94,7 +94,7 @@ export default function LoginPage() {
           <GoogleButton label="Entrar com Google" />
           <p className="text-sm text-muted-foreground">
             Ainda não tem conta?{" "}
-            <Link href="/cadastro" className="font-medium text-primary hover:underline">
+            <Link href="/cadastro" className="font-medium text-primary-ink hover:underline">
               Criar conta
             </Link>
           </p>

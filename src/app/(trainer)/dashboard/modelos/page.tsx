@@ -133,7 +133,7 @@ function TemplateSection({
                 <div className="flex flex-wrap items-center gap-2">
                   <Link
                     href={`/dashboard/modelos/${template.id}`}
-                    className="text-sm font-medium text-primary hover:underline"
+                    className="text-sm font-medium text-primary-ink hover:underline"
                   >
                     Editar
                   </Link>

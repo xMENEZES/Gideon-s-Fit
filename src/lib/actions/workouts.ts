@@ -143,9 +143,13 @@ export async function createLoadLog(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "Não autenticado." };
 
-  const kind = await exerciseKind(supabase, exerciseId);
-  if (!kind) return { error: "Exercício não encontrado." };
-  if (kind !== "strength") return { error: "Este exercício é de cardio: registre a sessão." };
+  const { data: exercise } = await supabase
+    .from("exercises")
+    .select("kind, sets")
+    .eq("id", exerciseId)
+    .maybeSingle();
+  if (!exercise) return { error: "Exercício não encontrado." };
+  if (exercise.kind !== "strength") return { error: "Este exercício é de cardio: registre a sessão." };
 
   // Carga e repetições podem vir conjugadas ("10 + 15"): o primeiro valor vai para a coluna
   // numérica e o texto completo para weight_text / reps_text.
@@ -159,6 +163,8 @@ export async function createLoadLog(
     weight_text: weight.text,
     reps_done: reps?.first ?? null,
     reps_text: reps?.text ?? null,
+    // Séries em branco: vale o número de séries definido no exercício (o aluno fez as previstas).
+    sets_done: parsed.data.setsDone ?? exercise.sets,
     // Sempre hoje, no dia de Brasília (o banco usa UTC e viraria o dia às 21h). A data não vem
     // do cliente: o histórico de treino não aceita datas passadas nem futuras.
     logged_at: todayBR(),
