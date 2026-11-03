@@ -41,10 +41,7 @@ jobs:
         run: npx tsc --noEmit
 
       - name: Lint
-        # TEMPORÁRIO: três páginas de autenticação já tinham erros de lint antes desta automação.
-        # A branch chore/corrigir-lint-paginas-auth corrige e remove o continue-on-error.
         run: npm run lint
-        continue-on-error: true
 
       - name: Testes
         run: npm test
