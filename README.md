@@ -93,7 +93,11 @@ Os scripts em `supabase/tests` verificam o isolamento entre contas (`rls_isolati
 
 ## Deploy
 
-O deploy é feito na Vercel (`npx vercel --prod`). As mesmas variáveis do `.env.local` precisam estar configuradas no projeto da Vercel. Mudanças de banco entram **antes** do código que depende delas, rodando a migração correspondente no Supabase (cada migração tem um arquivo `_rollback.sql` para reverter).
+O deploy é feito na Vercel (`npx vercel --prod`), **sempre a partir da `main` já mesclada e com autorização do dono do projeto**. As mesmas variáveis do `.env.local` precisam estar configuradas no projeto da Vercel. Mudanças de banco entram **antes** do código que depende delas, rodando a migração correspondente no Supabase (cada migração tem um arquivo `_rollback.sql` para reverter).
+
+## Versionamento
+
+A `main` é a produção e é protegida: toda mudança nasce numa branch com o nome do que está sendo feito, passa pela validação automática (CI) e pelo roteiro de regressão, e só entra na `main` por Pull Request depois de validada. O deploy é um passo separado. As versões seguem SemVer e estão no [`CHANGELOG.md`](CHANGELOG.md). A política completa está em [`docs/VERSIONAMENTO.md`](docs/VERSIONAMENTO.md) e o roteiro de testes em [`docs/TESTES_DE_REGRESSAO.md`](docs/TESTES_DE_REGRESSAO.md).
 
 ## Convenções
 
