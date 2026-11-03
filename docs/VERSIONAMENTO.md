@@ -13,11 +13,18 @@ Como uma mudança sai da ideia até a produção sem arriscar o que já funciona
 
 | Ambiente | Onde roda | Banco | Quem acessa |
 |---|---|---|---|
-| Local | `npm run dev` (porta 3010) | banco de testes (staging), quando existir; até lá, o de produção com contas de teste | quem desenvolve |
-| Preview | `npx vercel` (sem `--prod`) a partir da branch | banco de testes (staging) | quem tiver o link |
-| Produção | https://gideons-fit.vercel.app, deploy a partir da `main` | banco de produção | todos |
+| Local | `npm run dev` (porta 3010), lendo o `.env.local` | banco de testes (staging) | quem desenvolve |
+| Preview | `npx vercel` (sem `--prod`) a partir da branch | banco de testes (staging), pelas variáveis do ambiente Preview da Vercel | quem tiver o link |
+| Produção | https://gideons-fit.vercel.app, deploy a partir da `main` | banco de produção, pelas variáveis do ambiente Production da Vercel | todos |
 
-O banco de testes é um segundo projeto Supabase, com as mesmas migrações da produção e **nenhum dado pessoal real**. Enquanto ele não existir, vale a regra de migração compatível da seção "Banco de dados".
+**Banco de testes (staging)** é um segundo projeto Supabase, com as mesmas migrações da produção e **nenhum dado pessoal real**. Só tem contas de teste (`@example.com`) e protocolos fictícios.
+
+- **Nunca aponte o ambiente local para a produção.** O `.env.local` usa as chaves do banco de testes. As chaves de produção ficam só na Vercel (ambiente Production) e numa cópia local ignorada pelo Git; nenhuma chave entra no repositório.
+- **Migrações:** rodam primeiro no banco de testes (SQL Editor, na ordem), são validadas pela branch, e só no dia do deploy rodam em produção.
+- **Paridade:** o banco de testes deve continuar igual ao de produção. Depois de rodar uma migração nos dois, a consulta de conferência de esquema (contagens e assinaturas de colunas, políticas e funções) precisa dar o mesmo resultado nos dois projetos.
+- **Variáveis da Vercel:** as do banco de testes existem **só** no ambiente Preview, e as de produção **só** no Production. Uma variável marcada para os dois ambientes faria o preview usar a produção.
+
+A regra de migração compatível (seção "Banco de dados") continua valendo mesmo com o banco de testes.
 
 ## Fluxo de cada atualização
 
@@ -30,7 +37,7 @@ O banco de testes é um segundo projeto Supabase, com as mesmas migrações da p
 7. **Aprovação do dono** ("validei"). Sem ela, não há merge.
 8. **Merge por squash** na `main`. A branch é apagada automaticamente.
 9. **Deploy** a partir da `main` atualizada, **só com autorização explícita**, seguido de um teste rápido em produção. Se houver migração, ela roda em produção **antes** do deploy.
-10. **Versão:** atualizar o [`CHANGELOG.md`](../CHANGELOG.md) e marcar a tag da versão.
+10. **Versão:** marcar a tag anotada no **commit que foi publicado** e registrar a versão no [`CHANGELOG.md`](../CHANGELOG.md) (a atualização do arquivo pode ir junto da próxima branch de documentação, porque a `main` só aceita Pull Request).
 
 ## Nomes
 
