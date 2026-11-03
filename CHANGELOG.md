@@ -5,6 +5,13 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 ## Não lançado
 
 ### Adicionado
+- Banco de testes (staging) separado da produção, com contas de teste e dados fictícios, usado pelo ambiente local e pelos previews da Vercel.
+
+## [1.0.1] - 2026-11-03
+
+Primeiro deploy sob a política de versionamento (tag no commit `7365ba2`).
+
+### Adicionado
 - Política de versionamento (`docs/VERSIONAMENTO.md`), roteiro de regressão, modelo de Pull Request e validação automática (CI).
 
 ### Corrigido
@@ -23,4 +30,5 @@ Primeira versão marcada: o estado que estava em produção quando a política d
 - App instalável (PWA), tela de abertura própria, menu inferior no celular, tema claro e escuro, logo e ícones novos, cor da marca roxa `#6C0077`.
 - Segurança: RLS em todas as tabelas, cabeçalhos de segurança, validação de entrada, exclusão de conta pelo próprio usuário.
 
+[1.0.1]: https://github.com/xMENEZES/Gideon-s-Fit/releases/tag/v1.0.1
 [1.0.0]: https://github.com/xMENEZES/Gideon-s-Fit/releases/tag/v1.0.0
