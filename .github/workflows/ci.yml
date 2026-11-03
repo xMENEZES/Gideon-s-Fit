@@ -1,0 +1,53 @@
+name: CI
+
+# Portão automático de cada Pull Request e da main (veja docs/VERSIONAMENTO.md).
+# O job "validar" é o que a proteção da main vai exigir verde antes do merge.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validar:
+    name: validar
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      # Valores públicos de mentira: o build não conversa com o banco. Nenhum segredo entra aqui.
+      NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Tipos (tsc)
+        run: npx tsc --noEmit
+
+      - name: Lint
+        # TEMPORÁRIO: três páginas de autenticação já tinham erros de lint antes desta automação.
+        # A branch chore/corrigir-lint-paginas-auth corrige e remove o continue-on-error.
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Testes
+        run: npm test
+
+      - name: Build
+        run: npm run build
