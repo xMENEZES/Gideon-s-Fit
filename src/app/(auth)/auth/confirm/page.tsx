@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import type { EmailOtpType } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -25,19 +26,23 @@ const COPY: Record<string, { title: string; description: string; button: string 
   },
 };
 
+// O link é lido direto da URL (useSearchParams), sem estado: o token só é validado quando a pessoa
+// clica no botão. O Suspense é exigido pelo Next para ler a URL numa página estática.
 export default function AuthConfirmPage() {
-  const [params, setParams] = useState<{ tokenHash: string; type: EmailOtpType } | null>(null);
-  const [ready, setReady] = useState(false);
+  return (
+    <Suspense fallback={null}>
+      <AuthConfirm />
+    </Suspense>
+  );
+}
+
+function AuthConfirm() {
+  const search = useSearchParams();
+  const tokenHash = search.get("token_hash");
+  const type = search.get("type") as EmailOtpType | null;
+  const params = tokenHash && type && VALID_TYPES.includes(type) ? { tokenHash, type } : null;
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const search = new URLSearchParams(window.location.search);
-    const tokenHash = search.get("token_hash");
-    const type = search.get("type") as EmailOtpType | null;
-    if (tokenHash && type && VALID_TYPES.includes(type)) setParams({ tokenHash, type });
-    setReady(true);
-  }, []);
 
   async function handleConfirm() {
     if (!params) return;
@@ -53,15 +58,14 @@ export default function AuthConfirmPage() {
       setError("Este link é inválido ou expirou. Peça um novo link e abra-o só uma vez.");
       return;
     }
-    window.location.href =
+    window.location.assign(
       params.type === "recovery"
         ? "/redefinir-senha"
         : params.type === "invite"
           ? "/definir-senha"
-          : "/";
+          : "/"
+    );
   }
-
-  if (!ready) return null;
 
   if (!params) {
     return (

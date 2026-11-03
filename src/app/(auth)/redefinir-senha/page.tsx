@@ -46,7 +46,8 @@ export default function RedefinirSenhaPage() {
       setServerError("Não foi possível redefinir a senha. Peça um novo link e tente novamente.");
       return;
     }
-    window.location.href = "/";
+    // Navegação completa (não pelo roteador): renova a sessão e os dados do servidor.
+    window.location.assign("/");
   }
 
   if (hasSession === false) {

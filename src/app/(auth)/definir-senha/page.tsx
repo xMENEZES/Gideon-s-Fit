@@ -50,7 +50,8 @@ export default function DefinirSenhaPage() {
 
     await supabase.from("profiles").update({ full_name: fullName }).eq("id", userData.user.id);
 
-    window.location.href = "/";
+    // Navegação completa (não pelo roteador): renova a sessão e os dados do servidor.
+    window.location.assign("/");
   }
 
   return (
