@@ -11,5 +11,17 @@ updates:
         update-types:
           - "minor"
           - "patch"
+    # Versões maiores ignoradas de propósito, até as ferramentas do projeto acompanharem
+    # (reavaliar quando o motivo de cada uma deixar de valer):
+    ignore:
+      # TypeScript 7: o typescript-eslint (dentro do eslint-config-next) ainda não suporta TS 7.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      # ESLint 10: plugins do eslint-config-next (como o eslint-plugin-import) declaram suporte só até a 9.
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
+      # @types/node deve acompanhar a versão do Node usada (22), e não a mais nova.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
     commit-message:
       prefix: "deps"
