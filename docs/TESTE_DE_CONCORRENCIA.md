@@ -16,7 +16,7 @@ Por isso, o teste mede a capacidade do projeto Supabase, não a forma de conecta
 
 | Item | Valor |
 |---|---|
-| Banco | Projeto de **testes** (`aitkfgdawdxidpcegoku`), plano Free. A produção não foi tocada. |
+| Banco | Projeto de **testes** (staging), plano Free. A produção não foi tocada. |
 | Código | Versão 1.1.0 |
 | Contas | Duas contas de aluno de teste, com JWT real (as regras de acesso, RLS, e os gatilhos valem) |
 | Cliente | Um único computador, `supabase-js` sobre Node |
