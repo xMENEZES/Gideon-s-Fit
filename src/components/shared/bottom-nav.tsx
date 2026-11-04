@@ -3,12 +3,40 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChartNoAxesColumn, Dumbbell, Trophy, Users, Utensils, type LucideIcon } from "lucide-react";
+import {
+  BellRing,
+  ChartNoAxesColumn,
+  Dumbbell,
+  LayoutTemplate,
+  MessageSquareQuote,
+  Trophy,
+  Users,
+  Utensils,
+  type LucideIcon,
+} from "lucide-react";
 import { isNavActive } from "@/lib/nav";
 import { cn } from "@/lib/utils";
 
-export type BottomNavIcon = "treino" | "dieta" | "status" | "ranking" | "time";
-export type BottomNavItem = { href: string; label: string; icon: BottomNavIcon };
+export type BottomNavIcon =
+  | "treino"
+  | "dieta"
+  | "status"
+  | "ranking"
+  | "time"
+  | "alunos"
+  | "modelos"
+  | "mensagens"
+  | "alertas";
+export type BottomNavItem = {
+  href: string;
+  label: string;
+  icon: BottomNavIcon;
+  // `exact` e `alsoActiveFor` valem como no NavLink (ex.: "Alunos" é "/dashboard" e a ficha do aluno).
+  exact?: boolean;
+  alsoActiveFor?: string[];
+  // Bolinha de contagem sobre o ícone (carregada em segundo plano pelo servidor).
+  badge?: React.ReactNode;
+};
 
 // Ícones por nome: um componente não atravessa do servidor (layout) para o cliente.
 const ICONS: Record<BottomNavIcon, LucideIcon> = {
@@ -17,6 +45,10 @@ const ICONS: Record<BottomNavIcon, LucideIcon> = {
   status: ChartNoAxesColumn,
   ranking: Trophy,
   time: Users,
+  alunos: Users,
+  modelos: LayoutTemplate,
+  mensagens: MessageSquareQuote,
+  alertas: BellRing,
 };
 
 // Quanto a tela precisa rolar de uma vez para a barra reagir (ignora tremidas do dedo).
@@ -64,7 +96,10 @@ export function BottomNav({ basePath, items }: { basePath: string; items: Bottom
         <ul className="flex items-stretch justify-around">
           {items.map((item) => {
             const href = `${basePath}${item.href}`;
-            const active = isNavActive(pathname, href);
+            const active = isNavActive(pathname, href, {
+              exact: item.exact,
+              alsoActiveFor: item.alsoActiveFor,
+            });
             const Icon = ICONS[item.icon];
             return (
               <li key={href} className="min-w-0 flex-1">
@@ -76,7 +111,10 @@ export function BottomNav({ basePath, items }: { basePath: string; items: Bottom
                     active ? "font-semibold text-primary-ink" : "text-muted-foreground"
                   )}
                 >
-                  <Icon className="size-5" strokeWidth={active ? 2.5 : 2} />
+                  <span className="relative">
+                    <Icon className="size-5" strokeWidth={active ? 2.5 : 2} />
+                    {item.badge && <span className="absolute -top-2 left-full -ml-1.5">{item.badge}</span>}
+                  </span>
                   <span className="max-w-full truncate">{item.label}</span>
                 </Link>
               </li>
