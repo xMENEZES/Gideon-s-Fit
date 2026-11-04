@@ -1,35 +1,27 @@
 "use client";
 
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { toChartData, type LoadChartLog } from "@/lib/load-chart-data";
 
-export type LoadLogPoint = {
-  logged_at: string;
-  weight_kg: number;
-  // Exercício conjugado: o texto completo ("10 + 15"); o gráfico usa o primeiro valor.
-  weight_text?: string | null;
-};
+export type LoadLogPoint = LoadChartLog;
 
 export function LoadChart({ logs }: { logs: LoadLogPoint[] }) {
   if (logs.length < 2) return null;
 
-  const data = logs.map((log) => ({
-    // logged_at é uma data (sem horário); formatar em UTC evita perder um dia
-    // quando o fuso do navegador fica atrás de UTC (ex: Brasil).
-    date: new Intl.DateTimeFormat("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-      timeZone: "UTC",
-    }).format(new Date(log.logged_at)),
-    carga: log.weight_kg,
-    texto: log.weight_text ?? String(log.weight_kg),
-  }));
+  const data = toChartData(logs);
 
   return (
     <div className="h-32 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 5, right: 8, bottom: 0, left: 0 }}>
+          {/* `interval={0}` mostra a data de TODOS os dias treinados (por padrão o gráfico esconde
+              os rótulos que "se sobrepõem", e as datas sumiam). O espaço nas bordas evita cortar o
+              primeiro e o último ponto e deixa o rótulo da ponta inteiro. */}
           <XAxis
             dataKey="date"
+            interval={0}
+            padding={{ left: 16, right: 16 }}
+            tickMargin={4}
             tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
             axisLine={false}
             tickLine={false}

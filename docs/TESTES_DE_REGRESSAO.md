@@ -18,6 +18,7 @@ Legenda: **A** = dá para automatizar ou checar no preview local; **C** = só no
 ## Usuário Padrão
 - [ ] **A** Abas Treino, Alimentar, Status e Time; a barra de baixo some ao rolar para baixo e volta ao rolar para cima.
 - [ ] **A** Registrar carga: valor simples, conjugado com o botão "+", séries preenchidas e em branco.
+- [ ] **A** Histórico de carga (toque em "X kg atual"): com 2 a 7 registros, cada ponto do gráfico tem a data (dd/mm) embaixo, sem rótulo escondido nem ponto cortado nas bordas; com mais de 7, mostra os 7 mais recentes e a nota; confira também em tela estreita (320 px) e no tema escuro.
 - [ ] **A** Registrar carga com equipamento: marcar halter, máquina ou barra (tocar de novo desmarca), salvar sem escolher, e conferir que o próximo registro do mesmo exercício já vem com a última escolha e que o Status mostra o equipamento no fim da linha.
 - [ ] **A** Cronômetro: iniciar, pausar, ajustar, reiniciar.
 - [ ] **C** Cronômetro: som e vibração no fim da contagem.

@@ -7,6 +7,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 ### Adicionado
 - Notas de projeto por recurso em `docs/dev/` (carga e equipamento, cronômetro de descanso, Status, gamificação, ranking, cardio, catálogo de exercícios, times e perfis, menu, desempenho e banco de dados), com índice e modelo para novas notas.
 
+### Corrigido
+- Gráfico do histórico de carga: agora mostra a data (dia e mês) de **todos** os dias treinados, embaixo de cada ponto. Antes o gráfico escondia parte das datas (a primeira e, com mais registros, várias outras) e cortava o primeiro ponto na borda.
+
 ## [1.3.1] - 2026-11-04
 
 Deploy em produção, sem migração (tag no commit `438495c`).
