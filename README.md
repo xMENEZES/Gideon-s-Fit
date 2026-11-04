@@ -97,7 +97,7 @@ O deploy é feito na Vercel (`npx vercel --prod`), **sempre a partir da `main` j
 
 ## Versionamento
 
-A `main` é a produção e é protegida: toda mudança nasce numa branch com o nome do que está sendo feito, passa pela validação automática (CI) e pelo roteiro de regressão, e só entra na `main` por Pull Request depois de validada. O deploy é um passo separado. As versões seguem SemVer e estão no [`CHANGELOG.md`](CHANGELOG.md). A política completa está em [`docs/VERSIONAMENTO.md`](docs/VERSIONAMENTO.md) e o roteiro de testes em [`docs/TESTES_DE_REGRESSAO.md`](docs/TESTES_DE_REGRESSAO.md). A medição de capacidade sob muitos acessos simultâneos está em [`docs/TESTE_DE_CONCORRENCIA.md`](docs/TESTE_DE_CONCORRENCIA.md).
+A `main` é a produção e é protegida: toda mudança nasce numa branch com o nome do que está sendo feito, passa pela validação automática (CI) e pelo roteiro de regressão, e só entra na `main` por Pull Request depois de validada. O deploy é um passo separado. As versões seguem SemVer e estão no [`CHANGELOG.md`](CHANGELOG.md). A política completa está em [`docs/VERSIONAMENTO.md`](docs/VERSIONAMENTO.md) e o roteiro de testes em [`docs/TESTES_DE_REGRESSAO.md`](docs/TESTES_DE_REGRESSAO.md). A medição de capacidade sob muitos acessos simultâneos está em [`docs/TESTE_DE_CONCORRENCIA.md`](docs/TESTE_DE_CONCORRENCIA.md), as decisões de cada recurso em [`docs/dev/`](docs/dev/README.md) e a política de segurança em [`SECURITY.md`](SECURITY.md).
 
 ## Convenções
 

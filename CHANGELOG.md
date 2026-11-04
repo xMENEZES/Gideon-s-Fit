@@ -5,6 +5,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 ## Não lançado
 
 ### Adicionado
+- `SECURITY.md` (como reportar vulnerabilidade de forma privada, escopo e prazos) e notas de projeto por recurso em `docs/dev/` (carga e equipamento, cronômetro de descanso, Status, gamificação, ranking, cardio, catálogo de exercícios, times e perfis, menu, desempenho e banco de dados).
 - Alerta de tela piscando no fim do descanso: a tela pisca no ritmo dos bipes (6 vezes, cerca de 3 s), útil em academia barulhenta ou com o celular no silencioso. Com "reduzir movimento" ligado no aparelho, só o cronômetro fica em destaque, sem piscar.
 - Documento do teste de concorrência (`docs/TESTE_DE_CONCORRENCIA.md`): como o app fala com o banco, a medição feita no banco de testes (até 100 telas simultâneas e registros de carga concorrentes, sem nenhum erro) e o que fazer se o uso crescer.
 
