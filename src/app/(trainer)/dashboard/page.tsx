@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { User } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
@@ -5,6 +6,10 @@ import { getSessionUserId } from "@/lib/auth/session";
 import { Card, CardContent } from "@/components/ui/card";
 import { TeamCodeCard } from "@/components/shared/team-code-card";
 import { JoinRequestsList } from "@/components/shared/join-requests-list";
+import {
+  StudentStatusSummary,
+  StudentStatusSummarySkeleton,
+} from "@/components/shared/student-status-summary";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -50,14 +55,20 @@ export default async function DashboardPage() {
           {students.map((s) => (
             <Link key={s.id} href={`/dashboard/alunos/${s.id}`}>
               <Card className="h-full transition-colors hover:border-primary-ink/60">
-                <CardContent className="flex items-center gap-3 py-5">
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
-                    <User className="size-5" />
+                <CardContent className="flex flex-col gap-3 py-5">
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
+                      <User className="size-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate font-medium">{s.nickname ?? s.profiles?.full_name}</p>
+                      <p className="truncate text-sm text-muted-foreground">{s.email}</p>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <p className="truncate font-medium">{s.nickname ?? s.profiles?.full_name}</p>
-                    <p className="truncate text-sm text-muted-foreground">{s.email}</p>
-                  </div>
+                  {/* O resumo do status carrega em segundo plano: os nomes não esperam por ele. */}
+                  <Suspense fallback={<StudentStatusSummarySkeleton />}>
+                    <StudentStatusSummary studentId={s.id} />
+                  </Suspense>
                 </CardContent>
               </Card>
             </Link>

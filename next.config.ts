@@ -47,6 +47,8 @@ const nextConfig: NextConfig = {
     return [
       { source: "/meu-plano", destination: "/meu-plano/treino", permanent: false },
       { source: "/aluno", destination: "/aluno/treino", permanent: false },
+      // A tela "Status do time" do profissional virou o resumo dentro dos cards de "Meus alunos".
+      { source: "/dashboard/status", destination: "/dashboard", permanent: false },
     ];
   },
 };
