@@ -10,6 +10,7 @@ As notas descrevem o comportamento da **versão 1.1.0** em diante. A lista do qu
 |---|---|
 | [carga-e-equipamento](carga-e-equipamento.md) | Registro de carga: histórico, data, conjugado, séries feitas e equipamento |
 | [cronometro-de-descanso](cronometro-de-descanso.md) | Contagem do descanso, alarme e alerta de tela piscando |
+| [notificacao-push](notificacao-push.md) | Aviso do fim do descanso com a tela bloqueada |
 | [status-e-calendario](status-e-calendario.md) | Calendário do Status, cores, dia de descanso e resumo nos cards |
 | [gamificacao](gamificacao.md) | Resultado diário, sequências, selos e mensagens de incentivo |
 | [ranking](ranking.md) | Ranking mensal do time |

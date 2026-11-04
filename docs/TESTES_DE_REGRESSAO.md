@@ -21,6 +21,7 @@ Legenda: **A** = dá para automatizar ou checar no preview local; **C** = só no
 - [ ] **A** Registrar carga com equipamento: marcar halter, máquina ou barra (tocar de novo desmarca), salvar sem escolher, e conferir que o próximo registro do mesmo exercício já vem com a última escolha e que o Status mostra o equipamento no fim da linha.
 - [ ] **A** Cronômetro: iniciar, pausar, ajustar, reiniciar.
 - [ ] **C** Cronômetro: som e vibração no fim da contagem.
+- [ ] **C** Aviso por notificação push: ligar pelo convite do treino ou em Minha conta; iniciar o cronômetro (descanso curto), bloquear a tela e receber "Descanso terminou" no fim; pausar ou reiniciar antes do fim cancela o aviso; com o app aberto não aparece notificação; tocar na notificação abre o app; desligar em Minha conta para de avisar.
 - [ ] **C** Cronômetro: a tela pisca (6 vezes, cerca de 3 s) no fim da contagem; com "reduzir movimento" ligado no aparelho, só o cronômetro fica em destaque; reiniciar ou iniciar de novo no meio do alerta interrompe a piscada.
 - [ ] **A** Alimentação: marcar refeição como feita e como "não fiz" com motivo.
 - [ ] **A** Status: calendário com os dois círculos por dia, cores corretas, dia de hoje só com contorno.

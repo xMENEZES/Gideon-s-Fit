@@ -13,8 +13,8 @@ Cada exercício de musculação tem um descanso (`exercises.rest_seconds`, de 5 
 
 ## Limites
 
-- **Com a tela bloqueada, nada avisa**: a página é suspensa, não há tela para piscar e o navegador bloqueia a vibração de páginas em segundo plano. Manter a tela acesa durante a contagem (Wake Lock) foi descartado por decisão do dono. A alternativa para o celular bloqueado é a **notificação push**, ainda em planejamento (exige inscrição por aparelho, uma função que espera o fim do descanso e chaves de envio).
-- O som é sempre o do app; uma notificação push usaria o som padrão do sistema, não os 6 bipes.
+- **O alarme do app não dispara com a tela bloqueada**: a página é suspensa, não há tela para piscar e o navegador bloqueia a vibração de páginas em segundo plano. Manter a tela acesa durante a contagem (Wake Lock) foi descartado por decisão do dono. Para o celular bloqueado existe a **notificação push** (ver [notificacao-push](notificacao-push.md)): ao iniciar o cronômetro o app agenda o aviso no servidor, e pausar ou reiniciar o cancela.
+- O som do app é sempre o dos 6 bipes; a notificação push usa o som padrão do sistema.
 
 ## Onde está
 

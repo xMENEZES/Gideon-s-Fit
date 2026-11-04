@@ -5,6 +5,8 @@ import { createPortal } from "react-dom";
 import { Pause, Play, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { flashSchedule } from "@/lib/rest-alert";
+import { cancelRestAlarm, scheduleRestAlarm } from "@/lib/push-client";
+import { canPush } from "@/lib/rest-push";
 
 function formatTime(totalSeconds: number) {
   const m = Math.floor(totalSeconds / 60);
@@ -62,7 +64,7 @@ function playAlarm(ctx: AudioContext | null) {
   }
 }
 
-export function RestTimer({ seconds }: { seconds: number }) {
+export function RestTimer({ seconds, label }: { seconds: number; label?: string }) {
   const [prevSeconds, setPrevSeconds] = useState(seconds);
   const [remaining, setRemaining] = useState(seconds);
   const [running, setRunning] = useState(false);
@@ -74,6 +76,8 @@ export function RestTimer({ seconds }: { seconds: number }) {
   // então não atrasa se o navegador reduzir a frequência com a tela em segundo plano.
   const endAtRef = useRef(0);
   const audioRef = useRef<AudioContext | null>(null);
+  // Aviso por notificação push (para a tela bloqueada): o id do aviso agendado no servidor.
+  const alarmRef = useRef<Promise<string | null> | null>(null);
 
   // Ajusta o estado durante a renderização (em vez de um efeito) quando o
   // profissional muda o descanso do exercício: reinicia o cronômetro.
@@ -134,13 +138,22 @@ export function RestTimer({ seconds }: { seconds: number }) {
     setFlashOn(false);
   }
 
+  // Cancela o aviso por push que estava agendado (pausar, reiniciar ou começar de novo).
+  function cancelPushAlarm() {
+    const pending = alarmRef.current;
+    alarmRef.current = null;
+    if (pending) void pending.then((id) => (id ? cancelRestAlarm(id) : undefined));
+  }
+
   function start(from: number) {
     stopAlert();
+    cancelPushAlarm();
     releaseAudio();
     audioRef.current = createAudioContext();
     endAtRef.current = Date.now() + from * 1000;
     setRemaining(from);
     setRunning(true);
+    if (canPush(from)) alarmRef.current = scheduleRestAlarm(from, label ?? "");
   }
 
   function handleToggle() {
@@ -148,6 +161,7 @@ export function RestTimer({ seconds }: { seconds: number }) {
       start(seconds);
     } else if (running) {
       setRunning(false);
+      cancelPushAlarm();
       releaseAudio();
     } else {
       start(remaining);
@@ -157,6 +171,7 @@ export function RestTimer({ seconds }: { seconds: number }) {
   function handleReset() {
     setRunning(false);
     stopAlert();
+    cancelPushAlarm();
     releaseAudio();
     setRemaining(seconds);
   }

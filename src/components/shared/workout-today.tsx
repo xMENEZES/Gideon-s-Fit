@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { IncentiveBanner } from "@/components/shared/incentive-banner";
+import { PushOptIn } from "@/components/shared/push-opt-in";
 import { SealStrip } from "@/components/shared/seal-strip";
 import { TodayHeader } from "@/components/shared/today-header";
 import { WorkoutDaysTabs } from "@/components/shared/workout-days-tabs";
@@ -56,6 +57,8 @@ export function WorkoutToday({
           <SealStrip studentId={studentId} lines={["workout", "both"]} />
         </Suspense>
       </TodayHeader>
+
+      <PushOptIn />
 
       <Suspense fallback={null}>
         <IncentiveBanner
