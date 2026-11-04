@@ -7,6 +7,7 @@ import type {
 } from "@/lib/validations/workout.schema";
 import type { ExerciseKind } from "@/lib/types/database.types";
 import { ActivityField } from "@/components/shared/activity-field";
+import { ExerciseNameField, type CatalogChoice } from "@/components/shared/exercise-name-field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,6 +21,8 @@ export function ExerciseFormFields({
   control,
   errors,
   activityKey,
+  onCatalogChoice,
+  initialName,
 }: {
   kind: ExerciseKind;
   register: UseFormRegister<ExerciseFormInput>;
@@ -27,6 +30,9 @@ export function ExerciseFormFields({
   errors: FieldErrors<ExerciseFormInput>;
   // Muda quando o formulário é reiniciado, para remontar o menu de atividades.
   activityKey?: number;
+  // Catálogo de nomes (só musculação): o que guardar no envio, e o nome atual ao editar.
+  onCatalogChoice?: (choice: CatalogChoice | null) => void;
+  initialName?: string;
 }) {
   return (
     <>
@@ -76,7 +82,20 @@ export function ExerciseFormFields({
         <>
           <div className="flex flex-col gap-2">
             <Label htmlFor="name">Nome do exercício</Label>
-            <Input id="name" placeholder="Supino reto" {...register("name")} />
+            <Controller
+              control={control}
+              name="name"
+              render={({ field }) => (
+                <ExerciseNameField
+                  id="name"
+                  value={typeof field.value === "string" ? field.value : ""}
+                  onChange={field.onChange}
+                  invalid={!!errors.name}
+                  onChoiceChange={onCatalogChoice}
+                  initialName={initialName}
+                />
+              )}
+            />
             {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
           </div>
           <div className="grid grid-cols-2 gap-4">

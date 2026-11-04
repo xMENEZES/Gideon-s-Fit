@@ -5,8 +5,15 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 ## Não lançado
 
 ### Adicionado
-- `SECURITY.md` (como reportar vulnerabilidade de forma privada, escopo e prazos) e notas de projeto por recurso em `docs/dev/` (carga e equipamento, cronômetro de descanso, Status, gamificação, ranking, cardio, catálogo de exercícios, times e perfis, menu, desempenho e banco de dados).
-- Alerta de tela piscando no fim do descanso: a tela pisca no ritmo dos bipes (6 vezes, cerca de 3 s), útil em academia barulhenta ou com o celular no silencioso. Com "reduzir movimento" ligado no aparelho, só o cronômetro fica em destaque, sem piscar.
+- Notas de projeto por recurso em `docs/dev/` (carga e equipamento, cronômetro de descanso, Status, gamificação, ranking, cardio, catálogo de exercícios, times e perfis, menu, desempenho e banco de dados), com índice e modelo para novas notas.
+
+## [1.2.0] - 2026-11-04
+
+Deploy em produção com a migração `0033_exercise_catalog.sql` (tag no commit `8c0fd87`).
+
+### Adicionado
+- Alerta de tela piscando no fim do descanso: a tela pisca no ritmo dos bipes (6 vezes, cerca de 3 s), útil em academia barulhenta ou com o celular no silencioso. Com "reduzir movimento" ligado no aparelho, só o cronômetro fica em destaque, sem piscar. Só aparece com a tela ligada.
+- Catálogo de exercícios: ao criar ou editar um exercício de musculação, o campo de nome sugere nomes de uma lista de 152 exercícios em português (a partir de 2 letras, sem diferenciar acento), com o grupo muscular ao lado. Dá para digitar qualquer nome fora da lista. Um nome novo pode ser guardado no catálogo pessoal (com o grupo muscular) e aparece nas próximas buscas, com um "x" para remover. Vale para profissionais e Usuários Padrão. Exige a migração `0033_exercise_catalog.sql` (tabela nova, só acrescenta).
 - Documento do teste de concorrência (`docs/TESTE_DE_CONCORRENCIA.md`): como o app fala com o banco, a medição feita no banco de testes (até 100 telas simultâneas e registros de carga concorrentes, sem nenhum erro) e o que fazer se o uso crescer.
 
 ## [1.1.0] - 2026-11-04
@@ -58,6 +65,7 @@ Primeira versão marcada: o estado que estava em produção quando a política d
 - App instalável (PWA), tela de abertura própria, menu inferior no celular, tema claro e escuro, logo e ícones novos, cor da marca roxa `#6C0077`.
 - Segurança: RLS em todas as tabelas, cabeçalhos de segurança, validação de entrada, exclusão de conta pelo próprio usuário.
 
+[1.2.0]: https://github.com/xMENEZES/Gideon-s-Fit/releases/tag/v1.2.0
 [1.1.0]: https://github.com/xMENEZES/Gideon-s-Fit/releases/tag/v1.1.0
 [1.0.2]: https://github.com/xMENEZES/Gideon-s-Fit/releases/tag/v1.0.2
 [1.0.1]: https://github.com/xMENEZES/Gideon-s-Fit/releases/tag/v1.0.1
