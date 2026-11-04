@@ -7,6 +7,7 @@ do $$
 declare
   v_ex uuid;
   v_cardio uuid;
+  v_by uuid;
   v_out text := '';
   v_ok boolean;
 begin
@@ -16,22 +17,26 @@ begin
   limit 1;
   if v_ex is null then raise exception 'sem exercicio de musculacao para testar'; end if;
 
+  -- created_by é obrigatório: usa qualquer perfil existente (tudo é revertido no fim).
+  select p.id into v_by from public.profiles p limit 1;
+  if v_by is null then raise exception 'sem perfil para usar em created_by'; end if;
+
   -- Registro sem equipamento continua valendo (registros antigos e escolha em branco).
-  insert into public.exercise_load_logs (exercise_id, weight_kg, reps_done, logged_at)
-    values (v_ex, 20, 10, date '2000-01-01');
+  insert into public.exercise_load_logs (exercise_id, weight_kg, reps_done, logged_at, created_by)
+    values (v_ex, 20, 10, date '2000-01-01', v_by);
   v_out := v_out || 'sem equipamento: ok | ';
 
   -- Os três equipamentos.
-  insert into public.exercise_load_logs (exercise_id, weight_kg, equipment, logged_at)
-    values (v_ex, 20, 'halter', date '2000-01-02'),
-           (v_ex, 20, 'maquina', date '2000-01-03'),
-           (v_ex, 20, 'barra', date '2000-01-04');
+  insert into public.exercise_load_logs (exercise_id, weight_kg, equipment, logged_at, created_by)
+    values (v_ex, 20, 'halter', date '2000-01-02', v_by),
+           (v_ex, 20, 'maquina', date '2000-01-03', v_by),
+           (v_ex, 20, 'barra', date '2000-01-04', v_by);
   v_out := v_out || 'halter, maquina e barra: ok | ';
 
   -- Recusa: valor fora da lista.
   begin
-    insert into public.exercise_load_logs (exercise_id, weight_kg, equipment, logged_at)
-      values (v_ex, 20, 'polia', date '2000-01-05');
+    insert into public.exercise_load_logs (exercise_id, weight_kg, equipment, logged_at, created_by)
+      values (v_ex, 20, 'polia', date '2000-01-05', v_by);
     v_ok := false;
   exception when check_violation then v_ok := true; end;
   v_out := v_out || format('recusa valor fora da lista: %s | ', case when v_ok then 'ok' else 'FALHOU' end);
@@ -40,8 +45,8 @@ begin
   select e.id into v_cardio from public.exercises e where e.kind = 'cardio' limit 1;
   if v_cardio is not null then
     begin
-      insert into public.exercise_load_logs (exercise_id, duration_minutes, equipment, logged_at)
-        values (v_cardio, 30, 'halter', date '2000-01-06');
+      insert into public.exercise_load_logs (exercise_id, duration_minutes, equipment, logged_at, created_by)
+        values (v_cardio, 30, 'halter', date '2000-01-06', v_by);
       v_ok := false;
     exception when check_violation then v_ok := true; end;
     v_out := v_out || format('recusa equipamento no cardio: %s | ', case when v_ok then 'ok' else 'FALHOU' end);
