@@ -7,6 +7,10 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 ### Adicionado
 - Notas de projeto por recurso em `docs/dev/` (carga e equipamento, cronômetro de descanso, Status, gamificação, ranking, cardio, catálogo de exercícios, times e perfis, menu, desempenho e banco de dados), com índice e modelo para novas notas.
 
+## [1.3.1] - 2026-11-04
+
+Deploy em produção, sem migração (tag no commit `438495c`).
+
 ### Removido
 - Alerta de tela piscando no fim do descanso (camada roxa sobre a tela toda), que entrou na 1.2.0. Com o aviso por notificação push funcionando, o cronômetro volta a avisar só por som e vibração com a tela ligada, e por notificação com a tela bloqueada.
 
@@ -75,6 +79,7 @@ Primeira versão marcada: o estado que estava em produção quando a política d
 - App instalável (PWA), tela de abertura própria, menu inferior no celular, tema claro e escuro, logo e ícones novos, cor da marca roxa `#6C0077`.
 - Segurança: RLS em todas as tabelas, cabeçalhos de segurança, validação de entrada, exclusão de conta pelo próprio usuário.
 
+[1.3.1]: https://github.com/xMENEZES/Gideon-s-Fit/releases/tag/v1.3.1
 [1.3.0]: https://github.com/xMENEZES/Gideon-s-Fit/releases/tag/v1.3.0
 [1.2.0]: https://github.com/xMENEZES/Gideon-s-Fit/releases/tag/v1.2.0
 [1.1.0]: https://github.com/xMENEZES/Gideon-s-Fit/releases/tag/v1.1.0
