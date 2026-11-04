@@ -12,6 +12,7 @@ import { EditExerciseDialog } from "@/components/shared/edit-exercise-dialog";
 import { RestTimer } from "@/components/shared/rest-timer";
 import { deleteExercise } from "@/lib/actions/workouts";
 import { formatCardioAmount } from "@/lib/cardio";
+import { lastEquipment } from "@/lib/equipment";
 import type { ExerciseKind } from "@/lib/types/database.types";
 
 export type ExerciseWithLogs = {
@@ -30,6 +31,9 @@ export type ExerciseWithLogs = {
     logged_at: string;
     weight_kg: number | null;
     weight_text?: string | null;
+    // Só as telas de registro buscam estes dois: servem para sugerir o último equipamento.
+    equipment?: string | null;
+    created_at?: string | null;
     duration_minutes: number | null;
     distance_km: number | null;
   }[];
@@ -117,7 +121,12 @@ export function ExerciseCard({
           ) : (
             <>
               <RestTimer seconds={exercise.rest_seconds} />
-              <AddLoadLogDialog studentId={studentId} exerciseId={exercise.id} plannedSets={exercise.sets} />
+              <AddLoadLogDialog
+                studentId={studentId}
+                exerciseId={exercise.id}
+                plannedSets={exercise.sets}
+                defaultEquipment={lastEquipment(exercise.exercise_load_logs)}
+              />
             </>
           )}
         </div>

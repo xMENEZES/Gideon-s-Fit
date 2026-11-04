@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { parseLoadValue } from "@/lib/load-values";
+import { LOAD_EQUIPMENT } from "@/lib/equipment";
 
 export const workoutDaySchema = z.object({
   name: z.string().min(2, "Dê um nome para o dia de treino").max(80, "No máximo 80 caracteres"),
@@ -130,6 +131,8 @@ export const loadLogSchema = z.object({
       .max(99, "Máximo 99 séries")
       .optional()
   ),
+  // Equipamento (halter, máquina ou barra): opcional; em branco fica sem equipamento.
+  equipment: z.preprocess(emptyToUndefined, z.enum(LOAD_EQUIPMENT, "Equipamento inválido").optional()),
   notes: z.string().max(500, "No máximo 500 caracteres").optional(),
 });
 export type LoadLogInput = z.infer<typeof loadLogSchema>;

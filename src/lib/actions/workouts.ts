@@ -165,6 +165,7 @@ export async function createLoadLog(
     reps_text: reps?.text ?? null,
     // Séries em branco: vale o número de séries definido no exercício (o aluno fez as previstas).
     sets_done: parsed.data.setsDone ?? exercise.sets,
+    equipment: parsed.data.equipment ?? null,
     // Sempre hoje, no dia de Brasília (o banco usa UTC e viraria o dia às 21h). A data não vem
     // do cliente: o histórico de treino não aceita datas passadas nem futuras.
     logged_at: todayBR(),

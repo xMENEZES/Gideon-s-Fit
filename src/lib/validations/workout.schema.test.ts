@@ -141,6 +141,23 @@ describe("loadLogSchema (musculação)", () => {
     expect(filled.success && filled.data.setsDone).toBe(4);
   });
 
+  it("equipamento é opcional: em branco ou ausente fica sem equipamento", () => {
+    const blank = loadLogSchema.safeParse({ weightKg: "20", equipment: "" });
+    expect(blank.success && blank.data.equipment).toBe(undefined);
+    const absent = loadLogSchema.safeParse({ weightKg: "20" });
+    expect(absent.success && absent.data.equipment).toBe(undefined);
+  });
+
+  it("equipamento aceita halter, máquina e barra e recusa o resto", () => {
+    for (const equipment of ["halter", "maquina", "barra"]) {
+      const result = loadLogSchema.safeParse({ weightKg: "20", equipment });
+      expect(result.success && result.data.equipment).toBe(equipment);
+    }
+    for (const equipment of ["polia", "Halter", "máquina", 1]) {
+      expect(loadLogSchema.safeParse({ weightKg: "20", equipment }).success).toBe(false);
+    }
+  });
+
   it("séries feitas recusa zero, decimais, texto e mais de 99", () => {
     for (const setsDone of ["0", "-1", "2,5", "três", "100"]) {
       expect(loadLogSchema.safeParse({ weightKg: "20", setsDone }).success).toBe(false);
