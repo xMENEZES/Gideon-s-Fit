@@ -4,6 +4,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## Não lançado
 
+### Adicionado
+- Documento do teste de concorrência (`docs/TESTE_DE_CONCORRENCIA.md`): como o app fala com o banco, a medição feita no banco de testes (até 100 telas simultâneas e registros de carga concorrentes, sem nenhum erro) e o que fazer se o uso crescer.
+
 ## [1.1.0] - 2026-11-04
 
 Deploy em produção com a migração `0032_load_equipment.sql` (tag no commit `b9e7a7b`).
