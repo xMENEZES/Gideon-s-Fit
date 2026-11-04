@@ -33,6 +33,7 @@ Legenda: **A** = dá para automatizar ou checar no preview local; **C** = só no
 
 ## Profissional
 - [ ] **A** Alunos: lista, ficha de um aluno, treino e dieta do aluno, Status do aluno (somente leitura do descanso).
+- [ ] **A** Alunos: cada card mostra o resumo "Treino" e "Alimentar" do aluno; o menu não tem mais "Status" e `/dashboard/status` redireciona para `/dashboard`.
 - [ ] **A** Modelos: criar, aplicar a alunos.
 - [ ] **A** Mensagens de incentivo: editar e cartão do ranking (ligar e desligar).
 - [ ] **A** Alertas e solicitações de entrada (aprovar e recusar).

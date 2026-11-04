@@ -191,7 +191,6 @@ export async function applyToStudents(
   }
 
   revalidatePath("/dashboard");
-  revalidatePath("/dashboard/status");
   if (!applied) return { error: "Não foi possível atribuir o protocolo. Tente novamente." };
   return { success: true, applied, failed };
 }
@@ -237,6 +236,7 @@ export async function startFromSource(
   }
 
   revalidateModule(studentId, moduleOf(type));
-  revalidatePath("/dashboard/status");
+  // O resumo de status dos cards fica na lista de alunos.
+  revalidatePath("/dashboard");
   return { success: true, protocolId: data };
 }
