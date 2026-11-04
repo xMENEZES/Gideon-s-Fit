@@ -4,14 +4,29 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## Não lançado
 
+## [1.1.0] - 2026-11-04
+
+Deploy em produção com a migração `0032_load_equipment.sql` (tag no commit `b9e7a7b`).
+
 ### Adicionado
 - Registro de carga com equipamento: a pessoa pode marcar se a carga foi feita com halter, máquina ou barra (opcional). O próximo registro do mesmo exercício já vem com a última escolha, e o equipamento aparece no Status. Exige a migração `0032_load_equipment.sql` (só acrescenta uma coluna opcional).
-- Banco de testes (staging) separado da produção, com contas de teste e dados fictícios, usado pelo ambiente local e pelos previews da Vercel.
 
 ### Alterado
 - Tela do profissional: o ranking do time saiu de "Mensagens" e ganhou uma tela própria ("Ranking"), com o mesmo cartão de ligar e desligar.
 - Menu do profissional no celular: passa a ficar na barra de baixo, como o do aluno, com ícones para Alunos (com a contagem de solicitações), Modelos, Mensagens, Ranking e Alertas (com a contagem de alertas). Em telas largas os links continuam no topo, agora com o Ranking.
 - Tela do profissional: o resumo do status de cada aluno (dias de treino e aderência alimentar) passa a aparecer nos cards de "Meus alunos", e a tela "Status" do menu foi removida (o endereço antigo redireciona para "Meus alunos"). O status detalhado continua na ficha de cada aluno.
+
+### Corrigido
+- Scripts de teste das migrações 0029 e 0032 (`supabase/tests`): faltava preencher `created_by`, coluna obrigatória, e eles falhavam antes de testar as restrições.
+
+## [1.0.2] - 2026-11-03
+
+Deploy em produção (tag no commit `147b226`).
+
+### Adicionado
+- Banco de testes (staging) separado da produção, com contas de teste e dados fictícios, usado pelo ambiente local e pelos previews da Vercel.
+
+### Alterado
 - Dependências: atualização das bibliotecas (React 19.3.1, `@supabase/supabase-js` 2.118, `@supabase/ssr` 0.12.7, entre outras de versão menor), o que também fechou 14 dos 16 alertas de segurança de desenvolvimento.
 - Dependabot passa a ignorar as versões maiores de `typescript` (o `typescript-eslint` ainda não suporta o 7), `eslint` (plugins do `eslint-config-next` só declaram suporte até a 9) e `@types/node` (acompanha o Node 22).
 
@@ -38,5 +53,7 @@ Primeira versão marcada: o estado que estava em produção quando a política d
 - App instalável (PWA), tela de abertura própria, menu inferior no celular, tema claro e escuro, logo e ícones novos, cor da marca roxa `#6C0077`.
 - Segurança: RLS em todas as tabelas, cabeçalhos de segurança, validação de entrada, exclusão de conta pelo próprio usuário.
 
+[1.1.0]: https://github.com/xMENEZES/Gideon-s-Fit/releases/tag/v1.1.0
+[1.0.2]: https://github.com/xMENEZES/Gideon-s-Fit/releases/tag/v1.0.2
 [1.0.1]: https://github.com/xMENEZES/Gideon-s-Fit/releases/tag/v1.0.1
 [1.0.0]: https://github.com/xMENEZES/Gideon-s-Fit/releases/tag/v1.0.0
