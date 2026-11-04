@@ -290,6 +290,26 @@ describe("histórico do dia", () => {
     expect(describeWorkoutEntry(base)).toBe("Supino: 30 kg x 10");
   });
 
+  it("mostra o equipamento escolhido no fim do registro e ignora o que não existe", () => {
+    const base: WorkoutEntry = {
+      date: "2026-10-09",
+      day: "Treino A",
+      exercise: "Supino",
+      weight_kg: 30,
+      reps_done: 10,
+      duration_minutes: null,
+      distance_km: null,
+    };
+    expect(describeWorkoutEntry({ ...base, sets_done: 4, equipment: "halter" })).toBe(
+      "Supino: 4 séries · 30 kg x 10 · Halter"
+    );
+    expect(describeWorkoutEntry({ ...base, equipment: "maquina" })).toBe("Supino: 30 kg x 10 · Máquina");
+    expect(describeWorkoutEntry({ ...base, equipment: "barra" })).toBe("Supino: 30 kg x 10 · Barra");
+    // Sem escolha (registros antigos) ou valor desconhecido: como antes.
+    expect(describeWorkoutEntry({ ...base, equipment: null })).toBe("Supino: 30 kg x 10");
+    expect(describeWorkoutEntry({ ...base, equipment: "polia" })).toBe("Supino: 30 kg x 10");
+  });
+
   it("agrupa os registros do treino por dia do protocolo e exercício", () => {
     const entry = (day: string, exercise: string, weight: number | null, reps: number | null): WorkoutEntry => ({
       date: "2026-10-09",

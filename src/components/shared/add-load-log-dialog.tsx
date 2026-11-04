@@ -11,6 +11,7 @@ import {
   type LoadLogFormInput,
 } from "@/lib/validations/workout.schema";
 import { createLoadLog } from "@/lib/actions/workouts";
+import { EQUIPMENT_OPTIONS, type LoadEquipment } from "@/lib/equipment";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -44,13 +45,17 @@ export function AddLoadLogDialog({
   studentId,
   exerciseId,
   plannedSets,
+  defaultEquipment,
 }: {
   studentId: string;
   exerciseId: string;
   // Séries definidas no exercício: valem quando o aluno deixa "Séries feitas" em branco.
   plannedSets?: number | null;
+  // Última escolha de equipamento desse exercício: já vem marcada ao abrir.
+  defaultEquipment?: LoadEquipment | null;
 }) {
   const [open, setOpen] = useState(false);
+  const [equipment, setEquipment] = useState<LoadEquipment | null>(defaultEquipment ?? null);
   const {
     register,
     handleSubmit,
@@ -71,7 +76,7 @@ export function AddLoadLogDialog({
   }
 
   async function onSubmit(values: LoadLogInput) {
-    const result = await createLoadLog(studentId, exerciseId, values);
+    const result = await createLoadLog(studentId, exerciseId, { ...values, equipment: equipment ?? undefined });
     if (result?.error) {
       toast.error(result.error);
       return;
@@ -80,8 +85,14 @@ export function AddLoadLogDialog({
     setOpen(false);
   }
 
+  function onOpenChange(next: boolean) {
+    // Ao abrir, volta para a última escolha salva (a tela já foi atualizada com o último registro).
+    if (next) setEquipment(defaultEquipment ?? null);
+    setOpen(next);
+  }
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger render={<Button variant="ghost" size="sm" />}>
         <TrendingUp />
         Registrar carga
@@ -151,6 +162,26 @@ export function AddLoadLogDialog({
           <p className="text-xs text-muted-foreground">
             Exercício conjugado? Toque em + para somar outro valor, por exemplo 10 + 15.
           </p>
+          <div className="flex flex-col gap-2">
+            <Label id="equipment-label">Feito com (opcional)</Label>
+            <div role="group" aria-labelledby="equipment-label" className="grid grid-cols-3 gap-2">
+              {EQUIPMENT_OPTIONS.map((option) => {
+                const selected = equipment === option.value;
+                return (
+                  <Button
+                    key={option.value}
+                    type="button"
+                    variant={selected ? "default" : "outline"}
+                    aria-pressed={selected}
+                    // Tocar de novo na opção marcada desmarca (a escolha é opcional).
+                    onClick={() => setEquipment(selected ? null : option.value)}
+                  >
+                    {option.label}
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
           <DialogFooter>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? "Salvando..." : "Salvar"}

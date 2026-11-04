@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/types/database.types";
 import { addDays } from "@/lib/dates";
 import { formatCardioAmount } from "@/lib/cardio";
+import { equipmentLabel } from "@/lib/equipment";
 
 type Client = SupabaseClient<Database>;
 
@@ -25,16 +26,20 @@ export type WorkoutEntry = {
   reps_text?: string | null;
   // Séries feitas com essa carga e repetições; nulo nos registros anteriores ao campo.
   sets_done?: number | null;
+  // Halter, máquina ou barra; nulo quando a pessoa não escolheu (e nos registros antigos).
+  equipment?: string | null;
   duration_minutes: number | null;
   distance_km: number | null;
 };
 
-// Um registro, sem o nome do exercício: "3 séries · 30 kg x 10" ou "32 min, 5 km".
+// Um registro, sem o nome do exercício: "3 séries · 30 kg x 10 · Halter" ou "32 min, 5 km".
 export function describeWorkoutSet(entry: WorkoutEntry): string {
   if (entry.weight_kg != null) {
     const reps = entry.reps_text ?? entry.reps_done;
     const load = `${entry.weight_text ?? entry.weight_kg} kg${reps ? ` x ${reps}` : ""}`;
-    return entry.sets_done ? `${entry.sets_done} ${entry.sets_done === 1 ? "série" : "séries"} · ${load}` : load;
+    const withSets = entry.sets_done ? `${entry.sets_done} ${entry.sets_done === 1 ? "série" : "séries"} · ${load}` : load;
+    const equipment = equipmentLabel(entry.equipment);
+    return equipment ? `${withSets} · ${equipment}` : withSets;
   }
   return formatCardioAmount(entry.duration_minutes, entry.distance_km);
 }
@@ -98,7 +103,7 @@ export async function loadWorkoutEntries(supabase: Client, protocolIds: string[]
 
   const { data } = await supabase
     .from("workout_days")
-    .select("protocol_id, name, exercises(name, exercise_load_logs(logged_at, weight_kg, weight_text, reps_done, reps_text, sets_done, duration_minutes, distance_km))")
+    .select("protocol_id, name, exercises(name, exercise_load_logs(logged_at, weight_kg, weight_text, reps_done, reps_text, sets_done, equipment, duration_minutes, distance_km))")
     .in("protocol_id", protocolIds);
 
   for (const day of data ?? []) {
@@ -114,6 +119,7 @@ export async function loadWorkoutEntries(supabase: Client, protocolIds: string[]
           reps_done: log.reps_done,
           reps_text: log.reps_text,
           sets_done: log.sets_done,
+          equipment: log.equipment,
           duration_minutes: log.duration_minutes,
           distance_km: log.distance_km == null ? null : Number(log.distance_km),
         });

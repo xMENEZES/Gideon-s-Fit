@@ -5,6 +5,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 ## Não lançado
 
 ### Adicionado
+- Registro de carga com equipamento: a pessoa pode marcar se a carga foi feita com halter, máquina ou barra (opcional). O próximo registro do mesmo exercício já vem com a última escolha, e o equipamento aparece no Status. Exige a migração `0032_load_equipment.sql` (só acrescenta uma coluna opcional).
 - Banco de testes (staging) separado da produção, com contas de teste e dados fictícios, usado pelo ambiente local e pelos previews da Vercel.
 
 ### Alterado
