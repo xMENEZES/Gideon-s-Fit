@@ -5,8 +5,14 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 ## Não lançado
 
 ### Adicionado
-- Aviso do fim do descanso por notificação push: com a tela do celular bloqueada, o app manda uma notificação "Descanso terminou" quando o cronômetro zera. Liga-se pelo convite no topo do treino do dia ou em "Minha conta", por aparelho. Vale para descansos de até 4 minutos e não aparece com o app aberto (que já avisa por conta própria). Exige a migração `0034_push_notifications.sql` (tabelas novas, só acrescenta) e as chaves de envio na Vercel.
 - Notas de projeto por recurso em `docs/dev/` (carga e equipamento, cronômetro de descanso, Status, gamificação, ranking, cardio, catálogo de exercícios, times e perfis, menu, desempenho e banco de dados), com índice e modelo para novas notas.
+
+## [1.3.0] - 2026-11-04
+
+Deploy em produção com a migração `0034_push_notifications.sql` (tag no commit `712eee1`).
+
+### Adicionado
+- Aviso do fim do descanso por notificação push: com a tela do celular bloqueada, o app manda uma notificação "Descanso terminou" quando o cronômetro zera. Liga-se pelo convite no topo do treino do dia ou em "Minha conta", por aparelho. Vale para descansos de até 4 minutos e não aparece com o app aberto (que já avisa por conta própria). Exige a migração `0034_push_notifications.sql` (tabelas novas, só acrescenta) e as chaves de envio na Vercel.
 
 ## [1.2.0] - 2026-11-04
 
@@ -66,6 +72,7 @@ Primeira versão marcada: o estado que estava em produção quando a política d
 - App instalável (PWA), tela de abertura própria, menu inferior no celular, tema claro e escuro, logo e ícones novos, cor da marca roxa `#6C0077`.
 - Segurança: RLS em todas as tabelas, cabeçalhos de segurança, validação de entrada, exclusão de conta pelo próprio usuário.
 
+[1.3.0]: https://github.com/xMENEZES/Gideon-s-Fit/releases/tag/v1.3.0
 [1.2.0]: https://github.com/xMENEZES/Gideon-s-Fit/releases/tag/v1.2.0
 [1.1.0]: https://github.com/xMENEZES/Gideon-s-Fit/releases/tag/v1.1.0
 [1.0.2]: https://github.com/xMENEZES/Gideon-s-Fit/releases/tag/v1.0.2
