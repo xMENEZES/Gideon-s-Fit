@@ -75,7 +75,7 @@ self.addEventListener("fetch", (event) => {
 });
 
 // Notificação push do fim do descanso. O servidor manda { title, body, url, tag }.
-// Com o app à vista, ele mesmo já avisou (bipes, vibração e tela piscando), então não mostra a
+// Com o app à vista, ele mesmo já avisou (bipes e vibração), então não mostra a
 // notificação; o navegador aceita isso quando há uma janela do app visível.
 self.addEventListener("push", (event) => {
   let data = {};

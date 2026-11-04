@@ -7,6 +7,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 ### Adicionado
 - Notas de projeto por recurso em `docs/dev/` (carga e equipamento, cronômetro de descanso, Status, gamificação, ranking, cardio, catálogo de exercícios, times e perfis, menu, desempenho e banco de dados), com índice e modelo para novas notas.
 
+### Removido
+- Alerta de tela piscando no fim do descanso (camada roxa sobre a tela toda), que entrou na 1.2.0. Com o aviso por notificação push funcionando, o cronômetro volta a avisar só por som e vibração com a tela ligada, e por notificação com a tela bloqueada.
+
 ## [1.3.0] - 2026-11-04
 
 Deploy em produção com a migração `0034_push_notifications.sql` (tag no commit `712eee1`).

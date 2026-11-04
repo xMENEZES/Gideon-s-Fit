@@ -2,7 +2,7 @@
 
 ## O que é
 
-Com a tela do celular bloqueada, a página é suspensa: o alarme do app (bipes, vibração e tela piscando) não dispara. A notificação push resolve isso: um servidor espera o fim do descanso e manda uma notificação ao aparelho, que o sistema mostra mesmo com a tela bloqueada.
+Com a tela do celular bloqueada, a página é suspensa: o alarme do app (bipes e vibração) não dispara. A notificação push resolve isso: um servidor espera o fim do descanso e manda uma notificação ao aparelho, que o sistema mostra mesmo com a tela bloqueada.
 
 ## Como funciona
 
