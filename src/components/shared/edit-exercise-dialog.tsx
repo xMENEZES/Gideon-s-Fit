@@ -12,6 +12,8 @@ import {
 } from "@/lib/validations/workout.schema";
 import type { ExerciseKind } from "@/lib/types/database.types";
 import { updateExercise } from "@/lib/actions/workouts";
+import { saveCatalogName } from "@/lib/actions/exercise-catalog";
+import type { CatalogChoice } from "@/components/shared/exercise-name-field";
 import { Button } from "@/components/ui/button";
 import { ExerciseFormFields } from "@/components/shared/exercise-form-fields";
 import {
@@ -71,6 +73,8 @@ export function EditExerciseDialog({
   const [open, setOpen] = useState(false);
   // Remonta o menu de atividades a cada abertura, para ler o nome atual.
   const [activityKey, setActivityKey] = useState(0);
+  // Nome novo que a pessoa quer guardar no catálogo (só musculação, e só se o nome mudou).
+  const [catalogChoice, setCatalogChoice] = useState<CatalogChoice | null>(null);
   const {
     register,
     control,
@@ -91,11 +95,21 @@ export function EditExerciseDialog({
   }
 
   async function onSubmit(values: ExerciseInput) {
+    const choice = values.kind === "strength" ? catalogChoice : null;
+    if (choice?.save && !choice.group) {
+      toast.error("Escolha o grupo muscular para guardar o nome no catálogo, ou desmarque a opção.");
+      return;
+    }
     const result = await updateExercise(studentId, exercise.id, values);
     if (result?.error) {
       toast.error(result.error);
       return;
     }
+    if (choice?.save) {
+      const saved = await saveCatalogName(values.name, choice.group);
+      if (saved?.error) toast.error(`Exercício salvo. ${saved.error}`);
+    }
+    setCatalogChoice(null);
     setOpen(false);
   }
 
@@ -127,6 +141,8 @@ export function EditExerciseDialog({
             control={control}
             errors={errors}
             activityKey={activityKey}
+            onCatalogChoice={setCatalogChoice}
+            initialName={exercise.name}
           />
           <DialogFooter>
             <Button type="submit" disabled={isSubmitting}>

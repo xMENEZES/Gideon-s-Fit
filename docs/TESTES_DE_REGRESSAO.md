@@ -37,6 +37,7 @@ Legenda: **A** = dá para automatizar ou checar no preview local; **C** = só no
 - [ ] **A** Alunos: lista, ficha de um aluno, treino e dieta do aluno, Status do aluno (somente leitura do descanso).
 - [ ] **A** Alunos: cada card mostra o resumo "Treino" e "Alimentar" do aluno; o menu não tem mais "Status" e `/dashboard/status` redireciona para `/dashboard`.
 - [ ] **A** Modelos: criar, aplicar a alunos.
+- [ ] **A** Catálogo de exercícios (novo exercício de musculação, no aluno e no modelo): digitar 2 letras sugere nomes (sem diferenciar acento), escolher com toque e com setas e Enter; digitar um nome que não está na lista continua valendo; nome novo oferece "Guardar este nome no meu catálogo" (pede o grupo muscular) e aparece nas próximas buscas como "meu"; o "x" remove o nome guardado; ao editar sem mexer no nome não oferece guardar; exercício de cardio não muda.
 - [ ] **A** Mensagens de incentivo: editar (o cartão do ranking não fica mais aqui).
 - [ ] **A** Ranking: tela própria com o cartão do ranking (ligar e desligar), e a aba Ranking aparece ou some para os alunos.
 - [ ] **A** Menu do profissional: no celular fica embaixo (Alunos, Modelos, Mensagens, Ranking, Alertas) com as contagens em Alunos e Alertas, some ao rolar para baixo e volta ao rolar para cima; em tela larga os links ficam no topo.

@@ -473,6 +473,32 @@ export interface Database {
           },
         ];
       };
+      exercise_catalog: {
+        Row: {
+          id: string;
+          owner_id: string | null;
+          name: string;
+          muscle_group: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          owner_id: string | null;
+          name: string;
+          muscle_group: string;
+          created_at?: string;
+        };
+        Update: Partial<Record<never, never>>;
+        Relationships: [
+          {
+            foreignKeyName: "exercise_catalog_owner_id_fkey";
+            columns: ["owner_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       incentive_messages: {
         Row: {
           id: string;

@@ -12,6 +12,8 @@ import {
 } from "@/lib/validations/workout.schema";
 import type { ExerciseKind } from "@/lib/types/database.types";
 import { createExercise } from "@/lib/actions/workouts";
+import { saveCatalogName } from "@/lib/actions/exercise-catalog";
+import type { CatalogChoice } from "@/components/shared/exercise-name-field";
 import { Button } from "@/components/ui/button";
 import { ExerciseFormFields } from "@/components/shared/exercise-form-fields";
 import {
@@ -42,6 +44,8 @@ export function AddExerciseDialog({
   const [open, setOpen] = useState(false);
   // Remonta o menu de atividades (cardio) quando o formulário é reiniciado.
   const [activityKey, setActivityKey] = useState(0);
+  // Nome novo que a pessoa quer guardar no catálogo (só musculação).
+  const [catalogChoice, setCatalogChoice] = useState<CatalogChoice | null>(null);
   const {
     register,
     control,
@@ -61,14 +65,25 @@ export function AddExerciseDialog({
     if (next === kind) return;
     reset(defaultsFor(next));
     setActivityKey((key) => key + 1);
+    setCatalogChoice(null);
   }
 
   async function onSubmit(values: ExerciseInput) {
+    const choice = values.kind === "strength" ? catalogChoice : null;
+    if (choice?.save && !choice.group) {
+      toast.error("Escolha o grupo muscular para guardar o nome no catálogo, ou desmarque a opção.");
+      return;
+    }
     const result = await createExercise(studentId, workoutDayId, values);
     if (result?.error) {
       toast.error(result.error);
       return;
     }
+    if (choice?.save) {
+      const saved = await saveCatalogName(values.name, choice.group);
+      if (saved?.error) toast.error(`Exercício adicionado. ${saved.error}`);
+    }
+    setCatalogChoice(null);
     reset(defaultsFor(values.kind));
     setActivityKey((key) => key + 1);
     setOpen(false);
@@ -104,6 +119,7 @@ export function AddExerciseDialog({
             control={control}
             errors={errors}
             activityKey={activityKey}
+            onCatalogChoice={setCatalogChoice}
           />
           <DialogFooter>
             <Button type="submit" disabled={isSubmitting}>

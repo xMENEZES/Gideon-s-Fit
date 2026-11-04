@@ -5,6 +5,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 ## Não lançado
 
 ### Adicionado
+- Catálogo de exercícios: ao criar ou editar um exercício de musculação, o campo de nome sugere nomes de uma lista de 152 exercícios em português (a partir de 2 letras, sem diferenciar acento), com o grupo muscular ao lado. Dá para digitar qualquer nome fora da lista. Um nome novo pode ser guardado no catálogo pessoal (com o grupo muscular) e aparece nas próximas buscas, com um "x" para remover. Vale para profissionais e Usuários Padrão. Exige a migração `0033_exercise_catalog.sql` (tabela nova, só acrescenta).
 - Alerta de tela piscando no fim do descanso: a tela pisca no ritmo dos bipes (6 vezes, cerca de 3 s), útil em academia barulhenta ou com o celular no silencioso. Com "reduzir movimento" ligado no aparelho, só o cronômetro fica em destaque, sem piscar.
 - Documento do teste de concorrência (`docs/TESTE_DE_CONCORRENCIA.md`): como o app fala com o banco, a medição feita no banco de testes (até 100 telas simultâneas e registros de carga concorrentes, sem nenhum erro) e o que fazer se o uso crescer.
 
