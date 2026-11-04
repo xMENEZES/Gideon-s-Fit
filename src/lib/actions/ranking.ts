@@ -21,7 +21,7 @@ export async function setTeamRanking(enabled: boolean) {
     );
   if (error) return { error: "Não foi possível salvar. Tente novamente." };
 
-  revalidatePath("/dashboard/mensagens");
+  revalidatePath("/dashboard/ranking");
   revalidatePath("/aluno", "layout");
   return { success: true };
 }
@@ -43,6 +43,6 @@ export async function setRankingParticipation(join: boolean) {
   }
 
   revalidatePath("/aluno/ranking");
-  revalidatePath("/dashboard/mensagens");
+  revalidatePath("/dashboard/ranking");
   return { success: true };
 }
