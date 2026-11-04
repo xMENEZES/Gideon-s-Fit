@@ -473,6 +473,59 @@ export interface Database {
           },
         ];
       };
+      push_subscriptions: {
+        Row: {
+          id: string;
+          user_id: string;
+          endpoint: string;
+          p256dh: string;
+          auth: string;
+          user_agent: string | null;
+          created_at: string;
+        };
+        // Só a função register_push_subscription grava; o cliente lê e apaga.
+        Insert: Record<string, never>;
+        Update: Partial<Record<never, never>>;
+        Relationships: [
+          {
+            foreignKeyName: "push_subscriptions_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      rest_alarms: {
+        Row: {
+          id: string;
+          user_id: string;
+          due_at: string;
+          body: string | null;
+          status: "pending" | "sent" | "cancelled";
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          due_at: string;
+          body?: string | null;
+          status?: "pending";
+          created_at?: string;
+        };
+        Update: Partial<{
+          status: "sent" | "cancelled";
+        }>;
+        Relationships: [
+          {
+            foreignKeyName: "rest_alarms_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       exercise_catalog: {
         Row: {
           id: string;
@@ -670,6 +723,10 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
+      register_push_subscription: {
+        Args: { p_endpoint: string; p_p256dh: string; p_auth: string; p_user_agent?: string };
+        Returns: undefined;
+      };
       my_ranking_state: {
         Args: Record<string, never>;
         Returns: { enabled: boolean; opted_in: boolean; participants: number }[];

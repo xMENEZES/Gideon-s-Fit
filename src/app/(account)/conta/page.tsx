@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getProfile, getSessionUserId } from "@/lib/auth/session";
 import { roleHome } from "@/lib/auth/roles";
 import { DeleteAccountForm } from "@/components/shared/delete-account-form";
+import { PushSettingsCard } from "@/components/shared/push-settings-card";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const ROLE_LABEL: Record<string, string> = {
@@ -42,6 +43,8 @@ export default async function ContaPage() {
           {profile?.full_name} · {email} · {ROLE_LABEL[role]}
         </p>
       </div>
+
+      {(role === "student" || role === "standard") && <PushSettingsCard />}
 
       <Card className="border-destructive/40">
         <CardHeader>

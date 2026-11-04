@@ -1,4 +1,4 @@
-// Traduz o erro dos gatilhos de cota do banco (migrações 0023, 0025 e 0033) em mensagem para a pessoa.
+// Traduz o erro dos gatilhos de cota do banco (migrações 0023, 0025, 0033 e 0034) em mensagem para a pessoa.
 // Manter os números iguais aos de supabase/migrations/0023_quotas.sql, 0025_incentive_messages.sql e 0033_exercise_catalog.sql.
 const QUOTA_MESSAGES: Record<string, string> = {
   students: "Seu time chegou ao limite de 200 alunos.",
@@ -9,6 +9,8 @@ const QUOTA_MESSAGES: Record<string, string> = {
   meal_items: "Uma opção de refeição aceita no máximo 40 itens.",
   incentive_messages: "Cada tipo de mensagem aceita no máximo 10 mensagens.",
   exercise_catalog: "Seu catálogo aceita no máximo 200 nomes próprios. Remova algum para guardar outro.",
+  push_subscriptions: "Você chegou ao limite de 10 aparelhos com aviso ligado. Desative o aviso em algum deles.",
+  rest_alarms: "Há avisos de descanso demais ao mesmo tempo. Espere o fim de algum.",
 };
 
 export function quotaMessage(error: { message?: string } | null | undefined): string | null {

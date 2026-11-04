@@ -120,7 +120,7 @@ export function ExerciseCard({
             <AddCardioLogDialog studentId={studentId} exerciseId={exercise.id} />
           ) : (
             <>
-              <RestTimer seconds={exercise.rest_seconds} />
+              <RestTimer seconds={exercise.rest_seconds} label={exercise.name} />
               <AddLoadLogDialog
                 studentId={studentId}
                 exerciseId={exercise.id}
