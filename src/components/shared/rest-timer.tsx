@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Pause, Play, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { flashSchedule } from "@/lib/rest-alert";
 
 function formatTime(totalSeconds: number) {
   const m = Math.floor(totalSeconds / 60);
@@ -15,6 +17,11 @@ const ALARM_BEEPS = 6;
 const BEEP_STEP_S = 0.5;
 const BEEP_LENGTH_S = 0.3;
 const ALARM_VIBRATION_MS = [350, 180, 350, 180, 350, 180, 350, 180, 350, 180, 350];
+
+// Quem pede menos movimento no aparelho não vê a tela piscar: o cronômetro só ganha um destaque fixo.
+function prefersReducedMotion() {
+  return typeof window !== "undefined" && !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+}
 
 // O navegador só libera o áudio depois de um toque: o contexto nasce no "Iniciar" (um toque) e é
 // usado no fim da contagem.
@@ -59,6 +66,10 @@ export function RestTimer({ seconds }: { seconds: number }) {
   const [prevSeconds, setPrevSeconds] = useState(seconds);
   const [remaining, setRemaining] = useState(seconds);
   const [running, setRunning] = useState(false);
+  // Alerta visual do fim do descanso: a tela pisca no ritmo dos bipes ("flash") ou, com
+  // "reduzir movimento" ligado, o cronômetro fica em destaque por alguns segundos ("highlight").
+  const [alertMode, setAlertMode] = useState<"flash" | "highlight" | null>(null);
+  const [flashOn, setFlashOn] = useState(false);
   // Instante em que a contagem termina: o tempo vem do relógio (não de "um segundo por tick"),
   // então não atrasa se o navegador reduzir a frequência com a tela em segundo plano.
   const endAtRef = useRef(0);
@@ -81,10 +92,29 @@ export function RestTimer({ seconds }: { seconds: number }) {
         setRunning(false);
         playAlarm(audioRef.current);
         audioRef.current = null;
+        setAlertMode(prefersReducedMotion() ? "highlight" : "flash");
       }
     }, 250);
     return () => clearInterval(interval);
   }, [running]);
+
+  // Acende e apaga a camada de piscada no mesmo ritmo dos bipes e encerra o alerta no fim do alarme.
+  useEffect(() => {
+    if (!alertMode) return;
+    const timers: number[] = [];
+    if (alertMode === "flash") {
+      for (const event of flashSchedule(ALARM_BEEPS, BEEP_STEP_S * 1000, BEEP_LENGTH_S * 1000)) {
+        timers.push(window.setTimeout(() => setFlashOn(event.on), event.at));
+      }
+    }
+    timers.push(
+      window.setTimeout(() => {
+        setFlashOn(false);
+        setAlertMode(null);
+      }, ALARM_BEEPS * BEEP_STEP_S * 1000)
+    );
+    return () => timers.forEach((timer) => window.clearTimeout(timer));
+  }, [alertMode]);
 
   useEffect(() => {
     return () => {
@@ -99,7 +129,13 @@ export function RestTimer({ seconds }: { seconds: number }) {
     audioRef.current = null;
   }
 
+  function stopAlert() {
+    setAlertMode(null);
+    setFlashOn(false);
+  }
+
   function start(from: number) {
+    stopAlert();
     releaseAudio();
     audioRef.current = createAudioContext();
     endAtRef.current = Date.now() + from * 1000;
@@ -120,12 +156,23 @@ export function RestTimer({ seconds }: { seconds: number }) {
 
   function handleReset() {
     setRunning(false);
+    stopAlert();
     releaseAudio();
     setRemaining(seconds);
   }
 
   return (
-    <div className="flex items-center gap-2 rounded-md border border-border bg-muted/40 px-3 py-2">
+    <div
+      className={`flex items-center gap-2 rounded-md border border-border bg-muted/40 px-3 py-2 ${
+        alertMode === "highlight" ? "ring-2 ring-primary-ink" : ""
+      }`}
+    >
+      {/* Camada de piscada sobre a tela toda; não captura toques nem é lida por leitor de tela. */}
+      {flashOn &&
+        createPortal(
+          <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-[100] bg-brand/40" />,
+          document.body
+        )}
       <span className={`font-mono text-lg tabular-nums ${isDone ? "text-primary-ink" : ""}`}>
         {formatTime(remaining)}
       </span>
