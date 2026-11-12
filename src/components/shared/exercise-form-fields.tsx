@@ -112,7 +112,7 @@ export function ExerciseFormFields({
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="restSeconds">Descanso (segundos)</Label>
+              <Label htmlFor="restSeconds">Descanso (segundos, opcional)</Label>
               <Input id="restSeconds" type="number" min={5} max={3600} {...register("restSeconds")} />
               {errors.restSeconds && (
                 <p className="text-sm text-destructive">{errors.restSeconds.message}</p>

@@ -48,6 +48,13 @@ describe("exerciseFields", () => {
     expect(fields).toMatchObject({ target_minutes: null, target_distance_km: 12.5 });
   });
 
+  it("musculação sem descanso grava descanso nulo de forma explícita (sem valor padrão)", () => {
+    const fields = exerciseFields(parse({ name: "Remada", sets: "3", reps: "10", restSeconds: "" }));
+    // A chave precisa existir com null: um `undefined` seria omitido do envio ao banco.
+    expect("rest_seconds" in fields).toBe(true);
+    expect((fields as { rest_seconds: number | null }).rest_seconds).toBeNull();
+  });
+
   it("link de vídeo e observações em branco viram nulos", () => {
     const fields = exerciseFields(parse({ name: "Remada", sets: "3", reps: "10", restSeconds: "60", videoUrl: "", notes: "" }));
     expect(fields).toMatchObject({ video_url: null, notes: null });

@@ -171,7 +171,8 @@ export interface Database {
           kind: ExerciseKind;
           sets: number | null;
           reps: string | null;
-          rest_seconds: number;
+          // Nulo = sem descanso definido (treino gerado, cardio). Sem valor padrão no banco (0038).
+          rest_seconds: number | null;
           recommended_load_kg: number | null;
           target_minutes: number | null;
           target_distance_km: number | null;
@@ -187,7 +188,7 @@ export interface Database {
           kind?: ExerciseKind;
           sets?: number | null;
           reps?: string | null;
-          rest_seconds?: number;
+          rest_seconds?: number | null;
           recommended_load_kg?: number | null;
           target_minutes?: number | null;
           target_distance_km?: number | null;
@@ -200,7 +201,7 @@ export interface Database {
           name: string;
           sets: number | null;
           reps: string | null;
-          rest_seconds: number;
+          rest_seconds: number | null;
           recommended_load_kg: number | null;
           target_minutes: number | null;
           target_distance_km: number | null;
@@ -770,6 +771,11 @@ export interface Database {
       register_push_subscription: {
         Args: { p_endpoint: string; p_p256dh: string; p_auth: string; p_user_agent?: string };
         Returns: undefined;
+      };
+      // Grava o treino gerado (protocolo, dias e exercícios) numa transação; só o Usuário Padrão, no plano próprio.
+      create_generated_workout: {
+        Args: { p_student_id: string; p_start_date: string; p_end_date: string; p_notes: string | null; p_days: unknown };
+        Returns: string;
       };
       my_ranking_state: {
         Args: Record<string, never>;

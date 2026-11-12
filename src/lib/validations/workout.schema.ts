@@ -66,6 +66,7 @@ export const exerciseSchema = z
     notes: z.string().max(1000, "No máximo 1000 caracteres").optional(),
   })
   .superRefine((value, ctx) => {
+    // O descanso é opcional: em branco = sem tempo definido (o treino gerado não sugere descanso).
     if (value.name.trim().length < 2) {
       ctx.addIssue({
         code: "custom",
@@ -88,13 +89,6 @@ export const exerciseSchema = z
     }
     if (!value.reps) {
       ctx.addIssue({ code: "custom", path: ["reps"], message: "Informe as repetições (ex: 8-12)" });
-    }
-    if (value.restSeconds === undefined) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["restSeconds"],
-        message: "Informe o descanso (mínimo 5 segundos)",
-      });
     }
   });
 export type ExerciseInput = z.infer<typeof exerciseSchema>;

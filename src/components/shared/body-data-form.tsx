@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { ageOn, birthDateBounds, birthDateStatus, MIN_AGE } from "@/lib/body-data";
 import { todayBR } from "@/lib/dates";
 import {
+  bodyDataRequiredSchema,
   bodyDataSchema,
   type BodyDataFormInput,
   type BodyDataInput,
@@ -55,9 +56,12 @@ function consentedOn(isoTimestamp: string): string {
 export function BodyDataForm({
   initial,
   audience,
+  requireMeasures = false,
 }: {
   initial: BodyDataFormInitial | null;
   audience: BodyDataAudience;
+  // Altura e peso obrigatórios (o gerador de treino precisa dos três dados).
+  requireMeasures?: boolean;
 }) {
   const router = useRouter();
   const [consent, setConsent] = useState(false);
@@ -73,7 +77,7 @@ export function BodyDataForm({
     reset,
     formState: { errors, isSubmitting },
   } = useForm<BodyDataFormInput, unknown, BodyDataInput>({
-    resolver: zodResolver(bodyDataSchema),
+    resolver: zodResolver(requireMeasures ? bodyDataRequiredSchema : bodyDataSchema),
     defaultValues: {
       birthDate: initial?.birthDate ?? "",
       heightCm: initial?.heightCm != null ? String(initial.heightCm) : "",
@@ -117,8 +121,10 @@ export function BodyDataForm({
         <CardHeader>
           <CardTitle>Meus Dados</CardTitle>
           <CardDescription>
-            Data de nascimento, altura e peso. Só a data de nascimento é obrigatória, e o recurso é para
-            maiores de {MIN_AGE} anos.
+            {requireMeasures
+              ? "Para gerar o seu treino, informe a data de nascimento, a altura e o peso."
+              : "Data de nascimento, altura e peso. Só a data de nascimento é obrigatória."}{" "}
+            O recurso é para maiores de {MIN_AGE} anos.
             {/* Antes do aceite, o aviso de quem pode ver já está no texto do aceite. */}
             {sharing && !needsConsent ? ` ${sharing}` : ""}
           </CardDescription>

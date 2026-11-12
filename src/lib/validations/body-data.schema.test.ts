@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
-import { bodyDataSchema } from "@/lib/validations/body-data.schema";
+import { bodyDataRequiredSchema, bodyDataSchema } from "@/lib/validations/body-data.schema";
 
 // "Hoje" fixo (12/11/2026, meio-dia em Brasília) para a idade não depender do dia em que o teste roda.
 beforeAll(() => {
@@ -89,3 +89,29 @@ describe("bodyDataSchema", () => {
     });
   });
 });
+
+describe("bodyDataRequiredSchema (gerador de treino)", () => {
+  const issues = (input: Record<string, unknown>) => {
+    const result = bodyDataRequiredSchema.safeParse(input);
+    return result.success ? [] : result.error.issues.map((issue) => issue.message);
+  };
+
+  it("exige altura e peso além da data de nascimento", () => {
+    expect(issues({ birthDate: "1990-05-10" })).toEqual(["Informe a altura em cm", "Informe o peso em kg"]);
+    expect(issues({ birthDate: "1990-05-10", heightCm: "", weightKg: "" })).toEqual([
+      "Informe a altura em cm",
+      "Informe o peso em kg",
+    ]);
+    expect(issues({ birthDate: "1990-05-10", heightCm: "175" })).toEqual(["Informe o peso em kg"]);
+    expect(issues({ birthDate: "1990-05-10", weightKg: "72,5" })).toEqual(["Informe a altura em cm"]);
+  });
+
+  it("aceita os três e mantém as mesmas regras de faixa e idade", () => {
+    expect(issues({ birthDate: "1990-05-10", heightCm: "175", weightKg: "72,5" })).toEqual([]);
+    expect(issues({ birthDate: "2008-11-13", heightCm: "175", weightKg: "72,5" })).toContain(
+      "Os dados de saúde são só para maiores de 18 anos"
+    );
+    expect(issues({ birthDate: "1990-05-10", heightCm: "99", weightKg: "72,5" })).toContain("Altura entre 100 e 250 cm");
+  });
+});
+

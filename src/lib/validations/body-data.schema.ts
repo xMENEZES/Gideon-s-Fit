@@ -44,5 +44,15 @@ export const bodyDataSchema = z.object({
       .optional()
   ),
 });
+// Variante usada pelo gerador de treino: altura e peso passam a ser obrigatórios. Em Zod 4 o refinamento
+// mantém o mesmo tipo do esquema, então o formulário serve para os dois.
+export const bodyDataRequiredSchema = bodyDataSchema.superRefine((value, ctx) => {
+  if (value.heightCm === undefined) {
+    ctx.addIssue({ code: "custom", path: ["heightCm"], message: "Informe a altura em cm" });
+  }
+  if (value.weightKg === undefined) {
+    ctx.addIssue({ code: "custom", path: ["weightKg"], message: "Informe o peso em kg" });
+  }
+});
 export type BodyDataInput = z.infer<typeof bodyDataSchema>;
 export type BodyDataFormInput = z.input<typeof bodyDataSchema>;

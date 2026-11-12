@@ -21,7 +21,8 @@ export type ExerciseWithLogs = {
   kind: ExerciseKind;
   sets: number | null;
   reps: string | null;
-  rest_seconds: number;
+  // Nulo = sem descanso definido: não mostra o selo nem o cronômetro.
+  rest_seconds: number | null;
   recommended_load_kg: number | null;
   target_minutes: number | null;
   target_distance_km: number | null;
@@ -81,7 +82,9 @@ export function ExerciseCard({
               <>
                 <Badge variant="secondary">{exercise.sets} séries</Badge>
                 <Badge variant="secondary">{exercise.reps} reps</Badge>
-                <Badge variant="secondary">{exercise.rest_seconds}s descanso</Badge>
+                {exercise.rest_seconds != null && (
+                  <Badge variant="secondary">{exercise.rest_seconds}s descanso</Badge>
+                )}
                 {exercise.recommended_load_kg != null && (
                   <Badge variant="secondary">{exercise.recommended_load_kg} kg recomendado</Badge>
                 )}
@@ -120,7 +123,9 @@ export function ExerciseCard({
             <AddCardioLogDialog studentId={studentId} exerciseId={exercise.id} />
           ) : (
             <>
-              <RestTimer seconds={exercise.rest_seconds} label={exercise.name} />
+              {exercise.rest_seconds != null && (
+                <RestTimer seconds={exercise.rest_seconds} label={exercise.name} />
+              )}
               <AddLoadLogDialog
                 studentId={studentId}
                 exerciseId={exercise.id}
