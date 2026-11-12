@@ -38,12 +38,13 @@ begin
   end;
   v_out := v_out || 'recusa valor fora da lista: ' || case when v_ok then 'ok' else 'FALHOU' end || ' | ';
 
-  -- Recusa: Cross sem peso (a regra "só musculação com carga" continua valendo).
+  -- Recusa: Cross sem peso (a regra "só musculação com carga" continua valendo). Quem barra primeiro
+  -- é o gatilho do tipo de exercício (erro log_kind_mismatch); a restrição do banco é a segunda trava.
   begin
     insert into public.exercise_load_logs (exercise_id, equipment, reps_done, logged_at, created_by)
       values (v_ex, 'cross', 10, date '2000-01-07', v_by);
     v_ok := false;
-  exception when check_violation then
+  exception when check_violation or raise_exception then
     v_ok := true;
   end;
   v_out := v_out || 'recusa cross sem peso: ' || case when v_ok then 'ok' else 'FALHOU' end;
