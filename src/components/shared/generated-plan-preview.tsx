@@ -31,28 +31,23 @@ export function GeneratedPlanPreview({ plan }: { plan: GeneratedPlan }) {
           <CardContent>
             <ul className="flex flex-col divide-y divide-border">
               {day.exercises.map((exercise, index) => (
-                <li key={`${exercise.name}-${index}`} className="flex flex-col gap-1 py-2 first:pt-0 last:pb-0">
-                  <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
-                    <span className="min-w-0 font-medium">{exercise.name}</span>
-                    <span className="flex flex-wrap items-center gap-1.5">
-                      {exercise.kind === "strength" ? (
-                        <>
-                          <Badge variant="secondary">{exercise.sets} séries</Badge>
-                          <Badge variant="secondary">{exercise.timed ? exercise.reps : `${exercise.reps} reps`}</Badge>
-                        </>
-                      ) : (
-                        <>
-                          <Badge variant="outline">Cardio</Badge>
-                          <Badge variant="secondary">{exercise.targetMinutes} min</Badge>
-                        </>
-                      )}
-                    </span>
-                  </div>
-                  {exercise.kind === "strength" ? (
-                    <span className="text-xs text-muted-foreground">{GROUP_LABEL[exercise.group]}</span>
-                  ) : (
-                    <span className="text-xs text-muted-foreground">{exercise.notes}</span>
-                  )}
+                <li key={`${exercise.name}-${index}`} className="flex flex-col gap-1.5 py-2.5 first:pt-0 last:pb-0">
+                  <span className="font-medium">{exercise.name}</span>
+                  <span className="flex flex-wrap items-center gap-1.5">
+                    {exercise.kind === "strength" ? (
+                      <>
+                        <Badge variant="secondary">{exercise.sets} séries</Badge>
+                        <Badge variant="secondary">{exercise.timed ? exercise.reps : `${exercise.reps} reps`}</Badge>
+                        <span className="text-xs text-muted-foreground">{GROUP_LABEL[exercise.group]}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Badge variant="outline">Cardio</Badge>
+                        <Badge variant="secondary">{exercise.targetMinutes} min</Badge>
+                      </>
+                    )}
+                  </span>
+                  {exercise.kind === "cardio" && <span className="text-xs text-muted-foreground">{exercise.notes}</span>}
                 </li>
               ))}
             </ul>
