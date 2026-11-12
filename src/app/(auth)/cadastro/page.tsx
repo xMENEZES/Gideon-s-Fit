@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createClient } from "@/lib/supabase/client";
 import { cadastroSchema, type CadastroInput } from "@/lib/validations/auth.schema";
@@ -11,6 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PasswordInput } from "@/components/shared/password-input";
+import { PasswordRequirements } from "@/components/shared/password-requirements";
+import { passwordErrorMessage } from "@/lib/auth-errors";
 import { GoogleButton } from "@/components/shared/google-button";
 import { ProfileTypeSelector } from "@/components/shared/profile-type-selector";
 import {
@@ -31,6 +33,7 @@ export default function CadastroPage() {
     handleSubmit,
     setValue,
     watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<CadastroInput>({
     resolver: zodResolver(cadastroSchema),
@@ -39,6 +42,7 @@ export default function CadastroPage() {
 
   const role = watch("role");
   const acceptTerms = watch("acceptTerms");
+  const passwordValue = useWatch({ control, name: "password" }) ?? "";
 
   async function onSubmit(values: CadastroInput) {
     setServerError(null);
@@ -58,9 +62,7 @@ export default function CadastroPage() {
 
     if (error) {
       setServerError(
-        error.status === 429
-          ? "Muitas tentativas. Aguarde alguns minutos e tente novamente."
-          : "Não foi possível criar a conta. Verifique os dados e tente novamente."
+        passwordErrorMessage(error, "Não foi possível criar a conta. Verifique os dados e tente novamente.")
       );
       return;
     }
@@ -159,6 +161,7 @@ export default function CadastroPage() {
           <div className="flex flex-col gap-2">
             <Label htmlFor="password">Senha</Label>
             <PasswordInput id="password" autoComplete="new-password" {...register("password")} />
+            <PasswordRequirements value={passwordValue} />
             {errors.password && (
               <p className="text-sm text-destructive">{errors.password.message}</p>
             )}

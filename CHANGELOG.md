@@ -4,6 +4,10 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## Não lançado
 
+### Alterado
+- Senha nova (cadastro, convite do profissional e redefinição) agora exige de 8 a 72 caracteres com letra minúscula, letra maiúscula, número e símbolo, e recusa senhas comuns (como `Senha@123`). Os três formulários mostram a lista de regras e marcam o que já foi cumprido enquanto a pessoa digita. O login não mudou: quem tem senha antiga e fraca continua entrando.
+- Mensagens em português para senha recusada pelo servidor, senha igual à atual e excesso de tentativas.
+
 ### Adicionado
 - Notas de projeto por recurso em `docs/dev/` (carga e equipamento, cronômetro de descanso, Status, gamificação, ranking, cardio, catálogo de exercícios, times e perfis, menu, desempenho e banco de dados), com índice e modelo para novas notas.
 
