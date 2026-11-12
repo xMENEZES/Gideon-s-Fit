@@ -43,8 +43,9 @@ export function formatWait(totalSeconds: number): string {
 
 export const LOCKED_MESSAGE = "Muitas tentativas de login.";
 export const INVALID_MESSAGE = "Email ou senha inválidos.";
+export const CAPTCHA_FAILED_MESSAGE = "Não foi possível confirmar a verificação de segurança. Tente de novo.";
 export const RATE_LIMITED_MESSAGE = "Muitas tentativas. Aguarde alguns minutos e tente novamente.";
 
 export type LoginResponse =
   | { ok: true }
-  | { ok: false; error: "invalid" | "locked" | "rate_limited" | "bad_request"; retryAfter?: number };
+  | { ok: false; error: "invalid" | "locked" | "rate_limited" | "captcha" | "bad_request"; retryAfter?: number };

@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginInput } from "@/lib/validations/auth.schema";
+import { TurnstileWidget, useCaptcha } from "@/components/shared/turnstile-widget";
 import {
+  CAPTCHA_FAILED_MESSAGE,
   INVALID_MESSAGE,
   LOCKED_MESSAGE,
   RATE_LIMITED_MESSAGE,
@@ -34,6 +36,7 @@ export default function LoginPage() {
   // Espera imposta pelo servidor: de quanto, para qual e-mail, e o que falta (atualizado a cada segundo).
   const [lock, setLock] = useState<{ seconds: number; email: string; id: number } | null>(null);
   const [remaining, setRemaining] = useState(0);
+  const captcha = useCaptcha();
   const {
     register,
     handleSubmit,
@@ -69,10 +72,11 @@ export default function LoginPage() {
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
+        body: JSON.stringify({ ...values, captchaToken: captcha.token ?? undefined }),
       });
       data = (await response.json()) as LoginResponse;
     } catch {
+      captcha.reset();
       setServerError("Não foi possível entrar. Verifique a conexão e tente novamente.");
       return;
     }
@@ -82,7 +86,13 @@ export default function LoginPage() {
       router.refresh();
       return;
     }
+    // O token do CAPTCHA vale uma vez só: pede outro para a próxima tentativa.
+    captcha.reset();
 
+    if (data.error === "captcha") {
+      setServerError(CAPTCHA_FAILED_MESSAGE);
+      return;
+    }
     if (data.error === "rate_limited") {
       setServerError(RATE_LIMITED_MESSAGE);
       return;
@@ -139,9 +149,10 @@ export default function LoginPage() {
               <p className="text-sm text-destructive">{errors.password.message}</p>
             )}
           </div>
+          <TurnstileWidget captcha={captcha} />
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
-          <Button type="submit" className="w-full" disabled={isSubmitting || locked}>
+          <Button type="submit" className="w-full" disabled={isSubmitting || locked || !captcha.ready}>
             {isSubmitting ? "Entrando..." : locked ? `Aguarde ${formatWait(remaining)}` : "Entrar"}
           </Button>
           <div className="flex items-center gap-3 text-xs text-muted-foreground">

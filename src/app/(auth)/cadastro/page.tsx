@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PasswordInput } from "@/components/shared/password-input";
+import { TurnstileWidget, useCaptcha } from "@/components/shared/turnstile-widget";
 import { PasswordRequirements } from "@/components/shared/password-requirements";
 import { passwordErrorMessage } from "@/lib/auth-errors";
 import { GoogleButton } from "@/components/shared/google-button";
@@ -28,6 +29,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 export default function CadastroPage() {
   const [serverError, setServerError] = useState<string | null>(null);
   const [checkEmail, setCheckEmail] = useState(false);
+  const captcha = useCaptcha();
   const {
     register,
     handleSubmit,
@@ -57,10 +59,12 @@ export default function CadastroPage() {
           terms_accepted_at: new Date().toISOString(),
         },
         emailRedirectTo: `${window.location.origin}/auth/confirm`,
+        captchaToken: captcha.token ?? undefined,
       },
     });
 
     if (error) {
+      captcha.reset(); // o token vale uma vez só
       setServerError(
         passwordErrorMessage(error, "Não foi possível criar a conta. Verifique os dados e tente novamente.")
       );
@@ -177,9 +181,10 @@ export default function CadastroPage() {
               <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
             )}
           </div>
+          <TurnstileWidget captcha={captcha} />
         </CardContent>
         <CardFooter className="flex flex-col gap-3">
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
+          <Button type="submit" className="w-full" disabled={isSubmitting || !captcha.ready}>
             {isSubmitting ? "Criando conta..." : "Criar conta"}
           </Button>
           <p className="text-sm text-muted-foreground">

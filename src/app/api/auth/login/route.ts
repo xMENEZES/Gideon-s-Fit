@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { z } from "zod";
 import { loginSchema } from "@/lib/validations/auth.schema";
 import { LOGIN_THROTTLE_POLICY, type LoginResponse } from "@/lib/login-throttle";
 import { clientIp, throttleKeys } from "@/lib/login-throttle-keys";
@@ -8,6 +9,10 @@ import { clientIp, throttleKeys } from "@/lib/login-throttle-keys";
 // O navegador chama esta rota em vez de falar direto com o Supabase, para que a espera seja imposta
 // no servidor. A sessão volta por cookie, como antes. O login com Google não passa por aqui.
 // Veja docs/dev/senha-e-login.md.
+
+// O token do CAPTCHA (Turnstile) vem junto; só é exigido quando o site tem o CAPTCHA configurado.
+const loginRequestSchema = loginSchema.extend({ captchaToken: z.string().max(4096).optional() });
+const CAPTCHA_ENABLED = !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 // O navegador manda o cabeçalho Origin nos pedidos de outro site; recusa se não for o nosso.
 function sameOrigin(request: Request) {
@@ -24,9 +29,11 @@ function reply(body: LoginResponse, status: number) {
 export async function POST(request: Request) {
   if (!sameOrigin(request)) return reply({ ok: false, error: "bad_request" }, 403);
 
-  const parsed = loginSchema.safeParse(await request.json().catch(() => null));
+  const parsed = loginRequestSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return reply({ ok: false, error: "bad_request" }, 400);
-  const { email, password } = parsed.data;
+  const { email, password, captchaToken } = parsed.data;
+  // Sem token nem chega ao contador nem ao Supabase (que recusaria do mesmo jeito).
+  if (CAPTCHA_ENABLED && !captchaToken) return reply({ ok: false, error: "captcha" }, 400);
 
   const keys = throttleKeys(email, clientIp(request.headers), process.env.SUPABASE_SERVICE_ROLE_KEY ?? "");
   const [ipKey, eiKey, emKey] = keys;
@@ -47,7 +54,11 @@ export async function POST(request: Request) {
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+    options: captchaToken ? { captchaToken } : undefined,
+  });
 
   if (!error) {
     if (throttleOk) {
@@ -57,6 +68,8 @@ export async function POST(request: Request) {
     return reply({ ok: true }, 200);
   }
 
+  // Token recusado: não é erro de senha, então não conta contra o IP.
+  if (error.code === "captcha_failed") return reply({ ok: false, error: "captcha" }, 400);
   if (error.status === 429) return reply({ ok: false, error: "rate_limited" }, 429);
 
   // Só erro de e-mail ou senha conta contra o IP; falha do servidor ou e-mail por confirmar, não.

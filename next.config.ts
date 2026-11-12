@@ -8,14 +8,16 @@ const isDev = process.env.NODE_ENV !== "production";
 //  - 'unsafe-inline' em script/style é exigido pelos scripts embutidos do Next.js e pelo
 //    estilo do Tailwind; o próximo passo de endurecimento é usar nonces.
 //  - connect-src libera o Supabase (API e tempo real); frame-src libera só o YouTube.
+// O CAPTCHA (Cloudflare Turnstile) carrega um script e um iframe de challenges.cloudflare.com.
+const turnstile = "https://challenges.cloudflare.com";
 const contentSecurityPolicy = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline' ${turnstile}${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self' data:",
-  `connect-src 'self' https://*.supabase.co wss://*.supabase.co${isDev ? " ws://localhost:* http://localhost:*" : ""}`,
-  "frame-src https://www.youtube.com https://www.youtube-nocookie.com",
+  `connect-src 'self' https://*.supabase.co wss://*.supabase.co ${turnstile}${isDev ? " ws://localhost:* http://localhost:*" : ""}`,
+  `frame-src https://www.youtube.com https://www.youtube-nocookie.com ${turnstile}`,
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
