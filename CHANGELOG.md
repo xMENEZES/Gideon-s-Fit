@@ -4,6 +4,10 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## Não lançado
 
+## [1.6.0] - 2026-11-12
+
+Deploy em produção, sem migração (tag no commit `d2555a6`).
+
 ### Segurança
 - Atualização do grupo de dependências: Next 16.4.3 → 16.4.5, `@supabase/supabase-js` 2.119, `lucide-react` 1.70, Tailwind 4.3.4, `eslint-config-next` 16.4.5 e Vitest 5.1 (mudanças pequenas e correções). O `npm audit` da produção já dava 0 vulnerabilidades e continua dando.
 - Alerta do Dependabot em `minimatch` (negação de serviço) resolvido: as duas ferramentas de desenvolvimento que o usavam (lint e CLI de componentes) passam a usar a versão 11.0.8 por `overrides` no `package.json`. Ele nunca fez parte do app em produção.
