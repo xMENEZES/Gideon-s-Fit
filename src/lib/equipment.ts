@@ -1,12 +1,13 @@
 // Equipamento com que a carga foi feita. Opcional no registro; os valores são os mesmos da
-// restrição do banco (migração 0032).
-export const LOAD_EQUIPMENT = ["halter", "maquina", "barra"] as const;
+// restrição do banco (migrações 0032 e 0036).
+export const LOAD_EQUIPMENT = ["halter", "maquina", "barra", "cross"] as const;
 export type LoadEquipment = (typeof LOAD_EQUIPMENT)[number];
 
 const LABELS: Record<LoadEquipment, string> = {
   halter: "Halter",
   maquina: "Máquina",
   barra: "Barra",
+  cross: "Cross",
 };
 
 export function isLoadEquipment(value: unknown): value is LoadEquipment {

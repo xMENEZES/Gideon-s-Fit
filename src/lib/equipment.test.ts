@@ -2,10 +2,11 @@ import { describe, expect, it } from "vitest";
 import { equipmentLabel, isLoadEquipment, lastEquipment } from "@/lib/equipment";
 
 describe("equipmentLabel", () => {
-  it("traduz os três equipamentos", () => {
+  it("traduz os quatro equipamentos", () => {
     expect(equipmentLabel("halter")).toBe("Halter");
     expect(equipmentLabel("maquina")).toBe("Máquina");
     expect(equipmentLabel("barra")).toBe("Barra");
+    expect(equipmentLabel("cross")).toBe("Cross");
   });
 
   it("devolve vazio sem equipamento ou com valor desconhecido", () => {
@@ -18,6 +19,7 @@ describe("equipmentLabel", () => {
 describe("isLoadEquipment", () => {
   it("aceita só os valores do app", () => {
     expect(isLoadEquipment("barra")).toBe(true);
+    expect(isLoadEquipment("cross")).toBe(true);
     expect(isLoadEquipment("Barra")).toBe(false);
     expect(isLoadEquipment(3)).toBe(false);
   });
