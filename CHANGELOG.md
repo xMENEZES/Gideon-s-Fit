@@ -4,6 +4,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## Não lançado
 
+### Adicionado
+- Base do **gerador de treino** do Usuário Padrão, **sem nenhuma tela por enquanto** (nada muda para quem usa o app): classificação de 161 exercícios (equipamento, nível, articulações sensíveis), regras de séries e repetições por nível, objetivo, idade e dias por semana (sem descanso, que fica por conta de quem treina), cardio e o motor que monta a semana. Só para maiores de 18 anos. Sem migração. Veja `docs/dev/gerador-de-treino.md`.
+
 ### Alterado
 - A tela **Minha conta** passou a se chamar **Perfil** (ícone de pessoa no topo) e ganhou duas opções em lista: **Meus Dados** (novo) e **Informações da Conta**, que traz o que a tela já tinha (aviso de descanso e exclusão de conta). O endereço `/conta` continua valendo e leva a Meus Dados.
 - Política de privacidade atualizada (12/11/2026): dados de saúde (data de nascimento, altura e peso), consentimento, acesso do profissional e idade mínima de 18 anos para esses dados.
