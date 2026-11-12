@@ -723,6 +723,19 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
+      // Só o servidor (chave de serviço) chama estas funções; veja src/lib/login-throttle.ts.
+      login_throttle_begin: {
+        Args: { p_keys: string[]; p_policy: unknown };
+        Returns: { blocked: boolean; wait_seconds: number }[];
+      };
+      login_throttle_fail: {
+        Args: { p_key: string; p_step: number; p_decay: number; p_schedule: unknown };
+        Returns: number;
+      };
+      login_throttle_clear: {
+        Args: { p_keys: string[] };
+        Returns: undefined;
+      };
       register_push_subscription: {
         Args: { p_endpoint: string; p_p256dh: string; p_auth: string; p_user_agent?: string };
         Returns: undefined;
