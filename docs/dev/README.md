@@ -16,6 +16,7 @@ As notas descrevem o comportamento da **versão 1.1.0** em diante. A lista do qu
 | [ranking](ranking.md) | Ranking mensal do time |
 | [cardio](cardio.md) | Exercícios de cardio |
 | [catalogo-de-exercicios](catalogo-de-exercicios.md) | Sugestões de nome ao montar o treino |
+| [senha-e-login](senha-e-login.md) | Regras da senha nova, erros do servidor e proteção do login |
 | [times-e-perfis](times-e-perfis.md) | Perfis, times, código e solicitações |
 | [menu-e-navegacao](menu-e-navegacao.md) | Menu inferior no celular e rotas de entrada |
 | [desempenho-e-abertura](desempenho-e-abertura.md) | Abertura rápida e consultas ao banco |

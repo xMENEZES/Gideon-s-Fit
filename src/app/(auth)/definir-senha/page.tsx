@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -11,6 +11,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/shared/password-input";
+import { PasswordRequirements } from "@/components/shared/password-requirements";
+import { passwordErrorMessage } from "@/lib/auth-errors";
 import { Label } from "@/components/ui/label";
 import {
   Card,
@@ -27,8 +29,11 @@ export default function DefinirSenhaPage() {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<DefinirSenhaInput>({ resolver: zodResolver(definirSenhaSchema) });
+
+  const passwordValue = useWatch({ control, name: "password" }) ?? "";
 
   async function onSubmit(values: DefinirSenhaInput) {
     setServerError(null);
@@ -44,7 +49,9 @@ export default function DefinirSenhaPage() {
 
     const { error } = await supabase.auth.updateUser({ password: values.password });
     if (error) {
-      setServerError("Não foi possível definir a senha. Peça um novo convite ao seu profissional.");
+      setServerError(
+        passwordErrorMessage(error, "Não foi possível definir a senha. Peça um novo convite ao seu profissional.")
+      );
       return;
     }
 
@@ -90,6 +97,7 @@ export default function DefinirSenhaPage() {
               autoComplete="new-password"
               {...register("password")}
             />
+            <PasswordRequirements value={passwordValue} />
             {errors.password && (
               <p className="text-sm text-destructive">{errors.password.message}</p>
             )}

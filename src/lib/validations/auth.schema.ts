@@ -1,4 +1,12 @@
 import { z } from "zod";
+import { passwordProblem } from "@/lib/password-rules";
+
+// Senha nova (cadastro, definição e redefinição). O login NÃO usa esta regra: quem já tem uma senha
+// antiga e fraca precisa continuar entrando.
+export const passwordSchema = z.string().superRefine((value, ctx) => {
+  const problem = passwordProblem(value);
+  if (problem) ctx.addIssue({ code: "custom", message: problem });
+});
 
 export const loginSchema = z.object({
   email: z.string().email("Informe um email válido"),
@@ -12,7 +20,7 @@ export const cadastroSchema = z
     role: z.enum(["trainer", "standard"], { message: "Escolha o tipo de perfil" }),
     fullName: z.string().min(2, "Informe seu nome completo").max(120, "No máximo 120 caracteres"),
     email: z.string().email("Informe um email válido"),
-    password: z.string().min(8, "A senha deve ter pelo menos 8 caracteres"),
+    password: passwordSchema,
     confirmPassword: z.string(),
     acceptTerms: z
       .boolean()
@@ -33,7 +41,7 @@ export type EsqueciSenhaInput = z.infer<typeof esqueciSenhaSchema>;
 
 export const redefinirSenhaSchema = z
   .object({
-    password: z.string().min(8, "A senha deve ter pelo menos 8 caracteres"),
+    password: passwordSchema,
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -47,7 +55,7 @@ export const definirSenhaSchema = z
   .object({
     firstName: z.string().min(1, "Informe seu nome"),
     lastName: z.string().min(1, "Informe seu sobrenome"),
-    password: z.string().min(8, "A senha deve ter pelo menos 8 caracteres"),
+    password: passwordSchema,
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {

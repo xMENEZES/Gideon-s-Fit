@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -12,6 +12,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/shared/password-input";
+import { PasswordRequirements } from "@/components/shared/password-requirements";
+import { passwordErrorMessage } from "@/lib/auth-errors";
 import {
   Card,
   CardContent,
@@ -28,8 +30,11 @@ export default function RedefinirSenhaPage() {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<RedefinirSenhaInput>({ resolver: zodResolver(redefinirSenhaSchema) });
+
+  const passwordValue = useWatch({ control, name: "password" }) ?? "";
 
   useEffect(() => {
     createClient()
@@ -43,7 +48,9 @@ export default function RedefinirSenhaPage() {
     const { error } = await supabase.auth.updateUser({ password: values.password });
 
     if (error) {
-      setServerError("Não foi possível redefinir a senha. Peça um novo link e tente novamente.");
+      setServerError(
+        passwordErrorMessage(error, "Não foi possível redefinir a senha. Peça um novo link e tente novamente.")
+      );
       return;
     }
     // Navegação completa (não pelo roteador): renova a sessão e os dados do servidor.
@@ -84,6 +91,7 @@ export default function RedefinirSenhaPage() {
           <div className="flex flex-col gap-2">
             <Label htmlFor="password">Nova senha</Label>
             <PasswordInput id="password" autoComplete="new-password" {...register("password")} />
+            <PasswordRequirements value={passwordValue} />
             {errors.password && (
               <p className="text-sm text-destructive">{errors.password.message}</p>
             )}
