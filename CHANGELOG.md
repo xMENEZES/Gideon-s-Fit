@@ -4,6 +4,10 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## Não lançado
 
+## [1.5.0] - 2026-11-12
+
+Deploy em produção com a migração `0036_equipment_cross.sql` (só amplia a lista de equipamentos aceita; tag no commit `c8ad225`).
+
 ### Alterado
 - Margem lateral das telas no celular reduzida de 24 px para 12 px (áreas do profissional, do aluno, do Usuário Padrão, administrador e Minha conta), e a barra do topo acompanha. Em telas maiores (a partir de `sm`) nada muda; a página fica mais larga e os cartões aproveitam melhor a tela.
 
