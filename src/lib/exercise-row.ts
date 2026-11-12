@@ -25,7 +25,8 @@ export function exerciseFields(data: ExerciseInput) {
     ...common,
     sets: data.sets ?? null,
     reps: data.reps ?? null,
-    rest_seconds: data.restSeconds,
+    // Em branco = sem descanso definido (nulo). Precisa ir como null: `undefined` some do envio.
+    rest_seconds: data.restSeconds ?? null,
     recommended_load_kg: data.recommendedLoadKg ?? null,
     target_minutes: null,
     target_distance_km: null,

@@ -2,7 +2,7 @@
 
 ## O que é
 
-Cada exercício de musculação tem um descanso (`exercises.rest_seconds`, de 5 a 3600 segundos, padrão 60) definido pelo profissional. Quem treina vê um cronômetro no cartão do exercício, com Iniciar, Pausar e Reiniciar. No fim da contagem o app avisa por **som e vibração** e, com a tela bloqueada, por notificação push.
+Cada exercício de musculação tem um descanso (`exercises.rest_seconds`, de 5 a 3600 segundos) definido por quem monta o treino. **O descanso é opcional** (migração `0038`): sem valor, o cartão não mostra o selo "Xs descanso" nem o cronômetro, e quem treina pode definir um tempo ao editar o exercício. O treino gerado pelo aplicativo nunca traz descanso. Ao criar um exercício à mão, o campo vem preenchido com 60, mas pode ser esvaziado. Quem treina vê um cronômetro no cartão do exercício, com Iniciar, Pausar e Reiniciar. No fim da contagem o app avisa por **som e vibração** e, com a tela bloqueada, por notificação push.
 
 ## Regras
 
@@ -12,6 +12,7 @@ Cada exercício de musculação tem um descanso (`exercises.rest_seconds`, de 5 
 
 ## Limites
 
+- **Sem descanso definido não há cronômetro.** Um cronômetro livre (que a pessoa inicia e para quando sentir) é uma ideia em aberto.
 - **O alarme do app não dispara com a tela bloqueada**: a página é suspensa e o navegador bloqueia a vibração de páginas em segundo plano. Manter a tela acesa durante a contagem (Wake Lock) foi descartado por decisão do dono. Para o celular bloqueado existe a **notificação push** (ver [notificacao-push](notificacao-push.md)): ao iniciar o cronômetro o app agenda o aviso no servidor, e pausar ou reiniciar o cancela.
 - O som do app é sempre o dos 6 bipes; a notificação push usa o som padrão do sistema.
 

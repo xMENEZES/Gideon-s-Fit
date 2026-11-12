@@ -6,6 +6,7 @@ import { WorkoutDaysTabs } from "@/components/shared/workout-days-tabs";
 import { ProtocolHeader } from "@/components/shared/protocol-header";
 import { BackToTodayLink } from "@/components/shared/back-to-today-link";
 import { hasWorkoutContent } from "@/lib/today";
+import { GenerateWorkoutButton, GenerateWorkoutCallout } from "@/components/shared/generate-workout-button";
 
 export default async function MeuTreinoEditarPage() {
   const studentId = await getSoloStudentId();
@@ -32,12 +33,16 @@ export default async function MeuTreinoEditarPage() {
         historyHref="/meu-plano/treino/historico"
         statusHref="/meu-plano/status"
         editable
+        extraActions={<GenerateWorkoutButton />}
       />
 
       {!protocol ? (
-        <p className="py-12 text-center text-muted-foreground">
-          Nenhum protocolo de treino ativo. Inicie um para começar a montar o seu treino.
-        </p>
+        <div className="flex flex-col gap-4">
+          <p className="py-8 text-center text-muted-foreground">
+            Nenhum protocolo de treino ativo. Inicie um para começar a montar o seu treino.
+          </p>
+          <GenerateWorkoutCallout />
+        </div>
       ) : (
         <>
           <div className="flex justify-end">
@@ -49,9 +54,10 @@ export default async function MeuTreinoEditarPage() {
               Não foi possível carregar o treino. Atualize a página para tentar de novo.
             </p>
           ) : !days?.length ? (
-            <p className="py-12 text-center text-muted-foreground">
-              Nenhum dia de treino cadastrado ainda.
-            </p>
+            <div className="flex flex-col gap-4">
+              <p className="py-8 text-center text-muted-foreground">Nenhum dia de treino cadastrado ainda.</p>
+              <GenerateWorkoutCallout />
+            </div>
           ) : (
             <WorkoutDaysTabs days={days} studentId={studentId} editable canLog />
           )}

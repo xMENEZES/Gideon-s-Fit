@@ -16,7 +16,7 @@ describe("exerciseSchema: musculação", () => {
     }
   });
 
-  it("exige séries, repetições e descanso", () => {
+  it("exige séries e repetições (o descanso é opcional)", () => {
     const result = exerciseSchema.safeParse({
       name: "Supino reto",
       kind: "strength",
@@ -27,8 +27,15 @@ describe("exerciseSchema: musculação", () => {
     expect(issues(result)).toEqual([
       "sets: Mínimo 1 série",
       "reps: Informe as repetições (ex: 8-12)",
-      "restSeconds: Informe o descanso (mínimo 5 segundos)",
     ]);
+  });
+
+  it("descanso em branco vale 'sem descanso definido' (e não 0 nem 60)", () => {
+    for (const blank of ["", undefined]) {
+      const result = exerciseSchema.safeParse({ ...strength, restSeconds: blank });
+      expect(result.success, String(blank)).toBe(true);
+      if (result.success) expect(result.data.restSeconds).toBeUndefined();
+    }
   });
 
   it("exige o nome do exercício", () => {

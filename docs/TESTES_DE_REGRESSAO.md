@@ -69,6 +69,10 @@ Legenda: **A** = dá para automatizar ou checar no preview local; **C** = só no
 - [ ] **A** Um aluno não enxerga dados de outro (ver `supabase/tests/rls_isolation_probe.sql`, quando a mudança mexer em regras de acesso).
 - [ ] **A** Nenhum segredo, e-mail pessoal ou dado real nos arquivos alterados.
 
+- [ ] **A** Descanso opcional: em Editar exercício, esvaziar o campo "Descanso" e salvar tira o selo "Xs descanso" e o cronômetro do cartão; preencher (ex.: 90) devolve os dois; criar exercício à mão continua vindo com 60 preenchido; treino de aluno do profissional e modelos continuam iguais.
+- [ ] **A** Gerar meu treino (Usuário Padrão): aparece em "Editar plano" (botão e convite quando não há treino). Sem altura ou peso em Meus Dados, mostra o formulário com os três obrigatórios; com tudo preenchido, as 5 perguntas (só avança com resposta; "Nenhuma" nas dores), a prévia com dias, séries, repetições, cardio quando o objetivo pede e os avisos, **sem nenhum tempo de descanso**; "Gerar outra variação" muda o treino; "Voltar e ajustar" volta às perguntas; "Usar este treino" grava e leva ao Treino de hoje (com confirmação se já havia treino, que vai para o histórico, com as cargas). Cabe em 360 px nos dois temas. Aluno de time, profissional e administrador não veem o botão nem entram em `/meu-plano`.
+- [ ] **A** O treino gerado funciona como qualquer outro: registrar carga, histórico, Status, editar e apagar exercício, e as observações do protocolo mostram os avisos.
+
 ## Banco (quando houver migração)
 - [ ] Migração e rollback revisados; script de teste rodou com todos os itens "ok" no banco de testes.
 - [ ] A migração só acrescenta e é compatível com o código atual da `main`.

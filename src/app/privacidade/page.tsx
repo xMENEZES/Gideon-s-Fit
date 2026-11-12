@@ -48,6 +48,12 @@ const sections: { title: string; body: React.ReactNode }[] = [
           apagando os dados. Só são aceitos de maiores de 18 anos.
         </li>
         <li>
+          <strong>Treino gerado pelo aplicativo:</strong> quando você usa &quot;Gerar meu treino&quot;, as
+          respostas (experiência, dias por semana, objetivo, local e dores ou lesões) são usadas somente
+          naquele momento para escolher os exercícios e não ficam guardadas. O treino gerado fica no seu
+          plano, e as observações dele podem citar as articulações que foram evitadas.
+        </li>
+        <li>
           <strong>Dados técnicos essenciais:</strong> cookies de sessão para manter você conectado
           e a preferência de tema (claro/escuro).
         </li>

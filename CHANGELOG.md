@@ -4,8 +4,12 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## Não lançado
 
+### Alterado
+- O **descanso** entre as séries (`rest_seconds`) passa a ser **opcional** e sem valor padrão. Sem descanso definido, o cartão do exercício não mostra "Xs descanso" nem o cronômetro, e o campo "Descanso" ao editar o exercício pode ficar em branco. Ao criar um exercício à mão o campo continua vindo com 60. Exige a migração `0038_generated_workout.sql`.
+
 ### Adicionado
-- Base do **gerador de treino** do Usuário Padrão, **sem nenhuma tela por enquanto** (nada muda para quem usa o app): classificação de 161 exercícios (equipamento, nível, articulações sensíveis), regras de séries e repetições por nível, objetivo, idade e dias por semana (sem descanso, que fica por conta de quem treina), cardio e o motor que monta a semana. Só para maiores de 18 anos. Sem migração. Veja `docs/dev/gerador-de-treino.md`.
+- **Gerar meu treino** (Usuário Padrão, a partir de 18 anos): assistente com cinco perguntas (experiência, dias por semana, objetivo, onde treina e dores ou lesões), prévia do treino com séries e repetições (e cardio, quando o objetivo pede) e "Gerar outra variação". Usa nascimento, altura e peso de Meus Dados, que a própria tela pede se faltarem. **O gerador não sugere descanso.** As respostas não ficam guardadas: só o treino gerado, que vale por 8 semanas e manda o treino anterior para o histórico. Base: classificação de 161 exercícios, regras de séries e repetições por nível, objetivo, idade e dias, e o motor, em `src/lib/workout-generator/`. Exige a migração `0038_generated_workout.sql` (função que grava o treino numa transação). Veja `docs/dev/gerador-de-treino.md`.
+- A política de privacidade passa a descrever o treino gerado e o que não fica guardado.
 
 ## [1.7.0] - 2026-11-12
 

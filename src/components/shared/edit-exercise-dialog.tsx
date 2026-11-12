@@ -31,7 +31,7 @@ export type EditableExercise = {
   kind: ExerciseKind;
   sets: number | null;
   reps: string | null;
-  rest_seconds: number;
+  rest_seconds: number | null;
   recommended_load_kg: number | null;
   target_minutes: number | null;
   target_distance_km: number | null;
@@ -57,7 +57,7 @@ function toFormValues(exercise: EditableExercise): ExerciseFormInput {
     ...common,
     sets: exercise.sets ?? "",
     reps: exercise.reps ?? "",
-    restSeconds: exercise.rest_seconds,
+    restSeconds: exercise.rest_seconds ?? "",
     recommendedLoadKg: exercise.recommended_load_kg ?? "",
   };
 }
