@@ -11,7 +11,7 @@ import { signOut } from "@/lib/actions/auth";
 // admin) a linha única já cabe a partir de sm.
 const LAYOUT = {
   withNav: {
-    outer: "flex flex-col gap-3 px-6 py-3 lg:flex-row lg:items-center lg:justify-between lg:py-4",
+    outer: "flex flex-col gap-3 px-3 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:py-4",
     firstRow: "flex items-center justify-between lg:contents",
     compactControls: "flex items-center gap-1 lg:hidden",
     // No celular (< sm) o menu vai para a barra de baixo (BottomNav); aqui só aparece a partir de sm.
@@ -21,7 +21,7 @@ const LAYOUT = {
     signOut: "hidden lg:block",
   },
   withoutNav: {
-    outer: "flex flex-col gap-3 px-6 py-3 sm:flex-row sm:items-center sm:justify-between sm:py-4",
+    outer: "flex flex-col gap-3 px-3 py-3 sm:flex-row sm:px-6 sm:items-center sm:justify-between sm:py-4",
     firstRow: "flex items-center justify-between sm:contents",
     compactControls: "flex items-center gap-1 sm:hidden",
     nav: "hidden items-center justify-end gap-3 sm:flex lg:gap-4",

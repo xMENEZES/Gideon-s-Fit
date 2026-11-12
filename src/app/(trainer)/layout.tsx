@@ -50,7 +50,7 @@ export default async function TrainerLayout({
           </Suspense>
         </NavLink>
       </TopBar>
-      <main className="flex-1 px-6 py-8 sm:px-10">{children}</main>
+      <main className="flex-1 px-3 py-6 sm:px-10 sm:py-8">{children}</main>
       <BottomNav
         basePath=""
         items={[

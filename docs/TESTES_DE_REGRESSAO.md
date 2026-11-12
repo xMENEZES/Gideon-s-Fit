@@ -21,6 +21,8 @@ Legenda: **A** = dá para automatizar ou checar no preview local; **C** = só no
 - [ ] **A** Cadastro, convite (`/definir-senha`) e redefinição (`/redefinir-senha`): a lista de regras da senha marca cada item ao digitar, cabe em 360 px nos dois temas, e enviar `abcdefg1` (falta maiúscula e símbolo) ou `Senha@123` (comum) mostra a frase do problema sem chamar o servidor; uma senha forte segue o fluxo.
 - [ ] **A** Login com uma senha antiga e fraca (conta de teste criada com ela) continua entrando.
 
+- [ ] **A** Margem lateral no celular (360 px): cartões, abas, listas e a barra do topo encostam a 12 px das bordas, sem rolagem horizontal, nos temas claro e escuro, nas telas do profissional, do aluno, do Usuário Padrão e em Minha conta; em tablet e computador (a partir de 640 px) o espaçamento segue como antes.
+
 ## Usuário Padrão
 - [ ] **A** Abas Treino, Alimentar, Status e Time; a barra de baixo some ao rolar para baixo e volta ao rolar para cima.
 - [ ] **A** Registrar carga: valor simples, conjugado com o botão "+", séries preenchidas e em branco.
