@@ -6,6 +6,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createClient } from "@/lib/supabase/client";
 import { esqueciSenhaSchema, type EsqueciSenhaInput } from "@/lib/validations/auth.schema";
+import { TurnstileWidget, useCaptcha } from "@/components/shared/turnstile-widget";
+import { CAPTCHA_MESSAGE } from "@/lib/auth-errors";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +24,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 export default function EsqueciSenhaPage() {
   const [sent, setSent] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const captcha = useCaptcha();
   const {
     register,
     handleSubmit,
@@ -33,13 +36,17 @@ export default function EsqueciSenhaPage() {
     const supabase = createClient();
     const { error } = await supabase.auth.resetPasswordForEmail(values.email, {
       redirectTo: `${window.location.origin}/auth/confirm`,
+      captchaToken: captcha.token ?? undefined,
     });
 
     if (error) {
+      captcha.reset(); // o token vale uma vez só
       setServerError(
-        error.status === 429
-          ? "Muitos pedidos seguidos. Aguarde alguns minutos e tente novamente."
-          : "Não foi possível enviar o e-mail agora. Tente novamente."
+        error.code === "captcha_failed"
+          ? CAPTCHA_MESSAGE
+          : error.status === 429
+            ? "Muitos pedidos seguidos. Aguarde alguns minutos e tente novamente."
+            : "Não foi possível enviar o e-mail agora. Tente novamente."
       );
       return;
     }
@@ -82,9 +89,10 @@ export default function EsqueciSenhaPage() {
             <Input id="email" type="email" autoComplete="email" {...register("email")} />
             {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
           </div>
+          <TurnstileWidget captcha={captcha} />
         </CardContent>
         <CardFooter className="flex flex-col gap-3">
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
+          <Button type="submit" className="w-full" disabled={isSubmitting || !captcha.ready}>
             {isSubmitting ? "Enviando..." : "Enviar link"}
           </Button>
           <Link href="/login" className="text-sm text-primary-ink hover:underline">

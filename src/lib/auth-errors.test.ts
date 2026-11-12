@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { RATE_LIMIT_MESSAGE, passwordErrorMessage } from "@/lib/auth-errors";
+import { CAPTCHA_MESSAGE, RATE_LIMIT_MESSAGE, passwordErrorMessage } from "@/lib/auth-errors";
 
 const FALLBACK = "Não foi possível.";
 
@@ -12,6 +12,10 @@ describe("passwordErrorMessage", () => {
   it("explica o limite de tentativas", () => {
     expect(passwordErrorMessage({ status: 429 }, FALLBACK)).toBe(RATE_LIMIT_MESSAGE);
     expect(passwordErrorMessage({ code: "over_request_rate_limit" }, FALLBACK)).toBe(RATE_LIMIT_MESSAGE);
+  });
+
+  it("explica a falha da verificação de segurança (CAPTCHA)", () => {
+    expect(passwordErrorMessage({ status: 400, code: "captcha_failed" }, FALLBACK)).toBe(CAPTCHA_MESSAGE);
   });
 
   it("explica senha fraca e senha repetida", () => {

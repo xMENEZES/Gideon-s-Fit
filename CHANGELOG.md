@@ -9,6 +9,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 - Mensagens em português para senha recusada pelo servidor, senha igual à atual e excesso de tentativas.
 
 ### Adicionado
+- CAPTCHA (Cloudflare Turnstile) no login, no cadastro e no "esqueci a senha", desligado até a chave do site ser configurada (`NEXT_PUBLIC_TURNSTILE_SITE_KEY`). Com o CAPTCHA ligado também no Supabase, as tentativas de login feitas direto na API passam a exigir o token, o que completa o limite de tentativas. O login com Google não muda. A CSP libera `challenges.cloudflare.com`.
 - Limite de tentativas de login por e-mail e senha, com espera que cresce: 3 tentativas, 1 minuto; mais 3, 5 minutos; depois 15 minutos e 1 hora. Há três contadores (e-mail + IP, IP e e-mail de qualquer IP) e a tela mostra a contagem regressiva. O login passa por uma rota do servidor (`/api/auth/login`); o login com Google não muda. Exige a migração `0035_login_throttle.sql` (tabela e funções novas, só acrescenta), que deve rodar **antes** do deploy.
 - Notas de projeto por recurso em `docs/dev/` (carga e equipamento, cronômetro de descanso, Status, gamificação, ranking, cardio, catálogo de exercícios, times e perfis, menu, desempenho e banco de dados), com índice e modelo para novas notas.
 

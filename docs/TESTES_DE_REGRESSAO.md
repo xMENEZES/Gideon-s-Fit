@@ -14,6 +14,7 @@ Legenda: **A** = dá para automatizar ou checar no preview local; **C** = só no
 - [ ] **A** Login com e-mail e senha leva à tela inicial certa de cada perfil.
 - [ ] **A** Login com senha errada: no 3º erro seguido a tela avisa "Tente de novo em 1:00" com contagem regressiva e o botão desabilitado; durante a espera nem a senha certa entra; passada a espera, 2 tentativas livres e a 6ª pede 5 minutos; trocar o e-mail no campo libera o botão; acertar a senha entra e zera a contagem.
 - [ ] **A** Login com Google continua funcionando e a sessão do login por e-mail vale em todas as áreas (profissional, aluno e usuário padrão), inclusive após recarregar.
+- [ ] **A** CAPTCHA: no login, no cadastro e no "esqueci a senha" o botão só libera depois do widget gerar o token (invisível na maior parte das vezes); depois de cada envio o botão espera um token novo; sem a chave do site (`NEXT_PUBLIC_TURNSTILE_SITE_KEY`) nada aparece e tudo funciona como antes; com a chave de teste que sempre barra, o erro "verificação de segurança" aparece e não conta tentativa; o login com Google segue sem CAPTCHA.
 - [ ] **A** Sair encerra a sessão (voltar a uma rota protegida pede login).
 - [ ] **A** Minha conta abre, e a exclusão de conta pede a confirmação do e-mail (não excluir de verdade fora de conta de teste).
 
