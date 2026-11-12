@@ -19,6 +19,7 @@ As notas descrevem o comportamento da **versão 1.1.0** em diante. A lista do qu
 | [senha-e-login](senha-e-login.md) | Regras da senha nova, erros do servidor e proteção do login |
 | [limite-de-tentativas-de-login](limite-de-tentativas-de-login.md) | Espera progressiva após tentativas erradas de login |
 | [captcha](captcha.md) | Verificação anti-robô (Cloudflare Turnstile) no login, cadastro e "esqueci a senha" |
+| [gerador-de-treino](gerador-de-treino.md) | Base do gerador de treino do Usuário Padrão: classificação, regras e motor (sem tela) |
 | [dados-corporais](dados-corporais.md) | Perfil > Meus Dados: data de nascimento, altura e peso (consentimento, 18+ e acesso do profissional) |
 | [times-e-perfis](times-e-perfis.md) | Perfis, times, código e solicitações |
 | [menu-e-navegacao](menu-e-navegacao.md) | Menu inferior no celular e rotas de entrada |
