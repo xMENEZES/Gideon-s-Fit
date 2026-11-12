@@ -4,6 +4,10 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## Não lançado
 
+### Alterado
+- O site passa a reconhecer **duas assinaturas** do app Android: o `assetlinks.json` ganhou a impressão digital do keystore novo e manteve a do antigo. Prepara a versão 2 do app (ícone novo, "G" roxo), que será assinada com a chave nova. Sem migração; só um arquivo estático do site.
+- Nota de projeto sobre o app Android (`docs/dev/app-android.md`) e teste que protege o formato do `assetlinks.json`.
+
 ## [1.8.0] - 2026-11-12
 
 Deploy em produção com a migração `0038_generated_workout.sql` (descanso opcional e função que grava o treino gerado; tag no commit `431e323`). O gerador foi liberado para todos os Usuários Padrão maiores de 18 anos, com a classificação e as regras ainda em rascunho, sem a revisão de um profissional de educação física.
