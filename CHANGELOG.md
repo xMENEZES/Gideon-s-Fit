@@ -4,6 +4,10 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## Não lançado
 
+## [1.8.1] - 2026-11-12
+
+Deploy em produção, sem migração (tag no commit `cfcc459`). Só um arquivo estático do site muda; nada muda para quem usa o app.
+
 ### Alterado
 - O site passa a reconhecer **duas assinaturas** do app Android: o `assetlinks.json` ganhou a impressão digital do keystore novo e manteve a do antigo. Prepara a versão 2 do app (ícone novo, "G" roxo), que será assinada com a chave nova. Sem migração; só um arquivo estático do site.
 - Nota de projeto sobre o app Android (`docs/dev/app-android.md`) e teste que protege o formato do `assetlinks.json`.
