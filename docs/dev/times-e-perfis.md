@@ -20,7 +20,7 @@ Quem usa o plano próprio tem uma linha "solo" em `students` com `trainer_id = p
 - O profissional gera um **código de time de 8 caracteres** (`team_codes`). O Usuário Padrão envia uma solicitação em "Entrar no Time" (`team_join_requests`) e **só entra quando o profissional aprova**. Ao entrar, o plano próprio fica oculto.
 - Um limite atômico de tentativas de código (função `register_join_attempt`) evita adivinhar códigos.
 - O aluno pode **sair do time sozinho**: o que o profissional montou para ele é apagado e a pessoa volta a Usuário Padrão.
-- Excluir a conta é decisão da própria pessoa (`/conta`, com o e-mail digitado para confirmar). Profissional excluído: os alunos viram Usuário Padrão. O administrador não se exclui.
+- Excluir a conta é decisão da própria pessoa (Perfil > Informações da Conta, `/conta/informacoes`, com o e-mail digitado para confirmar). Profissional excluído: os alunos viram Usuário Padrão. O administrador não se exclui.
 
 ## Regras de segurança
 

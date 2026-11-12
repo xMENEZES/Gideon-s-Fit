@@ -6,7 +6,7 @@ Com a tela do celular bloqueada, a página é suspensa: o alarme do app (bipes e
 
 ## Como funciona
 
-1. **Inscrição.** A pessoa liga o aviso pelo convite no topo do treino do dia ("Ativar aviso") ou em **Minha conta**. O navegador pede permissão, entrega um endereço e chaves, e o app guarda em `push_subscriptions` pela função `register_push_subscription`. Uma pessoa pode ter até 10 aparelhos. Se outra pessoa entrar no mesmo aparelho, a inscrição passa para ela.
+1. **Inscrição.** A pessoa liga o aviso pelo convite no topo do treino do dia ("Ativar aviso") ou em **Perfil > Informações da Conta**. O navegador pede permissão, entrega um endereço e chaves, e o app guarda em `push_subscriptions` pela função `register_push_subscription`. Uma pessoa pode ter até 10 aparelhos. Se outra pessoa entrar no mesmo aparelho, a inscrição passa para ela.
 2. **Agendamento.** Ao tocar em "Iniciar" no cronômetro, o app chama `POST /api/rest-alarm` com os segundos e o nome do exercício. A rota só agenda se a pessoa tiver aparelho inscrito: grava um aviso pendente em `rest_alarms` (com o horário do fim) e responde na hora.
 3. **Espera e envio.** Depois da resposta, `after()` mantém a função viva até o horário (`sendRestAlarm`, em `src/lib/push-server.ts`). Ao chegar, ela "reivindica" o aviso com um `update ... where status = 'pending'`: só quem muda de pendente para enviado envia. Aí manda o push para todos os aparelhos da pessoa. Aparelhos que respondem 404 ou 410 (desinstalados) saem da lista.
 4. **Cancelamento.** Pausar, reiniciar ou iniciar de novo chama `DELETE /api/rest-alarm?id=...`, que muda o aviso para cancelado. Se o cancelamento chegar antes do horário, nada é enviado.

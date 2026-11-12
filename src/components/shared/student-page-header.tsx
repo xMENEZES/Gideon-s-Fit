@@ -15,6 +15,7 @@ export async function StudentPageHeader({ studentId }: { studentId: string }) {
     student.has_workout && { href: "/treino", label: "Prot. Treino" },
     student.has_diet && { href: "/dieta", label: "Prot. Alimentar" },
     { href: "/status", label: "Status" },
+    { href: "/dados", label: "Dados" },
   ].filter((tab): tab is { href: string; label: string } => Boolean(tab));
 
   return (

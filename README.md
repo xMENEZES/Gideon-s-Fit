@@ -38,7 +38,8 @@ Produção: <https://gideons-fit.vercel.app>
 - Cadastro com Google ou e-mail, com aceite da Política de Privacidade.
 - Confirmação por e-mail e recuperação de senha.
 - Tema claro e escuro. A cor da marca é o roxo `#6C0077` (em `globals.css`): `--primary` é o roxo exato, usado como fundo de botões e chips, e `--primary-ink`/`--brand` são o roxo para texto e ícones, que no tema escuro fica mais claro para dar contraste. As medalhas e conquistas mantêm cores próprias.
-- **Exclusão de conta pelo próprio usuário** (menu "Minha conta"), com confirmação digitando o e-mail. Página pública de instruções em `/excluir-conta`.
+- **Perfil** (ícone de pessoa no topo) com **Meus Dados** (data de nascimento, altura e peso, só para maiores de 18 anos e com consentimento; o profissional do time vê, somente leitura) e **Informações da Conta**.
+- **Exclusão de conta pelo próprio usuário** (Perfil > Informações da Conta), com confirmação digitando o e-mail. Página pública de instruções em `/excluir-conta`.
 - Política de privacidade em `/privacidade`.
 - Funciona como PWA instalável e foi ajustado para telas pequenas. Quem abre o app já logado vê na hora uma tela de abertura estática (`/abrindo/<destino>`, servida por rewrite no middleware a partir de `/`) que leva à home do perfil, em vez de esperar o servidor frio responder.
 
@@ -62,7 +63,7 @@ src/
     (student)/    área do aluno do time
     (standard)/   plano próprio do Usuário Padrão (/meu-plano)
     (admin)/      painel do administrador
-    (account)/    Minha conta (exclusão de conta)
+    (account)/    Perfil (Meus Dados e Informações da Conta: aviso de descanso e exclusão de conta)
   components/
     ui/           componentes base (shadcn/ui)
     shared/       cartões, diálogos e formulários compartilhados entre perfis

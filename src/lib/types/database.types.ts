@@ -640,6 +640,37 @@ export interface Database {
           },
         ];
       };
+      body_data: {
+        Row: {
+          profile_id: string;
+          birth_date: string;
+          height_cm: number | null;
+          weight_kg: number | null;
+          consented_at: string;
+          updated_at: string;
+        };
+        // A própria pessoa grava (e o profissional do time só lê). consented_at e updated_at são do banco.
+        Insert: {
+          profile_id: string;
+          birth_date: string;
+          height_cm?: number | null;
+          weight_kg?: number | null;
+        };
+        Update: Partial<{
+          birth_date: string;
+          height_cm: number | null;
+          weight_kg: number | null;
+        }>;
+        Relationships: [
+          {
+            foreignKeyName: "body_data_profile_id_fkey";
+            columns: ["profile_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       rest_days: {
         Row: {
           student_id: string;
