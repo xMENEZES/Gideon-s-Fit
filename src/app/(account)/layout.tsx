@@ -12,7 +12,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <TopBar fullName={profile.full_name} homeHref={roleHome(profile.role)} />
-      <main className="mx-auto w-full max-w-2xl flex-1 px-6 py-8">{children}</main>
+      <main className="mx-auto w-full max-w-2xl flex-1 px-3 py-6 sm:px-6 sm:py-8">{children}</main>
     </div>
   );
 }
