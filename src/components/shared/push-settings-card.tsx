@@ -20,7 +20,7 @@ const TEXT: Record<PushState, string> = {
     "Este navegador não oferece notificações push (no iPhone, só com o app adicionado à tela inicial).",
 };
 
-// Liga e desliga o aviso do fim do descanso neste aparelho (em "Minha conta").
+// Liga e desliga o aviso do fim do descanso neste aparelho (em "Perfil" > "Informações da Conta").
 export function PushSettingsCard() {
   const [state, setState] = useState<PushState | null>(null);
   const [busy, setBusy] = useState(false);

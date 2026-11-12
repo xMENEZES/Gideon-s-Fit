@@ -38,10 +38,10 @@ function AccountLink() {
       size="icon-sm"
       nativeButton={false}
       render={<Link href="/conta" />}
-      title="Minha conta"
+      title="Perfil"
     >
       <UserRound />
-      <span className="sr-only">Minha conta</span>
+      <span className="sr-only">Perfil</span>
     </Button>
   );
 }

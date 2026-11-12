@@ -4,6 +4,13 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## Não lançado
 
+### Alterado
+- A tela **Minha conta** passou a se chamar **Perfil** (ícone de pessoa no topo) e ganhou duas opções em lista: **Meus Dados** (novo) e **Informações da Conta**, que traz o que a tela já tinha (aviso de descanso e exclusão de conta). O endereço `/conta` continua valendo e leva a Meus Dados.
+- Política de privacidade atualizada (12/11/2026): dados de saúde (data de nascimento, altura e peso), consentimento, acesso do profissional e idade mínima de 18 anos para esses dados.
+
+### Adicionado
+- **Meus Dados**: cada pessoa pode informar data de nascimento (obrigatória), altura e peso (opcionais), **só para maiores de 18 anos** e **com consentimento**, que pode ser retirado com "Apagar meus dados". O **profissional vê, somente leitura**, os dados dos alunos do time na nova aba **Dados** da ficha do aluno. Exige a migração `0037_body_data.sql` (tabela nova, só acrescenta), que deve rodar **antes** do deploy. Base para o gerador de treino do Usuário Padrão (próximas etapas).
+
 ## [1.6.0] - 2026-11-12
 
 Deploy em produção, sem migração (tag no commit `d2555a6`).

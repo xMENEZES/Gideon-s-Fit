@@ -32,7 +32,8 @@ export default function ExcluirContaPage() {
           <ol className="list-decimal space-y-1 pl-5 text-sm leading-relaxed text-muted-foreground">
             <li>Entre na sua conta no Gideon&apos;s Fit.</li>
             <li>
-              Toque no ícone de pessoa no topo da tela (<strong>Minha conta</strong>).
+              Toque no ícone de pessoa no topo da tela (<strong>Perfil</strong>) e abra a opção{" "}
+              <strong>Informações da Conta</strong>.
             </li>
             <li>
               Na seção <strong>Excluir minha conta</strong>, digite o e-mail da conta para confirmar e

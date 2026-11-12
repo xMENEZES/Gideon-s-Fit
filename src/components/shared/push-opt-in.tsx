@@ -18,7 +18,7 @@ function dismissedBefore() {
 
 // Convite, no topo do treino do dia, para receber o aviso do fim do descanso com a tela
 // bloqueada. Só aparece quando dá para pedir (navegador com suporte, ainda sem escolha) e a pessoa
-// não dispensou. A escolha também fica em "Minha conta".
+// não dispensou. A escolha também fica em "Perfil" > "Informações da Conta".
 export function PushOptIn() {
   const [state, setState] = useState<PushState | "hidden">("hidden");
   const [busy, setBusy] = useState(false);

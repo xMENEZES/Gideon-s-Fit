@@ -6,7 +6,7 @@ export const metadata = {
 };
 
 const CONTACT_EMAIL = "gabrielprojects97@gmail.com";
-const UPDATED_AT = "7 de outubro de 2026";
+const UPDATED_AT = "12 de novembro de 2026";
 
 const sections: { title: string; body: React.ReactNode }[] = [
   {
@@ -42,6 +42,12 @@ const sections: { title: string; body: React.ReactNode }[] = [
           redobrado.
         </li>
         <li>
+          <strong>Dados de saúde (Perfil &gt; Meus Dados):</strong> data de nascimento, altura e peso,
+          que você informa por vontade própria. São dados pessoais sensíveis, guardados somente com o
+          seu consentimento específico, que você dá ao salvá-los e pode retirar a qualquer momento
+          apagando os dados. Só são aceitos de maiores de 18 anos.
+        </li>
+        <li>
           <strong>Dados técnicos essenciais:</strong> cookies de sessão para manter você conectado
           e a preferência de tema (claro/escuro).
         </li>
@@ -53,7 +59,8 @@ const sections: { title: string; body: React.ReactNode }[] = [
     body: (
       <p>
         Usamos os dados somente para fornecer o serviço: autenticar você, exibir e permitir a edição
-        dos seus protocolos e enviar e-mails de confirmação de conta e redefinição de senha. Não
+        dos seus protocolos, personalizar o seu treino com os dados de saúde que você informar e enviar
+        e-mails de confirmação de conta e redefinição de senha. Não
         vendemos seus dados e não os usamos para publicidade.
       </p>
     ),
@@ -64,7 +71,9 @@ const sections: { title: string; body: React.ReactNode }[] = [
       <ul className="list-disc space-y-1 pl-5">
         <li>
           <strong>Seu profissional:</strong> se você entrar no time de um profissional, ele passa a
-          ver e gerenciar seus protocolos e as cargas que você registrar.
+          ver e gerenciar seus protocolos e as cargas que você registrar, e a ver, somente para leitura,
+          a data de nascimento, a altura e o peso que você informou. Ao sair do time, ele deixa de
+          ter acesso.
         </li>
         <li>
           <strong>Provedores de infraestrutura:</strong> banco de dados e autenticação (Supabase),
@@ -90,7 +99,7 @@ const sections: { title: string; body: React.ReactNode }[] = [
     body: (
       <p>
         Mantemos seus dados enquanto sua conta existir. Você pode excluir a sua conta e todos os
-        dados associados a qualquer momento, direto no aplicativo (menu &quot;Minha conta&quot;), ou
+        dados associados a qualquer momento, direto no aplicativo (menu &quot;Perfil&quot;, opção &quot;Informações da Conta&quot;), ou
         pedir a exclusão pelo e-mail de contato. Veja o passo a passo em{" "}
         <Link className="text-primary-ink underline" href="/excluir-conta">
           Como excluir sua conta
@@ -128,7 +137,9 @@ const sections: { title: string; body: React.ReactNode }[] = [
     title: "9. Menores de idade",
     body: (
       <p>
-        O serviço não é destinado a menores de 18 anos sem a supervisão de um responsável legal.
+        O serviço não é destinado a menores de 18 anos sem a supervisão de um responsável legal. Os
+        dados de saúde (data de nascimento, altura e peso) e a geração de treino pelo aplicativo são
+        exclusivos para maiores de 18 anos: não coletamos esses dados de menores de idade.
       </p>
     ),
   },
