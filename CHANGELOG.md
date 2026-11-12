@@ -7,6 +7,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 ### Alterado
 - Margem lateral das telas no celular reduzida de 24 px para 12 px (áreas do profissional, do aluno, do Usuário Padrão, administrador e Minha conta), e a barra do topo acompanha. Em telas maiores (a partir de `sm`) nada muda; a página fica mais larga e os cartões aproveitam melhor a tela.
 
+### Adicionado
+- **Cross** como equipamento no registro de carga (ao lado de Halter, Máquina e Barra), com o mesmo comportamento: opcional, sugerido na próxima vez e mostrado no Status. Exige a migração `0036_equipment_cross.sql` (só amplia a lista aceita), que deve rodar **antes** do deploy.
+
 ## [1.4.0] - 2026-11-12
 
 Deploy em produção com a migração `0035_login_throttle.sql` (tag no commit `c466a44`). O CAPTCHA só passa a valer depois de ligado no painel do Supabase (veja `docs/dev/captcha.md`).

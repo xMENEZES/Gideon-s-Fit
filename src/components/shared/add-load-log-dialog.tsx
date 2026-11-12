@@ -164,7 +164,7 @@ export function AddLoadLogDialog({
           </p>
           <div className="flex flex-col gap-2">
             <Label id="equipment-label">Feito com (opcional)</Label>
-            <div role="group" aria-labelledby="equipment-label" className="grid grid-cols-3 gap-2">
+            <div role="group" aria-labelledby="equipment-label" className="grid grid-cols-4 gap-1.5 sm:gap-2">
               {EQUIPMENT_OPTIONS.map((option) => {
                 const selected = equipment === option.value;
                 return (
@@ -173,6 +173,7 @@ export function AddLoadLogDialog({
                     type="button"
                     variant={selected ? "default" : "outline"}
                     aria-pressed={selected}
+                    className="px-1 sm:px-2.5"
                     // Tocar de novo na opção marcada desmarca (a escolha é opcional).
                     onClick={() => setEquipment(selected ? null : option.value)}
                   >
