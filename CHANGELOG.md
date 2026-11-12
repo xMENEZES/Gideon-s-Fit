@@ -4,6 +4,10 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## Não lançado
 
+## [1.8.0] - 2026-11-12
+
+Deploy em produção com a migração `0038_generated_workout.sql` (descanso opcional e função que grava o treino gerado; tag no commit `431e323`). O gerador foi liberado para todos os Usuários Padrão maiores de 18 anos, com a classificação e as regras ainda em rascunho, sem a revisão de um profissional de educação física.
+
 ### Alterado
 - O **descanso** entre as séries (`rest_seconds`) passa a ser **opcional** e sem valor padrão. Sem descanso definido, o cartão do exercício não mostra "Xs descanso" nem o cronômetro, e o campo "Descanso" ao editar o exercício pode ficar em branco. Ao criar um exercício à mão o campo continua vindo com 60. Exige a migração `0038_generated_workout.sql`.
 
