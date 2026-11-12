@@ -9,6 +9,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 - Alerta do Dependabot em `minimatch` (negação de serviço) resolvido: as duas ferramentas de desenvolvimento que o usavam (lint e CLI de componentes) passam a usar a versão 11.0.8 por `overrides` no `package.json`. Ele nunca fez parte do app em produção.
 - Alerta em `deepmerge` (poluição de protótipo) **não tem versão corrigida** publicada e vem só da CLI de componentes (`shadcn`), usada em desenvolvimento. Fica registrado como risco aceito até sair a correção.
 
+### Alterado
+- `@hookform/resolvers` atualizado da 5.4 para a 7.0.6 (a conexão entre os formulários e a validação com `zod`). As mudanças das versões 6 e 7 que quebram compatibilidade são só dos resolvers de `effect` e `typebox`, que o projeto não usa; o de `zod` segue igual. Nenhuma tela muda.
+
 ## [1.5.0] - 2026-11-12
 
 Deploy em produção com a migração `0036_equipment_cross.sql` (só amplia a lista de equipamentos aceita; tag no commit `c8ad225`).
