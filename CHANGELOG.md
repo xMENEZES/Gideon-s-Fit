@@ -4,6 +4,10 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## Não lançado
 
+## [1.4.0] - 2026-11-12
+
+Deploy em produção com a migração `0035_login_throttle.sql` (tag no commit `c466a44`). O CAPTCHA só passa a valer depois de ligado no painel do Supabase (veja `docs/dev/captcha.md`).
+
 ### Alterado
 - Senha nova (cadastro, convite do profissional e redefinição) agora exige de 8 a 72 caracteres com letra minúscula, letra maiúscula, número e símbolo, e recusa senhas comuns (como `Senha@123`). Os três formulários mostram a lista de regras e marcam o que já foi cumprido enquanto a pessoa digita. O login não mudou: quem tem senha antiga e fraca continua entrando.
 - Mensagens em português para senha recusada pelo servidor, senha igual à atual e excesso de tentativas.
