@@ -9,6 +9,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ### Adicionado
 - **Cross** como equipamento no registro de carga (ao lado de Halter, Máquina e Barra), com o mesmo comportamento: opcional, sugerido na próxima vez e mostrado no Status. Exige a migração `0036_equipment_cross.sql` (só amplia a lista aceita), que deve rodar **antes** do deploy.
+- Classificação do mês na tela **Ranking do profissional**: com o ranking ligado, a lista com a posição e os pontos de cada aluno que participa (apelido ou primeiro nome), empate dividindo a posição, e o aviso de quantos alunos do time não aparecem por não participarem. Antes a tela só tinha o liga/desliga e a contagem. Sem migração: usa os acessos que o profissional já tem aos seus alunos.
 
 ## [1.4.0] - 2026-11-12
 

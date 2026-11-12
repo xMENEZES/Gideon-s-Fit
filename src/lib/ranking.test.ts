@@ -1,5 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { monthStart, participantsLabel, pointsLabel, rankRows, type RankingRow } from "@/lib/ranking";
+import {
+  monthStart,
+  nextMonthStart,
+  participantsLabel,
+  pointsLabel,
+  rankRows,
+  rankingDisplayName,
+  trainerRankingRows,
+  type RankingRow,
+} from "@/lib/ranking";
 
 const row = (display_name: string, total_points: number, is_me = false): RankingRow => ({
   display_name,
@@ -65,5 +74,55 @@ describe("textos", () => {
     expect(participantsLabel(0)).toBe("Nenhum aluno participa ainda");
     expect(participantsLabel(1)).toBe("1 aluno participa");
     expect(participantsLabel(5)).toBe("5 alunos participam");
+  });
+});
+
+describe("nextMonthStart", () => {
+  it("devolve o dia 1 do mês seguinte, inclusive na virada do ano", () => {
+    expect(nextMonthStart("2026-11-12")).toBe("2026-12-01");
+    expect(nextMonthStart("2026-12-31")).toBe("2027-01-01");
+    expect(nextMonthStart("2026-01-01")).toBe("2026-02-01");
+    expect(nextMonthStart("2026-09-30")).toBe("2026-10-01");
+  });
+});
+
+describe("rankingDisplayName", () => {
+  it("usa o apelido; sem apelido, o primeiro nome; sem nada, Aluno", () => {
+    expect(rankingDisplayName("Gigante", "Carlos Souza")).toBe("Gigante");
+    expect(rankingDisplayName("  ", "Carlos Souza")).toBe("Carlos");
+    expect(rankingDisplayName(null, "  Ana   Lima ")).toBe("Ana");
+    expect(rankingDisplayName(null, null)).toBe("Aluno");
+    expect(rankingDisplayName("", "")).toBe("Aluno");
+  });
+});
+
+describe("trainerRankingRows", () => {
+  const students = [
+    { id: "a", nickname: null, full_name: "Ana Lima" },
+    { id: "b", nickname: "Bi", full_name: "Bianca Reis" },
+    { id: "c", nickname: null, full_name: "Caio Dias" },
+  ];
+
+  it("soma 1 ponto por treino completo e 1 por alimentação completa, por aluno", () => {
+    const rows = trainerRankingRows(students, [
+      { student_id: "a", workout_done: true, diet_done: true },
+      { student_id: "a", workout_done: true, diet_done: false },
+      { student_id: "b", workout_done: false, diet_done: true },
+    ]);
+    expect(rows).toEqual([
+      { display_name: "Ana", total_points: 3, is_me: false },
+      { display_name: "Bi", total_points: 1, is_me: false },
+      { display_name: "Caio", total_points: 0, is_me: false },
+    ]);
+  });
+
+  it("aluno sem nenhum dia pontuado aparece com 0 e a lista vazia dá vazio", () => {
+    expect(trainerRankingRows(students, []).every((r) => r.total_points === 0)).toBe(true);
+    expect(trainerRankingRows([], [])).toEqual([]);
+  });
+
+  it("ignora pontos de quem não está na lista (não participa)", () => {
+    const rows = trainerRankingRows(students.slice(0, 1), [{ student_id: "zzz", workout_done: true, diet_done: true }]);
+    expect(rows).toEqual([{ display_name: "Ana", total_points: 0, is_me: false }]);
   });
 });

@@ -50,6 +50,7 @@ Legenda: **A** = dá para automatizar ou checar no preview local; **C** = só no
 - [ ] **A** Catálogo de exercícios (novo exercício de musculação, no aluno e no modelo): digitar 2 letras sugere nomes (sem diferenciar acento), escolher com toque e com setas e Enter; digitar um nome que não está na lista continua valendo; nome novo oferece "Guardar este nome no meu catálogo" (pede o grupo muscular) e aparece nas próximas buscas como "meu"; o "x" remove o nome guardado; ao editar sem mexer no nome não oferece guardar; exercício de cardio não muda.
 - [ ] **A** Mensagens de incentivo: editar (o cartão do ranking não fica mais aqui).
 - [ ] **A** Ranking: tela própria com o cartão do ranking (ligar e desligar), e a aba Ranking aparece ou some para os alunos.
+- [ ] **A** Ranking do profissional: com o ranking ligado e alunos participando, a "Classificação do mês" lista só os participantes, com posição, nome (apelido ou primeiro nome) e pontos batendo com a tela do aluno, mostra o aviso de quantos não participam, e some com o ranking desligado ou sem participantes; a tela do aluno segue igual.
 - [ ] **A** Menu do profissional: no celular fica embaixo (Alunos, Modelos, Mensagens, Ranking, Alertas) com as contagens em Alunos e Alertas, some ao rolar para baixo e volta ao rolar para cima; em tela larga os links ficam no topo.
 - [ ] **A** Alertas e solicitações de entrada (aprovar e recusar).
 
