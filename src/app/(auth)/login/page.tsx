@@ -1,11 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createClient } from "@/lib/supabase/client";
 import { loginSchema, type LoginInput } from "@/lib/validations/auth.schema";
+import {
+  INVALID_MESSAGE,
+  LOCKED_MESSAGE,
+  RATE_LIMITED_MESSAGE,
+  formatWait,
+  type LoginResponse,
+} from "@/lib/login-throttle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
@@ -25,24 +31,68 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 export default function LoginPage() {
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
+  // Espera imposta pelo servidor: de quanto, para qual e-mail, e o que falta (atualizado a cada segundo).
+  const [lock, setLock] = useState<{ seconds: number; email: string; id: number } | null>(null);
+  const [remaining, setRemaining] = useState(0);
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<LoginInput>({ resolver: zodResolver(loginSchema) });
+  const emailValue = useWatch({ control, name: "email" });
+
+  useEffect(() => {
+    if (!lock) return;
+    const deadline = Date.now() + lock.seconds * 1000;
+    const timer = setInterval(() => {
+      const left = Math.ceil((deadline - Date.now()) / 1000);
+      if (left <= 0) {
+        clearInterval(timer);
+        setLock(null);
+        setRemaining(0);
+        setServerError(null);
+      } else {
+        setRemaining(left);
+      }
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [lock]);
+
+  // Com outro e-mail no campo, o botão volta: o servidor decide de novo e responde com a espera certa.
+  const locked = lock !== null && remaining > 0 && lock.email === emailValue;
 
   async function onSubmit(values: LoginInput) {
     setServerError(null);
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword(values);
-
-    if (error) {
-      setServerError("Email ou senha inválidos.");
+    let data: LoginResponse | null = null;
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+      data = (await response.json()) as LoginResponse;
+    } catch {
+      setServerError("Não foi possível entrar. Verifique a conexão e tente novamente.");
       return;
     }
 
-    router.push("/");
-    router.refresh();
+    if (data.ok) {
+      router.push("/");
+      router.refresh();
+      return;
+    }
+
+    if (data.error === "rate_limited") {
+      setServerError(RATE_LIMITED_MESSAGE);
+      return;
+    }
+    if (data.retryAfter) {
+      const seconds = data.retryAfter;
+      setLock((prev) => ({ seconds, email: values.email, id: (prev?.id ?? 0) + 1 }));
+      setRemaining(seconds);
+    }
+    setServerError(data.error === "locked" ? LOCKED_MESSAGE : INVALID_MESSAGE);
   }
 
   return (
@@ -55,7 +105,15 @@ export default function LoginPage() {
         <CardContent className="flex flex-col gap-4">
           {serverError && (
             <Alert variant="destructive">
-              <AlertDescription>{serverError}</AlertDescription>
+              <AlertDescription>
+                {serverError}
+                {locked && (
+                  <>
+                    {" "}
+                    Tente de novo em <strong className="tabular-nums">{formatWait(remaining)}</strong>.
+                  </>
+                )}
+              </AlertDescription>
             </Alert>
           )}
           <div className="flex flex-col gap-2">
@@ -83,8 +141,8 @@ export default function LoginPage() {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "Entrando..." : "Entrar"}
+          <Button type="submit" className="w-full" disabled={isSubmitting || locked}>
+            {isSubmitting ? "Entrando..." : locked ? `Aguarde ${formatWait(remaining)}` : "Entrar"}
           </Button>
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
             <span className="h-px flex-1 bg-border" />

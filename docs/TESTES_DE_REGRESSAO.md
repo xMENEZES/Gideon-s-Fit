@@ -12,6 +12,8 @@ Legenda: **A** = dá para automatizar ou checar no preview local; **C** = só no
 
 ## Entrada e conta
 - [ ] **A** Login com e-mail e senha leva à tela inicial certa de cada perfil.
+- [ ] **A** Login com senha errada: no 3º erro seguido a tela avisa "Tente de novo em 1:00" com contagem regressiva e o botão desabilitado; durante a espera nem a senha certa entra; passada a espera, 2 tentativas livres e a 6ª pede 5 minutos; trocar o e-mail no campo libera o botão; acertar a senha entra e zera a contagem.
+- [ ] **A** Login com Google continua funcionando e a sessão do login por e-mail vale em todas as áreas (profissional, aluno e usuário padrão), inclusive após recarregar.
 - [ ] **A** Sair encerra a sessão (voltar a uma rota protegida pede login).
 - [ ] **A** Minha conta abre, e a exclusão de conta pede a confirmação do e-mail (não excluir de verdade fora de conta de teste).
 
